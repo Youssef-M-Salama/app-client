@@ -1,7 +1,14 @@
-import React from 'react'
-
-export default function publicPage() {
+export default function PublicPage() {
   return (
-    <div>publicPage</div>
-  )
+    <div 
+      style={{
+        backgroundImage: "url('/bg-img.jpg')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        minHeight: '100vh'
+      }}
+    >
+    
+    </div>
+  );
 }

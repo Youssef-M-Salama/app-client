@@ -1,0 +1,122 @@
+/* ── Container ── */
+.navbar {
+  position: fixed;
+  top: 40px;
+  right: 0;
+  left: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  padding: 8px 40px;
+  background-color: transparent;
+}
+
+/* ── Logo (right side) ── */
+.logo {
+  display: flex;
+  align-items: center;
+  width: 280.72px;
+  height: 35px;
+  justify-content: center;
+}
+
+.logoImg {
+  height: auto;
+  width: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* line */
+.brandDivider {
+  width: 2px;
+  height: 26px;
+  background-color: rgba(255, 255, 255, 0.85);
+  margin: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.tagline {
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-primary);
+  width: 157px;
+  height: 17px;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
+
+/* ── Actions (left side) ── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 281px;
+  height: 33px;
+}
+
+/* login btn */
+.loginBtn {
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-white);
+  background-color: transparent;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+  white-space: nowrap;
+}
+ 
+.loginBtn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+ 
+/* register btn */
+.registerBtn {
+  padding: var(--space-2) var(--space-5);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-primary-dark);
+  background-color: var(--color-primary-subtle);
+  border: 1.5px solid var(--color-primary-subtle);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+  white-space: nowrap;
+}
+ 
+.registerBtn:hover {
+  background-color:rgba(255, 255, 255, 0.15);
+  border-color: transparent;
+}
+ 
+/* ══════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════ */
+@media (max-width: 640px) {
+  .tagline,
+  .brandDivider {
+    display: none;
+  }
+ 
+  .navbar {
+    padding: 0 var(--space-4);
+  }
+ 
+  .loginBtn,
+  .registerBtn {
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-xs);
+  }
+}
