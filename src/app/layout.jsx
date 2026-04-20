@@ -1,11 +1,25 @@
 import "@/styles/globals.css";
-import Navbar from "@/components/layout/Navbar";
-import { Almarai } from 'next/font/google';
+import { Almarai, Pinyon_Script, Pirata_One } from 'next/font/google';
 
 const almarai = Almarai({
   subsets: ['arabic'],
   weight: ['300', '400', '700', '800'],
   display: 'swap',
+  variable: '--font-almarai'
+});
+
+const pinyonScript = Pinyon_Script({
+    subsets: ['latin'],
+    weight: ['400'],
+    display: 'swap',
+    variable: '--font-pinyon'
+});
+
+const pirataOne = Pirata_One({
+    subsets: ['latin'],
+    weight: ['400'],
+    display: 'swap',
+    variable: '--font-pirata'
 });
 export const metadata = {
   title: "App",
@@ -14,10 +28,14 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ar" dir="rtl" className={almarai.className}>
-      <body className="min-h-full flex flex-col">
-        <Navbar/>
-        {children}</body>
+    <html lang="ar" dir="rtl" className={`${almarai.variable} ${pinyonScript.variable} ${pirataOne.variable}`}>
+      <body className={almarai.className}>
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        />
+        {children}
+      </body>
     </html>
   );
 }
