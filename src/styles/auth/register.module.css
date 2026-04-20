@@ -1,0 +1,70 @@
+/* register.module.css - only register-specific styles */
+
+/* Radio section (unique to register) */
+.radioSection {
+    margin: 24px 0 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.radioTitle {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    color: #333;
+    text-align: right;
+}
+
+.radioLine {
+    display: flex;
+    gap: 32px;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #333;
+}
+
+.radioLabel input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #171123;
+    border-radius: 4px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    background-color: transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.radioLabel input:checked {
+    background-color: #171123;
+}
+
+.radioLabel input:checked::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+}
+
+@media (max-width: 768px) {
+    .radioLine {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}

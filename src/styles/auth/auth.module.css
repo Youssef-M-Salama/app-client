@@ -1,0 +1,344 @@
+/* auth.module.css - Layout + Common Form Styles */
+
+/* ========== LAYOUT (existing) ========== */
+.container {
+    background-image: url('/bg-img.jpg');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.card {
+    width: 100%;
+    max-width: 1100px;
+    min-height: 500px;
+    background-color: #FFFFFF;
+    border-radius: 30px;
+    box-shadow: -1px 10px 19px 0 rgba(0, 0, 0, 0.43);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+}
+
+.topBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    z-index: 10;
+    padding: 24px 40px 0 40px;
+    box-sizing: border-box;
+}
+
+.backButton {
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    padding: 16px 24px;
+    order: 2;
+}
+
+.backButton i {
+    font-size: clamp(32px, 8vw, 50px);
+    color: #171123;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 24px;
+    max-width: 160px;
+    width: auto;
+    height: auto;
+}
+
+.logoImg {
+    width: 100%;
+    height: auto;
+    max-width: 120px;
+}
+
+/* ========== COMMON FORM STYLES (shared by register & login) ========== */
+.formContainer {
+    display: flex;
+    min-height: 100%;
+    flex-wrap: wrap;
+}
+
+.formImage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    position: relative;
+    width: 50%;
+}
+
+.formImage img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.imgRegister {
+    /* Image on Left (Register): Large curve on the right-side top and bottom */
+    border-radius: 40px 160px 40px 40px;
+}
+
+.imgLogin {
+    /* Image on Right (Login): Large curve on the left-side top and bottom */
+    border-radius: 160px 40px 40px 40px;
+}
+.formImage .imageOverlayBox {
+    z-index: 3;
+    left: 290px; 
+    top: 100px;
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    position: absolute;
+    border: 5px solid #FFFFFF;
+    border-radius: 24px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.formImage .imageOverlayBoxLogin {
+    left:100px;
+}   
+
+.firstWord {
+    position: absolute;
+    bottom: 35%;
+    left: 50%;
+    color: #FFFFFF;
+    line-height: 100%;
+    letter-spacing: 0%;
+    font-family: var(--font-pirata), cursive;
+    font-weight: 400;
+    font-size: clamp(40px, 6vw, 80px);
+    z-index: 2;
+}
+
+.secondWord {
+    position: absolute;
+    bottom: 10%;
+    left: 25%;
+    color: #FFFFFF;
+    line-height: 100%;
+    letter-spacing: 0%;
+    font-family: var(--font-pinyon), cursive;
+    font-weight: 400;
+    font-size: clamp(80px, 12vw, 180px);
+    z-index: 2;
+}
+
+.imageOverlayBox {
+    position: absolute;
+    bottom: 80px;
+    left: -40px; /* Sticks out over the form area */
+    width: 220px;
+    height: 200px;
+    border: 3px solid #1E88E5; /* Bright blue color */
+    z-index: 1;
+    border-radius: 0;
+    pointer-events: none;
+}
+.formContent {
+    flex: 1;
+    text-align: right;
+    padding: 24px 32px;
+    min-width: 280px;
+}
+
+.formHeading {
+    text-align: center;
+    font-family: Almarai;
+    margin-bottom: 32px;
+}
+
+.formTitle {
+    font-size: 40px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    line-height: 100%;
+    color: #161616;
+}
+
+.formSubtitle {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 24px;
+    font-weight: 700;
+    line-height: 100%;
+}
+
+.formField {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-bottom: 20px;
+    margin-top: 8px;
+}
+
+.formField label {
+    position: absolute;
+    top: -10px;
+    right: 24px;
+    background-color: #FFFFFF;
+    padding: 0 10px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #171123;
+    z-index: 2;
+    margin-bottom: 0;
+    pointer-events: none;
+}
+
+.formField input {
+    width: 100%;
+    padding: 14px 20px;
+    font-size: 14px;
+    border: 1.5px solid #000000;
+    border-radius: 12px;
+    background-color: transparent;
+    text-align: right;
+    direction: rtl;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.firstLine {
+    display: flex;
+    column-gap: 24px;
+    flex-wrap: wrap;
+}
+
+.firstLine .formField {
+    flex: 1;
+    min-width: 180px;
+    margin-bottom: 16px;
+}
+
+.formField input:focus {
+    outline: none;
+    border-color: #171123;
+    box-shadow: 0 0 0 2px rgba(23, 17, 35, 0.1);
+}
+
+.submitBtn {
+    width: 100%;
+    padding: 16px;
+    background-color: #171123;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: transform 0.1s ease, opacity 0.2s;
+    box-shadow: 0 4px 10px rgba(23, 17, 35, 0.2);
+}
+
+.submitBtn:active {
+    transform: scale(0.98);
+}
+
+.linkText {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-top: auto;
+}
+
+.linkText a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.linkText a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive for forms */
+
+
+@media (max-width: 968px) {
+    .formContainer {
+        gap: 30px;
+        padding: 24px 32px;
+    }
+
+    .formImage {
+        display: none;
+    }
+
+    .formContent {
+        padding: 20px 24px;
+        width: 100%;
+    }
+    .firstLine {
+        gap: 0;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .formContainer {
+        padding: 16px 20px;
+    }
+
+    .formContent {
+        padding: 16px;
+    }
+
+    .formTitle {
+        font-size: 28px;
+    }
+}
+
+/* Small screen adjustments for topBar */
+@media (max-width: 768px) {
+    .container {
+        padding: 40px 16px;
+    }
+
+    .card {
+        min-height: auto;
+    }
+
+    .topBar {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .backButton {
+        padding: 12px 16px;
+    }
+
+    .logo {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .backButton i {
+        font-size: 32px;
+    }
+
+    .logo {
+        max-width: 100px;
+    }
+}
