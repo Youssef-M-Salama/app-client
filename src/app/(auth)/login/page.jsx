@@ -8,9 +8,9 @@ export default function LoginPage() {
     <div className={authStyles.formContainer}>
       <div className={authStyles.formImage}>
         <img src="/login-image.jpg" alt="Login" className={authStyles.imgLogin} />
-        <img src="/loginHandsImage.jpg" alt="" className={`${authStyles.imageOverlayBox} ${authStyles.imageOverlayBoxLogin}`}/>
+        <img src="/loginHandsImage.jpg" alt="" className={`${authStyles.imageOverlayBox} ${authStyles.imageOverlayBoxLogin}`} />
         <p className={authStyles.firstWord}>We</p>
-        <p className={authStyles.secondWord}>Trust</p> 
+        <p className={authStyles.secondWord}>Trust</p>
       </div>
       <LoginForm authStyles={authStyles} />
     </div>

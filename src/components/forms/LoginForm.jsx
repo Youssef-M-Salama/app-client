@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 
 export default function LoginForm({ authStyles }) {
   return (
@@ -21,7 +22,7 @@ export default function LoginForm({ authStyles }) {
       <button className={authStyles.submitBtn}>تسجيل الدخول</button>
 
       <p className={authStyles.linkText}>
-        نسيت الباسورد؟ <a href="/auth/forgot-password">إعادة تعيين</a>
+        نسيت الباسورد؟ <Link href="/forgot-password">إعادة تعيين</Link>
       </p>
     </div>
   );

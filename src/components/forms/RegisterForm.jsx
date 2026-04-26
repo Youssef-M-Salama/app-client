@@ -1,4 +1,5 @@
-import React from 'react'
+import React from 'react';
+import Link from 'next/link';
 
 export default function RegisterForm({ authStyles, regStyles }) {
   return (
@@ -47,7 +48,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
       <button className={authStyles.submitBtn}>إنشاء حساب</button>
 
       <p className={authStyles.linkText}>
-        لديك حساب بالفعل؟ <a href="/login">تسجيل الدخول</a>
+        لديك حساب بالفعل؟ <Link href="/login">تسجيل الدخول</Link>
       </p>
     </div>
   )
