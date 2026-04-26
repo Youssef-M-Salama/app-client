@@ -1,0 +1,155 @@
+.sidebar {
+    background: #FFFFFF;
+    height: 95%;
+    border-left: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    min-width: 257px;
+    padding: 24px;
+    margin: 20px 10px;
+    border-radius: 20px;
+    box-shadow: 0px 5px 29px 0px rgba(50, 49, 49, 0.16);
+    position: fixed;
+}
+
+/* ── Mobile close button (hidden on desktop) ── */
+.closeBtn {
+    display: none;
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    align-items: center;
+    justify-content: center;
+    color: #555;
+    transition: background 0.15s;
+}
+
+.closeBtn:hover {
+    background: #e0e0e0;
+}
+
+@media (max-width: 1100px) {
+    .sidebar {
+        position: relative;
+        height: 100%;
+        margin: 0;
+        border-radius: 20px 0 0 20px;
+        min-width: unset;
+        width: 100%;
+        overflow-y: auto;
+    }
+
+    .closeBtn {
+        display: flex;
+    }
+}
+
+.logo {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 175px;
+    margin: 0 auto;
+    margin-bottom: 70px;
+}
+
+.logo::after {
+    content: "";
+    position: absolute;
+    bottom: -15px;
+    width: 193px;
+    height: 1px;
+    background-color: black;
+}
+
+.navLinks {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: Almarai;
+    line-height: 100%;
+    font-size: 20px;
+}
+
+.navLinksTop {
+    position: relative;
+}
+
+.navLinksTop::after {
+    content: "";
+    position: absolute;
+    bottom: -40px;
+    width: 202px;
+    height: 1px;
+    background-color: black;
+}
+
+.navLinks li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.navLinks li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.navLinks li img {
+    width: 18px;
+    height: auto;
+    margin-bottom: 1px;
+}
+
+.navLinks li:hover {
+    background: #f5f0ff;
+    color: var(--color-primary);
+}
+
+/* Active state — solid purple */
+.navLinks li.active {
+    background: var(--color-primary);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.navLinks li.active a {
+    color: #ffffff;
+}
+
+.navLinks li.active img {
+    filter: brightness(0) invert(1);
+}
+
+.navLinksTail {
+    position: absolute;
+    bottom: 20px;
+}
+
+@media (max-width: 640px) {
+    .navLinks {
+        font-size: 17px;
+    }
+}

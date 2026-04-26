@@ -1,0 +1,31 @@
+.container {
+  margin: 0 auto;
+  padding: 32px 0;
+}
+
+.card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  overflow: hidden;
+}
+
+.content {
+  padding: 0 24px 24px;
+}
+
+.navLinks li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* active style */
+.active span {
+  background: #6F2DBD;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
