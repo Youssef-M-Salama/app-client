@@ -39,15 +39,15 @@ export default function Sidebar({ onClose }) {
           </Link>
         </li>
 
-        <li className={pathname === "/browse-offers" ? sidebarStyle.active : ""}>
-          <Link href="/browse-offers" onClick={onClose}>
+        <li className={pathname === "/browse" ? sidebarStyle.active : ""}>
+          <Link href="/browse" onClick={onClose}>
             <img src="/icons/offers-icon.png" alt="offers" />
             <span>العروض المتاحه</span>
           </Link>
         </li>
 
-        <li className={pathname === "/browse-charity-needs" ? sidebarStyle.active : ""}>
-          <Link href="/browse-charity-needs" onClick={onClose}>
+        <li className={pathname === "/requests" ? sidebarStyle.active : ""}>
+          <Link href="/requests" onClick={onClose}>
             <img src="/icons/requests-icon.png" alt="needs" />
             <span>الطلبات الوارده</span>
           </Link>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
-import dashBoardStyle from "@/styles/dashboard/dashboard.module.css";
+import dashboardStyle from "@/styles/dashboard/dashboard.module.css";
 
 export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -12,26 +12,26 @@ export default function Layout({ children }) {
   const closeSidebar = () => setSidebarOpen(false);
 
   return (
-    <div className={dashBoardStyle.container}>
+    <div className={dashboardStyle.container}>
 
       {/* Dark overlay — tapping it closes the sidebar on mobile */}
       {sidebarOpen && (
         <div
           id="sidebar-overlay"
-          className={`${dashBoardStyle.mobileOverlay} ${dashBoardStyle.visible}`}
+          className={`${dashboardStyle.mobileOverlay} ${dashboardStyle.visible}`}
           onClick={closeSidebar}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`${dashBoardStyle.sidebarWrapper} ${sidebarOpen ? dashBoardStyle.sidebarOpen : ""}`}
+        className={`${dashboardStyle.sidebarWrapper} ${sidebarOpen ? dashboardStyle.sidebarOpen : ""}`}
       >
         <Sidebar onClose={closeSidebar} />
       </aside>
 
       {/* Main content */}
-      <main className={dashBoardStyle.mainContent}>
+      <main className={dashboardStyle.mainContent}>
         <Header onMenuToggle={openSidebar} />
         {children}
       </main>

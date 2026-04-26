@@ -6,19 +6,14 @@ import headerStyle from "@/styles/dashboard/header.module.css";
 const PAGE_TITLES = {
   "/profile":               "البيانات الشخصية",
   "/posts":                 "المنشورات !",
-  "/browse-offers":         "العروض المتاحة",
-  "/browse-my-offers":      "عروضي",
-  "/browse-charity-needs":  "الطلبات المتاحة",
-  "/my-charity-needs":      "طلباتي",
-  "/received-applications": "الطلبات الواردة",
-  "/sent-applications":     "الطلبات المرسلة",
+  "/browse":                "العروض والطلبات المتاحة",
+  "/requests":              "الطلبات الواردة",
   "/notifications":         "الإشعارات",
 };
 
 const SEARCH_PLACEHOLDERS = {
   "/posts":                "ابحث عن المنشورات...",
-  "/browse-offers":        "ابحث عن العروض...",
-  "/browse-charity-needs": "ابحث عن الطلبات...",
+  "/browse":               "ابحث في العروض والطلبات...",
 };
 
 export default function Header({ onMenuToggle }) {
