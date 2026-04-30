@@ -1,6 +1,8 @@
 import "@/styles/globals.css";
-import Navbar from "@/components/layout/Navbar";
 import { Almarai } from 'next/font/google';
+import '@fortawesome/fontawesome-svg-core/styles.css';
+import { config } from '@fortawesome/fontawesome-svg-core';
+config.autoAddCss = false;
 
 const almarai = Almarai({
   subsets: ['arabic'],
@@ -15,8 +17,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="ar" dir="rtl" className={almarai.className}>
-      <body className="min-h-full flex flex-col">
-        <Navbar/>
+      <body>
         {children}</body>
     </html>
   );

@@ -1,6 +1,6 @@
 /* ── Container ── */
 .navbar {
-  position: fixed;
+  position: absolute;
   top: 40px;
   right: 0;
   left: 0;
@@ -23,8 +23,7 @@
 }
 
 .logoImg {
-  height: auto;
-  width: auto;
+  object-fit: cover;
   margin: 0;
   padding: 0;
 }

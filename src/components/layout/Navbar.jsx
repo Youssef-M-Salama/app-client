@@ -19,7 +19,8 @@ export default function Navbar() {
         <button className={styles.loginBtn}>تـــســجيل الــدخــول</button>
         <button className={styles.registerBtn}>الإشـــــتــــــراك</button>
       </div>
- 
+
     </nav>
+ 
   );
 }

@@ -1,0 +1,237 @@
+.home{
+  background-image: url('/bg-img.jpg');
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 1440px;
+  height: 1024px;
+  
+}
+/* hero */
+.hero{
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  top: 131px;
+  width: 411px;
+  height: 238px;
+  color: var(--color-primary-subtle);
+}
+.hero-txt{
+  display: block;
+  font-weight: var(--font-weight-bold);
+  font-size: 80px;
+  text-align: center;
+}
+.hero-btn{
+  display: flex;
+  gap: 16px;
+  background-color:var(--color-primary-dark) ;
+  width: 176px;
+  height: 44px;
+  border-radius: 11px;
+  padding: 8px;
+  position: relative;
+}
+.hero-btn span {
+  width: 113px;
+  height: 20px;
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+}
+.hero-arrow{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color:var(--color-primary-light) ;
+  border-radius: 8px;
+  position: relative;
+  padding: 2px;
+  width: 31px;
+  height: 28px;
+}
+
+.ellipse{
+  position: absolute;
+  bottom: 0px;
+  left: 1px;
+  border-radius: 0 0 0 8px ;
+}
+.cover-layout{
+  position:absolute;
+  top: 412px;
+  /* left: 471px; */
+  bottom: 0;
+  /* width: 586.47px; */
+  height: 612.02px;
+  overflow: hidden; 
+}
+.cover-layout-img{
+  transform: rotate(-10deg);
+  position: relative;
+  bottom: 0;
+  object-fit: cover;
+  object-position: top;
+}
+
+.infos{
+  position: absolute;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  bottom: 40px;
+  left: 0;
+  right: 0;
+  top: 0;
+  /* padding: 0 48px; */
+  z-index: 3;
+  /* gap: 24px; */
+
+}
+/* ── Shared glass style ── */
+.glass-card {
+  background:rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  border-radius: 20px;
+  padding: 16px 20px;
+  color: white;
+  /* border: 1px solid rgba(255, 255, 255, 0.35); */
+}
+
+.r-infos{
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.r-1{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 368.6px;
+  height: 47.6px;
+  position: absolute;
+  top: 476px;
+  right: 140px;
+  border-radius: 24px;
+  padding: 8px 16px;
+  gap: 8px;
+}
+.r-1-txt{
+  width: 273px;
+  /* height: 13px; */
+  /* padding: 8px; */
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-regular);
+}
+
+
+.r-2{
+  display: flex;
+  justify-content: space-around;
+  flex-direction: column;
+  width: 359px;
+  height: 239.5px;
+  position: absolute;
+  top: 539.6px;
+  right: 105px;
+  border-radius: 24px;
+  padding: 16px;
+  gap: 16px;
+}
+.r-2-header{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: row;
+  width: 327px;
+  height: 22px;
+}
+.r-2-txt{
+  width: 273px;
+  /* height: 13px; */
+  /* padding: 8px; */
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+.r-2-des{
+  width: 327px;
+  height: 125px;
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  gap: 8px;
+}
+.des-title{
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+}
+.des-txt{
+  font-size: 11px;
+  font-weight: var(--font-weight-regular);
+}
+.r-2-imgs{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background:rgba(0, 0, 0, 0.14);
+  border-radius: 20px;
+  padding: 16px 20px;
+  color: white;
+  width: 190px;
+  height: 28.53px;
+  padding: 7px 22px;
+  margin: auto;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.r-2-imgs > img {
+  width: 13.8px;
+  height: 13.8px;
+}
+
+
+.r-3{
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 290px;
+  height: 40px;
+  position: absolute;
+  top: 795.13px;
+  right: 240px;
+  border-radius: 24px;
+  padding: 8px 16px;
+  gap: 8px;
+}
+.r-3-txt{
+  width: 226px;
+  height: 15px;
+  font-size: 13px;
+  font-weight: var(--font-weight-regular);
+}
+
+
+.r-4{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  width: 281px;
+  height: 120px;
+  position: absolute;
+  top: 851.13px;
+  right: 345px;
+  border-radius: 24px;
+  padding: 8px 16px;
+  gap: 16px;
+}
+.r-4-txt{
+  width: 233px;
+  height: 48px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+}
