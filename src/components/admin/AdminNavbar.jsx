@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "@/styles/admin/adminNavbar.module.css";
+import { useAuth } from "@/context/AuthContext";
 
 const NAV_ITEMS = [
   { label: "إدارة المستخدمين",           href: "/admin/users",   badge: 19 },
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
 
 export default function AdminNavbar() {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <nav className={styles.navbar}>
@@ -59,6 +61,14 @@ export default function AdminNavbar() {
         </button>
         <button className={styles.iconBtn} aria-label="الإعدادات" title="الإعدادات">
           ⚙️
+        </button>
+        <button 
+          className={styles.iconBtn} 
+          aria-label="تسجيل الخروج" 
+          title="تسجيل الخروج"
+          onClick={logout}
+        >
+          🚪
         </button>
       </div>
 

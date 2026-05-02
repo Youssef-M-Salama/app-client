@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import sidebarStyle from "@/styles/dashboard/sidebar.module.css";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar({ onClose }) {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <nav className={sidebarStyle.sidebar}>
@@ -65,10 +67,17 @@ export default function Sidebar({ onClose }) {
         </li>
 
         <li>
-          <Link href="/logout" onClick={onClose}>
+          <button 
+            className={sidebarStyle.logoutBtn} 
+            onClick={() => {
+              logout();
+              if (onClose) onClose();
+            }}
+            aria-label="تسجيل الخروج"
+          >
             <img src="/icons/logoutIconpng.png" alt="logout" />
             <span>تسجيل الخروج</span>
-          </Link>
+          </button>
         </li>
 
       </div>

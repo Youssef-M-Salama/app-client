@@ -1,130 +1,158 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PostCard from "@/components/cards/PostCard";
 import PostFormModal from "@/components/ui/PostFormModal";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
 import styles from "@/styles/dashboard/posts.module.css";
+import { useAuth } from "@/context/AuthContext";
+import charityNeedsService from "@/services/charityNeedsService";
+import offersService from "@/services/offersService";
+import { mapCategory } from "@/utils/enumMapper";
 
-// ── Mock data ──────────────────────────────────────────────
-const INITIAL_POSTS = [
-  {
-    id: 1,
-    title: "مصنع حديد عـــز",
-    category: "حديد تسليح",
-    description:
-      "توفر كمية من حديد التسليح مختلفة الأشكال وصالحة للعديد من الأعمال. الكمية تصل إلى (80 طن) مع إمكانية إرفاق عمال محترفين لتركيبه.",
-    phone: "01200000001",
-    timeAgo: "2 يوم و 15 ساعة",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-  },
-  {
-    id: 2,
-    title: "مصنع حديد عـــز",
-    category: "أدوات بناء",
-    description:
-      "توفر معدات بناء مختلفة الأشكال والاستخدامات مع إمكانية إرفاق عمال محترفين لاستخدامها.",
-    phone: "01200000002",
-    timeAgo: "3 أيام و 20 ساعة",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-  },
-  {
-    id: 3,
-    title: "مصنع حديد عـــز",
-    category: "عمال بناء و تسليح",
-    description:
-      "نوفر عدد من العمال مشرعين والقيام بالعديد من أعمال البناء والتسليح وغيره. متوفرين على مدار 24 ساعة لإتمام كافة المهام.",
-    phone: "01200000003",
-    timeAgo: "1 يوم و 3 ساعات",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-  },
-  {
-    id: 4,
-    title: "مصنع حديد عـــز",
-    category: "حديد تسليح",
-    description:
-      "متوفر حديد تسليح بجودة عالية وأسعار تنافسية. التوصيل متاح لجميع المحافظات.",
-    phone: "01200000004",
-    timeAgo: "5 أيام و 10 ساعات",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-  },
-  {
-    id: 5,
-    title: "مصنع حديد عـــز",
-    category: "أدوات بناء",
-    description:
-      "نوفر جميع أدوات البناء اللازمة مع فريق متخصص لمساعدتك في كل مرحلة من مراحل الإنشاء.",
-    phone: "01200000005",
-    timeAgo: "7 أيام و 2 ساعة",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-  },
-  {
-    id: 6,
-    title: "مصنع حديد عـــز",
-    category: "عمال بناء و تسليح",
-    description:
-      "فريق من المهندسين والعمال المتخصصين في أعمال البناء والتشطيب متاح للتعاقد.",
-    phone: "01200000006",
-    timeAgo: "10 أيام",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-  },
-];
-
-const CATEGORIES = ["جميع المنشورات", "حديد تسليح", "أدوات بناء", "عمال بناء و تسليح"];
+const CATEGORIES = ["جميع المنشورات", "طعام", "ملابس", "طبي", "تعليمي", "أخرى"];
 
 export default function PostsPage() {
-  const [posts, setPosts] = useState(INITIAL_POSTS);
+  const { role, user } = useAuth();
+  
+  const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState("جميع المنشورات");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Modal states
   const [addModalOpen, setAddModalOpen] = useState(false);
-  const [editPost, setEditPost] = useState(null);   // post object or null
-  const [deletePost, setDeletePost] = useState(null); // post object or null
+  const [editPost, setEditPost] = useState(null);
+  const [deletePost, setDeletePost] = useState(null);
+  const [actionError, setActionError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  useEffect(() => {
+    fetchPosts();
+  }, [role]);
+
+  const fetchPosts = async () => {
+    if (!role) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      let data = null;
+      if (role === "Charity") {
+        const response = await charityNeedsService.getMyCharityNeeds({ Page: 1, PageSize: 50 });
+        data = response?.data || response;
+      } else if (role === "DonorOrganization") {
+        const response = await offersService.getMyOffers({ Page: 1, PageSize: 50 });
+        data = response?.data || response;
+      }
+      
+      // Assume paginated envelope returns array in `data.items` or `data` itself is array if not paginated locally
+      if (data?.items) {
+        setPosts(data.items);
+      } else if (Array.isArray(data)) {
+        setPosts(data);
+      } else if (data?.data?.items) {
+        setPosts(data.data.items);
+      } else {
+        setPosts([]);
+      }
+    } catch (err) {
+      setError(err.appMessage || "حدث خطأ أثناء تحميل المنشورات.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // ── Derived ──
-  const filteredPosts =
-    filter === "جميع المنشورات"
-      ? posts
-      : posts.filter((p) => p.category === filter);
+  const filteredPosts = filter === "جميع المنشورات"
+    ? posts
+    : posts.filter((p) => mapCategory(p.category) === filter);
 
   // ── Handlers ──
-  function handleAddSubmit(form) {
-    const newPost = {
-      id: Date.now(),
-      title: form.title,
-      category: form.category,
-      description: form.description,
-      phone: form.phone,
-      timeAgo: "الآن",
-      image:
-        form.imagePreview ||
-        "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-    };
-    setPosts((prev) => [newPost, ...prev]);
-    setAddModalOpen(false);
+  async function handleAddSubmit(form) {
+    setActionError(null);
+    setFieldErrors({});
+    try {
+      const fd = new FormData();
+      // map category back to integer if we used strings in form, but the form uses integer?
+      // Wait, in PostFormModal, we should use integer categories. 
+      // We will adjust PostFormModal to send category as integer.
+      fd.append("Category", form.category);
+      fd.append("ProductName", form.title);
+      fd.append("Quantity", form.quantity || 1);
+      fd.append("Description", form.description);
+      if (form.phone) fd.append("Phone", form.phone); // Not in API strictly but okay
+      if (form.image) fd.append("ProductImage", form.image);
+
+      if (role === "Charity") {
+        fd.append("Priority", form.priority || 2);
+        await charityNeedsService.createCharityNeed(fd);
+      } else if (role === "DonorOrganization") {
+        fd.append("ExpiryDate", form.expiryDate ? new Date(form.expiryDate).toISOString() : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString());
+        await offersService.createOffer(fd);
+      }
+      
+      setAddModalOpen(false);
+      fetchPosts(); // Refresh list
+    } catch (err) {
+      setActionError(err.appMessage || "حدث خطأ أثناء إنشاء المنشور.");
+      if (err.validationErrors) setFieldErrors(err.validationErrors);
+    }
   }
 
-  function handleEditSubmit(form) {
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === editPost.id
-          ? {
-              ...p,
-              title: form.title,
-              category: form.category,
-              description: form.description,
-              phone: form.phone,
-              image: form.imagePreview || p.image,
-            }
-          : p
-      )
-    );
-    setEditPost(null);
+  async function handleEditSubmit(form) {
+    setActionError(null);
+    setFieldErrors({});
+    try {
+      const fd = new FormData();
+      fd.append("Category", form.category);
+      fd.append("ProductName", form.title);
+      fd.append("Quantity", form.quantity || 1);
+      fd.append("Description", form.description);
+      if (form.image) fd.append("ProductImage", form.image);
+
+      if (role === "Charity") {
+        fd.append("Priority", form.priority || 2);
+        await charityNeedsService.updateCharityNeed(editPost.id || editPost.charityNeedId || editPost.offerId, fd);
+      } else if (role === "DonorOrganization") {
+        fd.append("ExpiryDate", form.expiryDate ? new Date(form.expiryDate).toISOString() : editPost.expiryDate);
+        await offersService.updateOffer(editPost.id || editPost.charityNeedId || editPost.offerId, fd);
+      }
+
+      setEditPost(null);
+      fetchPosts();
+    } catch (err) {
+      setActionError(err.appMessage || "حدث خطأ أثناء تعديل المنشور.");
+      if (err.validationErrors) setFieldErrors(err.validationErrors);
+    }
   }
 
-  function handleDeleteConfirm() {
-    setPosts((prev) => prev.filter((p) => p.id !== deletePost.id));
-    setDeletePost(null);
+  async function handleDeleteConfirm() {
+    try {
+      const id = deletePost.id || deletePost.charityNeedId || deletePost.offerId;
+      if (role === "Charity") {
+        await charityNeedsService.deleteCharityNeed(id);
+      } else if (role === "DonorOrganization") {
+        await offersService.deleteOffer(id);
+      }
+      setDeletePost(null);
+      fetchPosts();
+    } catch (err) {
+      alert(err.appMessage || "لا يمكن حذف المنشور. يجب أن يكون قيد المراجعة.");
+      setDeletePost(null);
+    }
+  }
+
+  async function handleFulfill(postId) {
+    try {
+      if (role === "Charity") {
+        await charityNeedsService.fulfillCharityNeed(postId);
+      } else if (role === "DonorOrganization") {
+        await offersService.fulfillOffer(postId);
+      }
+      fetchPosts();
+    } catch (err) {
+      alert(err.appMessage || "حدث خطأ أثناء إكمال المنشور.");
+    }
   }
 
   return (
@@ -153,7 +181,13 @@ export default function PostsPage() {
           <button
             id="add-post-btn"
             className={styles.addPostBtn}
-            onClick={() => setAddModalOpen(true)}
+            onClick={() => {
+              if (user?.isVerified === false) {
+                alert("يجب تفعيل حسابك من قبل الإدارة لتتمكن من النشر.");
+                return;
+              }
+              setAddModalOpen(true);
+            }}
             aria-label="إضافة منشور جديد"
           >
             +
@@ -161,45 +195,72 @@ export default function PostsPage() {
         </div>
       </div>
 
+      {actionError && <div className={styles.errorMessage}>{actionError}</div>}
+      {error && <div className={styles.errorMessage}>{error}</div>}
+
       {/* ── Grid ── */}
-      <div className={styles.postsGrid}>
-        {filteredPosts.length === 0 ? (
-          <p className={styles.emptyState}>لا توجد منشورات في هذه الفئة</p>
-        ) : (
-          filteredPosts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              onEdit={(p) => setEditPost(p)}
-              onDelete={(p) => setDeletePost(p)}
-            />
-          ))
-        )}
-      </div>
+      {isLoading ? (
+        <p>جاري التحميل...</p>
+      ) : (
+        <div className={styles.postsGrid}>
+          {filteredPosts.length === 0 ? (
+            <p className={styles.emptyState}>لا توجد منشورات في هذه الفئة</p>
+          ) : (
+            filteredPosts.map((post, index) => (
+              <PostCard
+                key={post.id || post.charityNeedId || post.offerId || index}
+                post={post}
+                role={role}
+                onEdit={(p) => setEditPost(p)}
+                onDelete={(p) => setDeletePost(p)}
+                onFulfill={(id) => handleFulfill(id)}
+              />
+            ))
+          )}
+        </div>
+      )}
 
       {/* ── Add Modal ── */}
-      <PostFormModal
-        isOpen={addModalOpen}
-        onClose={() => setAddModalOpen(false)}
-        onSubmit={handleAddSubmit}
-        initialData={null}
-      />
+      {addModalOpen && (
+        <PostFormModal
+          isOpen={addModalOpen}
+          onClose={() => {
+            setAddModalOpen(false);
+            setFieldErrors({});
+            setActionError(null);
+          }}
+          onSubmit={handleAddSubmit}
+          initialData={null}
+          role={role}
+          fieldErrors={fieldErrors}
+        />
+      )}
 
       {/* ── Edit Modal ── */}
-      <PostFormModal
-        isOpen={Boolean(editPost)}
-        onClose={() => setEditPost(null)}
-        onSubmit={handleEditSubmit}
-        initialData={editPost}
-      />
+      {editPost && (
+        <PostFormModal
+          isOpen={Boolean(editPost)}
+          onClose={() => {
+            setEditPost(null);
+            setFieldErrors({});
+            setActionError(null);
+          }}
+          onSubmit={handleEditSubmit}
+          initialData={editPost}
+          role={role}
+          fieldErrors={fieldErrors}
+        />
+      )}
 
       {/* ── Delete Confirm ── */}
-      <DeleteConfirmModal
-        isOpen={Boolean(deletePost)}
-        onClose={() => setDeletePost(null)}
-        onConfirm={handleDeleteConfirm}
-        postTitle={deletePost?.title || ""}
-      />
+      {deletePost && (
+        <DeleteConfirmModal
+          isOpen={Boolean(deletePost)}
+          onClose={() => setDeletePost(null)}
+          onConfirm={handleDeleteConfirm}
+          postTitle={deletePost?.productName || deletePost?.title || ""}
+        />
+      )}
     </div>
   );
 }

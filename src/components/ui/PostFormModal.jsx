@@ -3,14 +3,32 @@
 import { useState, useEffect, useRef } from "react";
 import styles from "@/styles/dashboard/posts.module.css";
 
-export default function PostFormModal({ isOpen, onClose, onSubmit, initialData }) {
+const CATEGORY_OPTIONS = [
+  { value: 0, label: "طعام" },
+  { value: 1, label: "ملابس" },
+  { value: 2, label: "طبي" },
+  { value: 3, label: "تعليمي" },
+  { value: 4, label: "أخرى" }
+];
+
+const PRIORITY_OPTIONS = [
+  { value: 0, label: "عاجل" },
+  { value: 1, label: "عالي" },
+  { value: 2, label: "عادي" },
+  { value: 3, label: "منخفض" }
+];
+
+export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, role, fieldErrors = {} }) {
   const isEdit = Boolean(initialData);
+  const isCharity = role === "Charity";
 
   const [form, setForm] = useState({
     title: "",
-    category: "",
-    phone: "",
+    category: 0,
+    quantity: 1,
     description: "",
+    priority: 2,
+    expiryDate: "",
     image: null,
     imagePreview: null,
   });
@@ -19,15 +37,26 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData }
   useEffect(() => {
     if (initialData) {
       setForm({
-        title: initialData.title || "",
-        category: initialData.category || "",
-        phone: initialData.phone || "",
+        title: initialData.productName || initialData.title || "",
+        category: initialData.category !== undefined ? initialData.category : 0,
+        quantity: initialData.quantity || 1,
         description: initialData.description || "",
+        priority: initialData.priority !== undefined ? initialData.priority : 2,
+        expiryDate: initialData.expiryDate ? initialData.expiryDate.split("T")[0] : "",
         image: null,
-        imagePreview: initialData.image || null,
+        imagePreview: initialData.productImage || initialData.imageUrl || initialData.image || null,
       });
     } else {
-      setForm({ title: "", category: "", phone: "", description: "", image: null, imagePreview: null });
+      setForm({ 
+        title: "", 
+        category: 0, 
+        quantity: 1, 
+        description: "", 
+        priority: 2, 
+        expiryDate: "", 
+        image: null, 
+        imagePreview: null 
+      });
     }
   }, [initialData, isOpen]);
 
@@ -49,7 +78,12 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData }
 
   function handleChange(e) {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    setForm((prev) => ({ 
+      ...prev, 
+      [name]: name === "category" || name === "priority" || name === "quantity" 
+        ? (value === "" ? "" : Number(value)) 
+        : value 
+    }));
   }
 
   function handleSubmit(e) {
@@ -111,37 +145,87 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData }
                 value={form.title}
                 onChange={handleChange}
                 placeholder="أدخل العنوان"
+                maxLength={200}
                 required
               />
+              {fieldErrors.ProductName && (
+                <p className={styles.inputError}>{fieldErrors.ProductName[0]}</p>
+              )}
             </div>
             <div className={styles.formGroup} style={{ marginBottom: 0 }}>
-              <label className={styles.formLabel} htmlFor="post-category">التوصيف</label>
-              <input
+              <label className={styles.formLabel} htmlFor="post-category">التصنيف</label>
+              <select
                 id="post-category"
                 className={styles.formInput}
-                type="text"
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-                placeholder="مثل: حديد تسليح"
                 required
-              />
+              >
+                {CATEGORY_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              {fieldErrors.Category && (
+                <p className={styles.inputError}>{fieldErrors.Category[0]}</p>
+              )}
             </div>
           </div>
 
-          {/* Phone */}
-          <div className={styles.formGroup}>
-            <label className={styles.formLabel} htmlFor="post-phone">رقم التواصل</label>
-            <input
-              id="post-phone"
-              className={styles.formInput}
-              type="text"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              placeholder="01xxxxxxxxx"
-              required
-            />
+          <div className={styles.formRow}>
+            <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+              <label className={styles.formLabel} htmlFor="post-quantity">الكمية</label>
+              <input
+                id="post-quantity"
+                className={styles.formInput}
+                type="number"
+                min="1"
+                name="quantity"
+                value={form.quantity}
+                onChange={handleChange}
+                required
+              />
+              {fieldErrors.Quantity && (
+                <p className={styles.inputError}>{fieldErrors.Quantity[0]}</p>
+              )}
+            </div>
+
+            {isCharity ? (
+              <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+                <label className={styles.formLabel} htmlFor="post-priority">الأولوية</label>
+                <select
+                  id="post-priority"
+                  className={styles.formInput}
+                  name="priority"
+                  value={form.priority}
+                  onChange={handleChange}
+                  required
+                >
+                  {PRIORITY_OPTIONS.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                {fieldErrors.Priority && (
+                  <p className={styles.inputError}>{fieldErrors.Priority[0]}</p>
+                )}
+              </div>
+            ) : (
+              <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+                <label className={styles.formLabel} htmlFor="post-expiryDate">تاريخ الصلاحية</label>
+                <input
+                  id="post-expiryDate"
+                  className={styles.formInput}
+                  type="date"
+                  name="expiryDate"
+                  value={form.expiryDate}
+                  onChange={handleChange}
+                  required
+                />
+                {fieldErrors.ExpiryDate && (
+                  <p className={styles.inputError}>{fieldErrors.ExpiryDate[0]}</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Description */}
@@ -154,8 +238,12 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData }
               value={form.description}
               onChange={handleChange}
               placeholder="اكتب تفاصيل المنشور هنا..."
+              maxLength={1000}
               required
             />
+            {fieldErrors.Description && (
+              <p className={styles.inputError}>{fieldErrors.Description[0]}</p>
+            )}
           </div>
 
           <button id="submit-post-btn" type="submit" className={styles.publishBtn}>
