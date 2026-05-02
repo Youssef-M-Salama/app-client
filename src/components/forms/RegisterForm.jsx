@@ -10,14 +10,12 @@ const RULES = {
     required: true,
     min: 3,
     max: 200,
-    label: 'الاسم الكامل',
+    label: 'اسم المنظمه',
   },
   username: {
     required: true,
     min: 3,
     max: 50,
-    pattern: /^[a-zA-Z0-9_.]+$/,
-    patternMsg: 'يجب أن يحتوي على أحرف إنجليزية وأرقام و _ و . فقط',
     label: 'اسم المستخدم',
   },
   email: {
@@ -28,8 +26,6 @@ const RULES = {
   },
   phone: {
     required: true,
-    pattern: /^[0-9+\-\s()]{7,20}$/,
-    patternMsg: 'رقم الهاتف غير صحيح',
     label: 'رقم الهاتف',
   },
   password: {
@@ -39,6 +35,7 @@ const RULES = {
   },
   confirmPassword: {
     required: true,
+    min: 1,
     label: 'تأكيد كلمة المرور',
   },
 };
