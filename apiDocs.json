@@ -1,0 +1,2642 @@
+{
+    "openapi": "3.0.4",
+    "info": {
+        "title": "Waffer (وافر)",
+        "description": "Waffer (وافر) - RESTful API for connecting charities with donor organizations",
+        "contact": {
+            "name": "API Support",
+            "email": "support@example.com"
+        },
+        "version": "1.0"
+    },
+    "paths": {
+        "/api/v1/admin/dashboard": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Retrieves aggregated dashboard statistics for Admin.\r\nIncludes counts of total users, pending verifications, pending charity needs, and pending offers.",
+                "responses": {
+                    "200": {
+                        "description": "Statistics retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/verifications/pending": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Retrieves lists of unverified charities and donor organizations.\r\nReturns users with ApplicationStatus Pending (0).",
+                "description": "ApplicationStatus: 0 (Pending), 1 (Accepted), 2 (Rejected)\r\n\r\nUserRole: 0 (Charity), 1 (DonorOrganization), 2 (Admin)",
+                "responses": {
+                    "200": {
+                        "description": "Pending verifications retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/verifications/verify": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Verifies a user, changing their ApplicationStatus to Accepted.",
+                "description": "Field Constraints:\r\n- UserId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the user ID to verify.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User verified successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/verifications/reject": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Rejects a user registration, changing their ApplicationStatus to Rejected.",
+                "description": "Field Constraints:\r\n- UserId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the user ID to reject.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User rejected successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/charity-needs/pending": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Gets pending charity needs awaiting admin approval.\r\nReturns charity needs with status Pending (0).",
+                "description": "Priority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)\r\n\r\nCategory: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50",
+                "parameters": [
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pending charity needs retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/charity-needs/approve": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Approves a charity need, changing its status to Approved.",
+                "description": "Field Constraints:\r\n- CharityNeedId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the charity need ID to approve.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionCharityNeedRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionCharityNeedRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionCharityNeedRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Charity need approved successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "Charity need not found."
+                    },
+                    "422": {
+                        "description": "Charity need is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/charity-needs/reject": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Rejects a charity need, changing its status to Rejected.",
+                "description": "Field Constraints:\r\n- CharityNeedId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the charity need ID to reject.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionCharityNeedRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionCharityNeedRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionCharityNeedRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Charity need rejected successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "Charity need not found."
+                    },
+                    "422": {
+                        "description": "Charity need is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/offers/pending": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Gets pending offers awaiting admin approval.\r\nReturns offers with status Pending (0).",
+                "description": "Status: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)\r\n\r\nCategory: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50",
+                "parameters": [
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Pending offers retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/offers/approve": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Approves an offer, changing its status to Approved.",
+                "description": "Field Constraints:\r\n- OfferId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the offer ID to approve.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOfferRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOfferRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOfferRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Offer approved successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "Offer not found."
+                    },
+                    "422": {
+                        "description": "Offer is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/offers/reject": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Rejects an offer, changing its status to Rejected.",
+                "description": "Field Constraints:\r\n- OfferId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the offer ID to reject.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOfferRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOfferRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionOfferRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Offer rejected successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "Offer not found."
+                    },
+                    "422": {
+                        "description": "Offer is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/users": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Gets all users with filters based on role and active status.",
+                "description": "UserRole: 0 (Charity), 1 (DonorOrganization), 2 (Admin)\r\n\r\nApplicationStatus: 0 (Pending), 1 (Accepted), 2 (Rejected)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Role: Optional, valid UserRole enum (0-2)\r\n- IsActive: Optional, boolean",
+                "parameters": [
+                    {
+                        "name": "Role",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/UserRole"
+                        }
+                    },
+                    {
+                        "name": "IsActive",
+                        "in": "query",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Users retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/users/deactivate": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Deactivates a user, setting IsActive to false.",
+                "description": "Field Constraints:\r\n- UserId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the user ID to deactivate.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User deactivated successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/admin/users/activate": {
+            "post": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Activates a user, setting IsActive to true.",
+                "description": "Field Constraints:\r\n- UserId: Required, valid GUID",
+                "requestBody": {
+                    "description": "Request containing the user ID to activate.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ActionUserRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "User activated successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "403": {
+                        "description": "Forbidden access, not an Admin."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Register a new charity or donor organization account.\r\nReturns 201 Created with a message to check email for verification.",
+                "description": "AccountType: 0 (Charity), 1 (DonorOrganization)\r\n\r\nField Constraints:\r\n- AccountType: Required, valid AccountType enum\r\n- Name: Required, 3-200 characters\r\n- Username: Required, 3-50 characters, must be unique\r\n- Email: Required, valid email format, must be unique\r\n- Phone: Required, valid phone format\r\n- Description: Optional, 10-1000 characters\r\n- Password: Required, minimum 5 characters\r\n- ConfirmPassword: Required, must match Password\r\n- Whatsapp: Optional\r\n- City: Optional\r\n- Governorate: Optional\r\n- PostalCode: Optional",
+                "requestBody": {
+                    "description": "Registration details including account type, name, username, email, phone, password, and optional profile information.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Account created successfully. Verification email sent."
+                    },
+                    "400": {
+                        "description": "Validation error - invalid input or account type."
+                    },
+                    "409": {
+                        "description": "Username or email already exists."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Login with username or email and password.\r\nRequires email to be verified first.",
+                "description": "Field Constraints:\r\n- UsernameOrEmail: Required, valid username or email\r\n- Password: Required, minimum 5 characters\r\n- RememberMe: Optional, boolean for extended session (default false)",
+                "requestBody": {
+                    "description": "Login credentials including username or email and password.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login successful. Returns access token and refresh token."
+                    },
+                    "400": {
+                        "description": "Validation error - invalid input."
+                    },
+                    "401": {
+                        "description": "Invalid credentials."
+                    },
+                    "403": {
+                        "description": "Email not verified OR account is deactivated."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/refresh": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Get a new access token using a valid refresh token.",
+                "description": "Field Constraints:\r\n- RefreshToken: Required, valid refresh token string",
+                "requestBody": {
+                    "description": "Refresh token request containing the refresh token.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshTokenDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshTokenDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefreshTokenDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Token refreshed successfully. Returns new access token and refresh token."
+                    },
+                    "400": {
+                        "description": "Validation error - invalid input."
+                    },
+                    "401": {
+                        "description": "Invalid or expired refresh token."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/logout": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Logout the authenticated user and revoke their refresh token.",
+                "responses": {
+                    "200": {
+                        "description": "Logout successful. Refresh token revoked."
+                    },
+                    "401": {
+                        "description": "Unauthorized - invalid or missing authentication token."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/verify-email": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Verify email address using the token sent to the user's email.",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "description": "The unique identifier of the user.",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "token",
+                        "in": "query",
+                        "description": "The verification token sent to the user's email.",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Email verified successfully."
+                    },
+                    "400": {
+                        "description": "Invalid or expired verification token."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/resend-verification": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Resend the email verification link to the user's email address.",
+                "description": "Field Constraints:\r\n- Email: Required, valid email format",
+                "requestBody": {
+                    "description": "Request containing the email address to verify.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResendVerificationRequestDto"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResendVerificationRequestDto"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ResendVerificationRequestDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Verification email sent successfully."
+                    },
+                    "400": {
+                        "description": "Validation error - invalid email format."
+                    },
+                    "404": {
+                        "description": "User not found or already verified."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/dashboard": {
+            "get": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Returns aggregated statistics for the authenticated charity's dashboard.\r\nIncludes charity need counts (by status), need applications received,\r\nand offer applications sent — all broken down by status.",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard statistics retrieved successfully."
+                    },
+                    "404": {
+                        "description": "Charity profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/charity-needs": {
+            "post": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Creates a new charity need for the authenticated charity.\r\nThe need is created with status Pending and must be approved by admin\r\nbefore it becomes visible to donor organizations.\r\nAccepts multipart/form-data to support an optional product image.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nField Constraints:\r\n- Category: Required, valid ProductCategory enum (0-4)\r\n- ProductName: Required, max 200 characters\r\n- Quantity: Required, minimum 1\r\n- Priority: Required, valid CharityNeedPriority enum (0-3)\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "ProductName",
+                                    "Quantity"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "Category": {
+                                        "$ref": "#/components/schemas/ProductCategory"
+                                    },
+                                    "ProductName": {
+                                        "maxLength": 200,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "Quantity": {
+                                        "maximum": 2147483647,
+                                        "minimum": 1,
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "Priority": {
+                                        "$ref": "#/components/schemas/CharityNeedPriority"
+                                    },
+                                    "Description": {
+                                        "maxLength": 1000,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "ProductImage": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            },
+                            "encoding": {
+                                "Category": {
+                                    "style": "form"
+                                },
+                                "ProductName": {
+                                    "style": "form"
+                                },
+                                "Quantity": {
+                                    "style": "form"
+                                },
+                                "Priority": {
+                                    "style": "form"
+                                },
+                                "Description": {
+                                    "style": "form"
+                                },
+                                "ProductImage": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Charity need created successfully."
+                    },
+                    "400": {
+                        "description": "Validation error or invalid image."
+                    },
+                    "403": {
+                        "description": "Charity account is not verified or active."
+                    },
+                    "404": {
+                        "description": "Charity profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            },
+            "get": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Returns a paginated list of the authenticated charity's own needs.\r\nAll statuses are visible to the owner (Pending, Approved, Rejected, Fulfilled).\r\nOptionally filtered by status.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Status: Optional, valid CharityNeedStatus enum (0-3)",
+                "parameters": [
+                    {
+                        "name": "Status",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/CharityNeedStatus"
+                        }
+                    },
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Charity needs retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination or status parameters."
+                    },
+                    "404": {
+                        "description": "Charity profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/charity-needs/{charityNeedId}": {
+            "get": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Returns the full detail of a single charity need owned by the authenticated charity.\r\nAll statuses are visible to the owner.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "charityNeedId",
+                        "in": "path",
+                        "description": "The unique identifier of the charity need.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Charity need retrieved successfully."
+                    },
+                    "403": {
+                        "description": "The charity need does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Charity need or charity profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Updates a pending charity need owned by the authenticated charity.\r\nOnly fields provided (non-null) are applied.\r\nAccepts multipart/form-data to support an optional replacement image.",
+                "description": "Field Constraints:\r\n- ProductName: Optional, max 200 characters\r\n- Quantity: Optional, minimum 1\r\n- Category: Optional, valid ProductCategory enum\r\n- Priority: Optional, valid CharityNeedPriority enum\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "parameters": [
+                    {
+                        "name": "charityNeedId",
+                        "in": "path",
+                        "description": "The unique identifier of the charity need.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "Category": {
+                                        "$ref": "#/components/schemas/ProductCategory"
+                                    },
+                                    "ProductName": {
+                                        "maxLength": 200,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "Quantity": {
+                                        "maximum": 2147483647,
+                                        "minimum": 1,
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "Priority": {
+                                        "$ref": "#/components/schemas/CharityNeedPriority"
+                                    },
+                                    "Description": {
+                                        "maxLength": 1000,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "ProductImage": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            },
+                            "encoding": {
+                                "Category": {
+                                    "style": "form"
+                                },
+                                "ProductName": {
+                                    "style": "form"
+                                },
+                                "Quantity": {
+                                    "style": "form"
+                                },
+                                "Priority": {
+                                    "style": "form"
+                                },
+                                "Description": {
+                                    "style": "form"
+                                },
+                                "ProductImage": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Charity need updated successfully."
+                    },
+                    "400": {
+                        "description": "Validation error or invalid image."
+                    },
+                    "403": {
+                        "description": "The charity need does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Charity need or charity profile not found."
+                    },
+                    "422": {
+                        "description": "Charity need is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Deletes a pending charity need owned by the authenticated charity.\r\nAlso removes the associated product image from storage if present.",
+                "parameters": [
+                    {
+                        "name": "charityNeedId",
+                        "in": "path",
+                        "description": "The unique identifier of the charity need.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Charity need deleted successfully."
+                    },
+                    "403": {
+                        "description": "The charity need does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Charity need or charity profile not found."
+                    },
+                    "422": {
+                        "description": "Charity need is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/charity-needs/{charityNeedId}/fulfill": {
+            "post": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Marks an approved charity need as fulfilled.\r\nThe need must be in Approved status — only approved needs can be fulfilled.",
+                "parameters": [
+                    {
+                        "name": "charityNeedId",
+                        "in": "path",
+                        "description": "The unique identifier of the charity need.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Charity need marked as fulfilled."
+                    },
+                    "403": {
+                        "description": "The charity need does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Charity need or charity profile not found."
+                    },
+                    "422": {
+                        "description": "Charity need is not in Approved status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/applications/received": {
+            "get": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Returns a paginated list of need applications received by the charity\r\nacross all of its charity needs.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Applications retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "404": {
+                        "description": "Charity profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/applications/{needApplicationId}/accept": {
+            "post": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Accepts a pending need application received by the charity.",
+                "parameters": [
+                    {
+                        "name": "needApplicationId",
+                        "in": "path",
+                        "description": "The unique identifier of the need application.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Need application accepted."
+                    },
+                    "403": {
+                        "description": "The application does not belong to this charity's need."
+                    },
+                    "404": {
+                        "description": "Application or charity profile not found."
+                    },
+                    "422": {
+                        "description": "Application is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/applications/{needApplicationId}/reject": {
+            "post": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Rejects a pending need application received by the charity.",
+                "parameters": [
+                    {
+                        "name": "needApplicationId",
+                        "in": "path",
+                        "description": "The unique identifier of the need application.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Need application rejected."
+                    },
+                    "403": {
+                        "description": "The application does not belong to this charity's need."
+                    },
+                    "404": {
+                        "description": "Application or charity profile not found."
+                    },
+                    "422": {
+                        "description": "Application is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/offers/{offerId}/apply": {
+            "post": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Applies the authenticated charity to an approved donor offer.\r\nA charity can only apply once per offer.",
+                "parameters": [
+                    {
+                        "name": "offerId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Application submitted successfully."
+                    },
+                    "403": {
+                        "description": "Charity account is not verified or active."
+                    },
+                    "404": {
+                        "description": "Offer not found or no longer available."
+                    },
+                    "409": {
+                        "description": "Already applied to this offer."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/applications/sent": {
+            "get": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Returns a paginated list of offer applications sent by the charity.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Applications retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "404": {
+                        "description": "Charity profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/charity/applications/{offerApplicationId}": {
+            "delete": {
+                "tags": [
+                    "Charity"
+                ],
+                "summary": "Cancels a pending offer application sent by the charity.",
+                "parameters": [
+                    {
+                        "name": "offerApplicationId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer application.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offer application cancelled."
+                    },
+                    "403": {
+                        "description": "The application does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Application or charity profile not found."
+                    },
+                    "422": {
+                        "description": "Application is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/dashboard": {
+            "get": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Returns aggregated statistics for the authenticated donor organization's dashboard.\r\nIncludes offer counts (by status), applications received, and applications sent — all broken down by status.",
+                "responses": {
+                    "200": {
+                        "description": "Dashboard statistics retrieved successfully."
+                    },
+                    "404": {
+                        "description": "Donor organization profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer": {
+            "post": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Creates a new offer for the authenticated donor organization.\r\nThe offer is created with status Pending and must be approved by admin\r\nbefore it becomes visible to charities.\r\nAccepts multipart/form-data to support an optional product image.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints:\r\n- ProductName: Required, max 200 characters\r\n- Quantity: Required, minimum 1\r\n- Category: Required, valid ProductCategory enum\r\n- ExpiryDate: Required, must be a future date\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "ExpiryDate",
+                                    "ProductName",
+                                    "Quantity"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "Category": {
+                                        "$ref": "#/components/schemas/ProductCategory"
+                                    },
+                                    "ProductName": {
+                                        "maxLength": 200,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "Quantity": {
+                                        "maximum": 2147483647,
+                                        "minimum": 1,
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "ExpiryDate": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "Description": {
+                                        "maxLength": 1000,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "ProductImage": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            },
+                            "encoding": {
+                                "Category": {
+                                    "style": "form"
+                                },
+                                "ProductName": {
+                                    "style": "form"
+                                },
+                                "Quantity": {
+                                    "style": "form"
+                                },
+                                "ExpiryDate": {
+                                    "style": "form"
+                                },
+                                "Description": {
+                                    "style": "form"
+                                },
+                                "ProductImage": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Offer created successfully."
+                    },
+                    "400": {
+                        "description": "Validation error or invalid image."
+                    },
+                    "403": {
+                        "description": "Donor organization account is not verified or active."
+                    },
+                    "404": {
+                        "description": "Donor organization profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer/my-offers": {
+            "get": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Returns a paginated list of the authenticated donor organization's own offers.\r\nAll statuses are visible to the owner (Pending, Approved, Rejected, Fulfilled, Expired).\r\nOptionally filtered by status.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "Status",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/OfferStatus"
+                        }
+                    },
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offers retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination or status parameters."
+                    },
+                    "404": {
+                        "description": "Donor organization profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer/my-offers/{offerId}": {
+            "get": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Returns the full detail of a single offer owned by the authenticated donor organization.\r\nAll statuses are visible to the owner.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "offerId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offer retrieved successfully."
+                    },
+                    "403": {
+                        "description": "The offer does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Offer or donor organization profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer/{offerId}": {
+            "put": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Updates a pending offer owned by the authenticated donor organization.\r\nOnly fields provided (non-null) are applied.\r\nAccepts multipart/form-data to support an optional replacement image.",
+                "description": "Field Constraints:\r\n- ProductName: Optional, max 200 characters\r\n- Quantity: Optional, minimum 1\r\n- Category: Optional, valid ProductCategory enum\r\n- ExpiryDate: Optional, must be a future date\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "parameters": [
+                    {
+                        "name": "offerId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "Category": {
+                                        "$ref": "#/components/schemas/ProductCategory"
+                                    },
+                                    "ProductName": {
+                                        "maxLength": 200,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "Quantity": {
+                                        "maximum": 2147483647,
+                                        "minimum": 1,
+                                        "type": "integer",
+                                        "format": "int32"
+                                    },
+                                    "ExpiryDate": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "Description": {
+                                        "maxLength": 1000,
+                                        "minLength": 0,
+                                        "type": "string"
+                                    },
+                                    "ProductImage": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            },
+                            "encoding": {
+                                "Category": {
+                                    "style": "form"
+                                },
+                                "ProductName": {
+                                    "style": "form"
+                                },
+                                "Quantity": {
+                                    "style": "form"
+                                },
+                                "ExpiryDate": {
+                                    "style": "form"
+                                },
+                                "Description": {
+                                    "style": "form"
+                                },
+                                "ProductImage": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Offer updated successfully."
+                    },
+                    "400": {
+                        "description": "Validation error or invalid image."
+                    },
+                    "403": {
+                        "description": "The offer does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Offer or donor organization profile not found."
+                    },
+                    "422": {
+                        "description": "Offer is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Deletes a pending offer owned by the authenticated donor organization.\r\nAlso removes the associated product image from storage if present.",
+                "parameters": [
+                    {
+                        "name": "offerId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offer deleted successfully."
+                    },
+                    "403": {
+                        "description": "The offer does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Offer or donor organization profile not found."
+                    },
+                    "422": {
+                        "description": "Offer is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer/{offerId}/fulfill": {
+            "patch": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Marks an approved offer as fulfilled.\r\nThe offer must be in Approved status — only approved offers can be fulfilled.",
+                "parameters": [
+                    {
+                        "name": "offerId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offer marked as fulfilled."
+                    },
+                    "403": {
+                        "description": "The offer does not belong to the caller."
+                    },
+                    "404": {
+                        "description": "Offer or donor organization profile not found."
+                    },
+                    "422": {
+                        "description": "Offer is not in Approved status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer-applications/received": {
+            "get": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Returns a paginated list of offer applications received by the donor organization\r\nacross all of its offers.",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Applications retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "404": {
+                        "description": "Donor organization profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer-applications/{offerApplicationId}/accept": {
+            "patch": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Accepts a pending offer application received by the donor organization.",
+                "parameters": [
+                    {
+                        "name": "offerApplicationId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer application.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offer application accepted."
+                    },
+                    "403": {
+                        "description": "The application does not belong to this donor organization's offer."
+                    },
+                    "404": {
+                        "description": "Application or donor organization profile not found."
+                    },
+                    "422": {
+                        "description": "Application is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/offer-applications/{offerApplicationId}/reject": {
+            "patch": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Rejects a pending offer application received by the donor organization.",
+                "parameters": [
+                    {
+                        "name": "offerApplicationId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer application.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offer application rejected."
+                    },
+                    "403": {
+                        "description": "The application does not belong to this donor organization's offer."
+                    },
+                    "404": {
+                        "description": "Application or donor organization profile not found."
+                    },
+                    "422": {
+                        "description": "Application is not in Pending status."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/donor-organization/charity-needs/{charityNeedId}/apply": {
+            "post": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Applies the authenticated donor organization to an approved charity need.\r\nA donor organization can only apply once per need.",
+                "parameters": [
+                    {
+                        "name": "charityNeedId",
+                        "in": "path",
+                        "description": "The unique identifier of the charity need.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "201": {
+                        "description": "Application submitted successfully."
+                    },
+                    "403": {
+                        "description": "Donor organization account is not verified or active."
+                    },
+                    "404": {
+                        "description": "Charity need not found or no longer available."
+                    },
+                    "409": {
+                        "description": "Already applied to this charity need."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/profile": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Returns the full profile of the authenticated user.\r\nIncludes contact information, location details, and profile image URL.",
+                "responses": {
+                    "200": {
+                        "description": "Profile retrieved successfully."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Updates the authenticated user's contact and location fields.\r\nAll fields are optional — only non-null values are applied.",
+                "description": "Field Constraints:\r\n- Phone: Optional, valid phone number format\r\n- Whatsapp: Optional, valid phone number format\r\n- City: Optional, max 100 characters\r\n- Governorate: Optional, max 100 characters\r\n- PostalCode: Optional, max 20 characters",
+                "requestBody": {
+                    "description": "Profile update details including phone, whatsapp, city, governorate, and postal code.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProfileRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProfileRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateProfileRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile updated successfully."
+                    },
+                    "400": {
+                        "description": "Validation error."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/profile/password": {
+            "patch": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Changes the authenticated user's password.\r\nRequires the current password to be verified before setting a new password.",
+                "description": "Field Constraints:\r\n- CurrentPassword: Required, must match the current password\r\n- NewPassword: Required, minimum 5 characters\r\n- ConfirmPassword: Required, must match NewPassword",
+                "requestBody": {
+                    "description": "Password change details including current password, new password, and confirmation.",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordRequestDTO"
+                            }
+                        },
+                        "text/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordRequestDTO"
+                            }
+                        },
+                        "application/*+json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ChangePasswordRequestDTO"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Password changed successfully."
+                    },
+                    "400": {
+                        "description": "Validation error or current password is incorrect."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/profile/image": {
+            "patch": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Updates the authenticated user's profile image.\r\nAccepts multipart/form-data with the image file.",
+                "description": "Field Constraints:\r\n- ProfileImage: Required, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "Image"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "Image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                }
+                            },
+                            "encoding": {
+                                "Image": {
+                                    "style": "form"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Image updated successfully."
+                    },
+                    "400": {
+                        "description": "Invalid image format or size."
+                    },
+                    "401": {
+                        "description": "Unauthorized access."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/public/charity-needs": {
+            "get": {
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Browse all approved charity requests with optional filters and pagination.\r\nOnly returns charity needs with status Approved (1).",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Category: Optional, valid ProductCategory enum (0-4)\r\n- Priority: Optional, valid CharityNeedPriority enum (0-3)\r\n- City: Optional, filter by city\r\n- Governorate: Optional, filter by governorate\r\n- Search: Optional, search by product name",
+                "parameters": [
+                    {
+                        "name": "Category",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ProductCategory"
+                        }
+                    },
+                    {
+                        "name": "City",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Governorate",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "maximum": 50,
+                            "minimum": 1,
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requests retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/public/charity-needs/{charityNeedId}": {
+            "get": {
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Returns a single approved charity need by its identifier.\r\nOnly returns charity needs with status Approved (1).",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "charityNeedId",
+                        "in": "path",
+                        "description": "The unique identifier of the charity need.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "CharityNeed retrieved successfully."
+                    },
+                    "404": {
+                        "description": "CharityNeed not found or not approved."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/public/offers": {
+            "get": {
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Browse all approved offers with optional filters and pagination.\r\nOnly returns offers with status Approved (1).",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Category: Optional, valid ProductCategory enum (0-4)\r\n- City: Optional, filter by city\r\n- Governorate: Optional, filter by governorate\r\n- Search: Optional, search by product name",
+                "parameters": [
+                    {
+                        "name": "Category",
+                        "in": "query",
+                        "schema": {
+                            "$ref": "#/components/schemas/ProductCategory"
+                        }
+                    },
+                    {
+                        "name": "City",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Governorate",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "maximum": 50,
+                            "minimum": 1,
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offers retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/public/offers/{offerId}": {
+            "get": {
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Returns a single approved offer by its identifier.\r\nOnly returns offers with status Approved (1).",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)",
+                "parameters": [
+                    {
+                        "name": "offerId",
+                        "in": "path",
+                        "description": "The unique identifier of the offer.",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Offer retrieved successfully."
+                    },
+                    "404": {
+                        "description": "Offer not found or not approved."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
+        "/api/v1/public/statistics": {
+            "get": {
+                "tags": [
+                    "Public"
+                ],
+                "summary": "Returns platform-wide statistics for the public landing page.\r\nIncludes total approved charity needs, total approved offers, and user counts.",
+                "responses": {
+                    "200": {
+                        "description": "Statistics retrieved successfully."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AccountType": {
+                "enum": [
+                    0,
+                    1
+                ],
+                "type": "integer",
+                "format": "int32"
+            },
+            "ActionCharityNeedRequestDTO": {
+                "required": [
+                    "charityNeedId"
+                ],
+                "type": "object",
+                "properties": {
+                    "charityNeedId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ActionOfferRequestDTO": {
+                "required": [
+                    "offerId"
+                ],
+                "type": "object",
+                "properties": {
+                    "offerId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ActionUserRequestDTO": {
+                "required": [
+                    "userId"
+                ],
+                "type": "object",
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ChangePasswordRequestDTO": {
+                "required": [
+                    "confirmPassword",
+                    "currentPassword",
+                    "newPassword"
+                ],
+                "type": "object",
+                "properties": {
+                    "currentPassword": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "newPassword": {
+                        "minLength": 5,
+                        "type": "string"
+                    },
+                    "confirmPassword": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "CharityNeedPriority": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "type": "integer",
+                "format": "int32"
+            },
+            "CharityNeedStatus": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "type": "integer",
+                "format": "int32"
+            },
+            "LoginDTO": {
+                "required": [
+                    "password",
+                    "usernameOrEmail"
+                ],
+                "type": "object",
+                "properties": {
+                    "usernameOrEmail": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "password": {
+                        "minLength": 1,
+                        "type": "string"
+                    },
+                    "rememberMe": {
+                        "type": "boolean"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "OfferStatus": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "type": "integer",
+                "format": "int32"
+            },
+            "ProductCategory": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4
+                ],
+                "type": "integer",
+                "format": "int32"
+            },
+            "RefreshTokenDTO": {
+                "required": [
+                    "refreshToken"
+                ],
+                "type": "object",
+                "properties": {
+                    "refreshToken": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "RegisterDTO": {
+                "required": [
+                    "accountType",
+                    "confirmPassword",
+                    "email",
+                    "name",
+                    "password",
+                    "phone",
+                    "username"
+                ],
+                "type": "object",
+                "properties": {
+                    "accountType": {
+                        "$ref": "#/components/schemas/AccountType"
+                    },
+                    "name": {
+                        "maxLength": 200,
+                        "minLength": 3,
+                        "type": "string"
+                    },
+                    "username": {
+                        "maxLength": 50,
+                        "minLength": 3,
+                        "type": "string"
+                    },
+                    "email": {
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "phone": {
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "tel"
+                    },
+                    "description": {
+                        "maxLength": 1000,
+                        "minLength": 10,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "whatsapp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "city": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "governorate": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "postalCode": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "password": {
+                        "minLength": 5,
+                        "type": "string"
+                    },
+                    "confirmPassword": {
+                        "minLength": 1,
+                        "type": "string"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "ResendVerificationRequestDto": {
+                "required": [
+                    "email"
+                ],
+                "type": "object",
+                "properties": {
+                    "email": {
+                        "minLength": 1,
+                        "type": "string",
+                        "format": "email"
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UpdateProfileRequestDTO": {
+                "type": "object",
+                "properties": {
+                    "phone": {
+                        "type": "string",
+                        "format": "tel",
+                        "nullable": true
+                    },
+                    "whatsapp": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "city": {
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "governorate": {
+                        "maxLength": 100,
+                        "minLength": 0,
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "postalCode": {
+                        "maxLength": 20,
+                        "minLength": 0,
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "additionalProperties": false
+            },
+            "UserRole": {
+                "enum": [
+                    0,
+                    1,
+                    2
+                ],
+                "type": "integer",
+                "format": "int32"
+            }
+        },
+        "securitySchemes": {
+            "Bearer": {
+                "type": "http",
+                "description": "Enter your JWT token. Example: eyJhbGci...",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    },
+    "security": [
+        {
+            "Bearer": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "Admin"
+        },
+        {
+            "name": "Authentication"
+        },
+        {
+            "name": "Charity"
+        },
+        {
+            "name": "Donor Organization"
+        },
+        {
+            "name": "Profile"
+        },
+        {
+            "name": "Public"
+        }
+    ]
+}

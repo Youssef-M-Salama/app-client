@@ -241,6 +241,52 @@
     box-shadow: 0 0 0 2px rgba(23, 17, 35, 0.1);
 }
 
+/* ── Validation States ── */
+.formField input.inputError {
+    border-color: #dc2626;
+    background-color: #fff8f8;
+}
+
+.formField input.inputError:focus {
+    border-color: #dc2626;
+    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
+.formField input.inputValid {
+    border-color: #16a34a;
+}
+
+.formField input.inputValid:focus {
+    border-color: #16a34a;
+    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+}
+
+.fieldError {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+    color: #dc2626;
+    font-weight: 600;
+    padding-right: 4px;
+    animation: slideDown 0.15s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Submit Button States ── */
+.submitBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.submitBtn:hover:not(:disabled) {
+    opacity: 0.9;
+}
+
 .submitBtn {
     width: 100%;
     padding: 16px;
