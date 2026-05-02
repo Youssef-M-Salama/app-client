@@ -1,0 +1,139 @@
+/* =====================
+   ADMIN LAYOUT
+   ===================== */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+}
+
+.mainContent {
+  flex: 1;
+  padding: 32px 28px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Page Header (title + subtitle) ── */
+.pageHeader {
+  margin-bottom: 24px;
+  text-align: right;
+}
+
+.pageHeader h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.pageHeader p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Action Bar ── */
+.actionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actionBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actionBarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Search */
+.searchWrapper {
+  position: relative;
+}
+
+.searchInput {
+  padding: 9px 40px 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  width: 260px;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+/* Action Buttons */
+.btnOutline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btnOutline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* =====================
+   RESPONSIVE
+   ===================== */
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 20px 16px;
+  }
+
+  .searchInput {
+    width: 180px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mainContent {
+    padding: 14px 12px;
+  }
+
+  .actionBar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actionBarLeft,
+  .actionBarRight {
+    flex-wrap: wrap;
+  }
+}

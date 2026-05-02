@@ -1,0 +1,560 @@
+/* =====================
+   ADMIN USERS PAGE
+   ===================== */
+
+.page {
+  direction: rtl;
+}
+
+/* ── Page Header ── */
+.pageHeader {
+  margin-bottom: 24px;
+}
+
+.pageHeader h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.pageHeader p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Action Bar ── */
+.actionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actionBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actionBarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchWrapper {
+  position: relative;
+}
+
+.searchInput {
+  padding: 9px 38px 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  width: 240px;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  font-size: 13px;
+}
+
+.btnOutline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btnOutline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* =====================
+   STATS SECTION
+   ===================== */
+
+.statsSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+/* ── Charts card (left) ── */
+.chartsCard {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chartsRow {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+/* Bar Chart */
+.barChartArea {
+  flex: 1;
+}
+
+.barChartHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.barChartTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.periodTabs {
+  display: flex;
+  gap: 4px;
+}
+
+.periodTab {
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: none;
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.periodTab.activePeriod {
+  background: var(--color-primary);
+  color: var(--color-white);
+}
+
+.barChart {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 100px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 4px;
+}
+
+.bar {
+  flex: 1;
+  background: linear-gradient(to top, #d4a8e8, #a663cc);
+  border-radius: 4px 4px 0 0;
+  min-height: 8px;
+  transition: height 0.3s ease;
+}
+
+.barLabels {
+  display: flex;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.barLabel {
+  flex: 1;
+  text-align: center;
+  font-size: 9px;
+  color: var(--color-text-muted);
+}
+
+/* Donut Chart */
+.donutArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.donutWrapper {
+  position: relative;
+  width: 100px;
+  height: 100px;
+}
+
+.donutSvg {
+  transform: rotate(-90deg);
+}
+
+.donutTrack {
+  fill: none;
+  stroke: #f0e8f8;
+  stroke-width: 10;
+}
+
+.donutFill {
+  fill: none;
+  stroke: var(--color-primary);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-dasharray: 251.3;
+  stroke-dashoffset: 220; /* ~12% */
+  transition: stroke-dashoffset 0.8s ease;
+}
+
+.donutLabel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.donutPercent {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.donutSub {
+  font-size: 9px;
+  color: var(--color-text-muted);
+  line-height: 1.2;
+}
+
+/* ── Stats Card (right) ── */
+.statsCard {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  padding: 20px 24px;
+}
+
+.statsCardTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.statsCardSubTitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 20px;
+}
+
+.totalStat {
+  margin-bottom: 20px;
+}
+
+.totalLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.totalValue {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.subStats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.subStat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.subStatDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-bottom: 4px;
+}
+
+.subStatLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.subStatValue {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* =====================
+   USERS TABLE
+   ===================== */
+
+.tableCard {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.tableCardHeader {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.tableCardHeader h2 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.tableCardHeader p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  min-width: 800px;
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: right;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  background: #fafafa;
+}
+
+.table td {
+  padding: 13px 16px;
+  text-align: right;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #f9f7ff;
+}
+
+/* ── User Cell ── */
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #e8e0f0;
+}
+
+.userName {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* ── Checkbox ── */
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+/* ── Status Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.badgeActive {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.badgeInactive {
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+}
+
+.badgeVerified {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.badgeUnverified {
+  background: #f0f0f0;
+  color: var(--color-text-muted);
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.badgeActive .badgeDot { background: var(--color-success); }
+.badgeInactive .badgeDot { background: var(--color-danger); }
+.badgeVerified .badgeDot { background: var(--color-success); }
+.badgeUnverified .badgeDot { background: var(--color-text-muted); }
+
+/* ── Row Actions ── */
+.actionsCell {
+  position: relative;
+}
+
+.actionsMenuBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--color-text-muted);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.actionsMenuBtn:hover {
+  background: #f0f0f0;
+  color: var(--color-text-primary);
+}
+
+.dropdown {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 4px);
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  z-index: var(--z-dropdown);
+  min-width: 150px;
+  overflow: hidden;
+  animation: dropIn 0.15s ease;
+}
+
+@keyframes dropIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  width: 100%;
+  background: none;
+  border: none;
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.dropdownItem:hover {
+  background: #f5f0ff;
+  color: var(--color-primary);
+}
+
+.dropdownItem.danger {
+  color: var(--color-danger);
+}
+
+.dropdownItem.danger:hover {
+  background: var(--color-danger-light);
+}
+
+/* =====================
+   RESPONSIVE
+   ===================== */
+@media (max-width: 1024px) {
+  .statsSection {
+    grid-template-columns: 1fr;
+  }
+
+  .chartsRow {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .searchInput {
+    width: 180px;
+  }
+
+  .subStats {
+    grid-template-columns: 1fr 1fr;
+  }
+}

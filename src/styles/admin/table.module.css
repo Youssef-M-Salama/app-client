@@ -1,0 +1,293 @@
+/* =====================
+   ADMIN TABLE PAGE (Needs & Offers)
+   ===================== */
+
+.page {
+  direction: rtl;
+}
+
+/* ── Page Header ── */
+.pageHeader {
+  margin-bottom: 24px;
+}
+
+.pageHeader h1 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.pageHeader p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Action Bar ── */
+.actionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.actionBarLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actionBarRight {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.searchWrapper {
+  position: relative;
+}
+
+.searchInput {
+  padding: 9px 38px 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  width: 240px;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  border-color: var(--color-primary);
+}
+
+.searchIcon {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+  font-size: 13px;
+}
+
+.btnOutline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btnOutline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+/* ── Table Section Card ── */
+.tableCard {
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+
+.tableCardHeader {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.tableCardHeader h2 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.tableCardHeader p {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Table ── */
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  min-width: 720px;
+}
+
+.table th {
+  padding: 12px 16px;
+  text-align: right;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  background: #fafafa;
+}
+
+.table td {
+  padding: 14px 16px;
+  text-align: right;
+  color: var(--color-text-secondary);
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: #f9f7ff;
+}
+
+/* ── Org Cell (name + avatar) ── */
+.orgCell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.orgAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #e8e0f0;
+}
+
+.orgName {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* ── Status Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+}
+
+.badgeVerified {
+  background: var(--color-success-light);
+  color: var(--color-success);
+}
+
+.badgeUnverified {
+  background: #f0f0f0;
+  color: var(--color-text-muted);
+}
+
+.badgeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.badgeVerified .badgeDot {
+  background: var(--color-success);
+}
+
+.badgeUnverified .badgeDot {
+  background: var(--color-text-muted);
+}
+
+/* ── Action Buttons ── */
+.actionBtns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.btnIconApprove {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-success-light);
+  color: var(--color-success);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-weight: bold;
+}
+
+.btnIconApprove:hover {
+  background: var(--color-success);
+  color: white;
+}
+
+.btnIconReject {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-danger-light);
+  color: var(--color-danger);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-weight: bold;
+}
+
+.btnIconReject:hover {
+  background: var(--color-danger);
+  color: white;
+}
+
+/* ── Empty State ── */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+}
+
+/* =====================
+   RESPONSIVE
+   ===================== */
+@media (max-width: 768px) {
+  .searchInput {
+    width: 180px;
+  }
+
+  .tableCard {
+    border-radius: var(--radius-md);
+  }
+}
