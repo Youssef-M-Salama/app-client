@@ -4,10 +4,44 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import sidebarStyle from "@/styles/dashboard/sidebar.module.css";
 import { useAuth } from "@/context/AuthContext";
+import { useState, useEffect } from "react";
+import dashboardService from "@/services/dashboardService";
 
 export default function Sidebar({ onClose }) {
   const pathname = usePathname();
   const { logout, role } = useAuth();
+  const [stats, setStats] = useState({
+    received: 0,
+    sent: 0
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        let res;
+        if (role === "Charity") {
+          res = await dashboardService.getCharityDashboard();
+        } else if (role === "DonorOrganization") {
+          res = await dashboardService.getDonorDashboard();
+        } else {
+          return;
+        }
+
+        const data = res.data || res;
+        // Map based on role specific keys or common ones
+        setStats({
+          received: data.pendingApplicationsReceived || data.PendingApplicationsReceived || data.applicationsReceivedCount || 0,
+          sent: data.pendingApplicationsSent || data.PendingApplicationsSent || data.applicationsSentCount || 0
+        });
+      } catch (err) {
+        console.error("Sidebar stats error:", err);
+      }
+    }
+    fetchStats();
+    // Refresh every 5 min
+    const interval = setInterval(fetchStats, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [role]);
 
   return (
     <nav className={sidebarStyle.sidebar}>
@@ -52,6 +86,9 @@ export default function Sidebar({ onClose }) {
           <Link href="/requests" onClick={onClose}>
             <img src="/icons/requests-icon.png" alt="needs" />
             <span>الطلبات الوارده</span>
+            {stats.received > 0 && (
+              <span className={sidebarStyle.badge}>{stats.received}</span>
+            )}
           </Link>
         </li>
 
@@ -59,6 +96,9 @@ export default function Sidebar({ onClose }) {
           <Link href="/sent-requests" onClick={onClose}>
             <img src="/icons/requests-icon.png" alt="sent-needs" />
             <span>طلباتي المرسلة</span>
+            {stats.sent > 0 && (
+              <span className={sidebarStyle.badge}>{stats.sent}</span>
+            )}
           </Link>
         </li>
 

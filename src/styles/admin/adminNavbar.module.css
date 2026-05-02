@@ -96,13 +96,19 @@
 .userControls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .iconBtn {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   border: 1px solid var(--color-border);
   background: var(--color-white);
@@ -111,71 +117,86 @@
   justify-content: center;
   cursor: pointer;
   color: var(--color-text-secondary);
-  font-size: 16px;
   transition: all var(--transition-fast);
+  padding: 0;
 }
 
 .iconBtn:hover {
   border-color: var(--color-primary);
   color: var(--color-primary);
+  background: #fdfbff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(111, 45, 189, 0.1);
+}
+
+.logoutBtn {
+  width: auto;
+  padding: 0 14px;
+  border-radius: var(--radius-full);
+  gap: 6px;
+  border-color: #ffe0e0;
+  color: #c0392b;
+}
+
+.logoutBtn:hover {
+  border-color: #c0392b;
+  color: var(--color-white);
+  background: #c0392b;
+}
+
+.logoutText {
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-bold);
 }
 
 .userChip {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 4px 10px 4px 4px;
+  gap: 10px;
+  padding: 5px 12px 5px 6px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
-  background: var(--color-white);
-  cursor: pointer;
-  transition: border-color var(--transition-fast);
+  background: #fcfcfd;
+  cursor: default;
+  transition: all var(--transition-fast);
 }
 
 .userChip:hover {
-  border-color: var(--color-primary);
+  border-color: var(--color-primary-light);
 }
 
 .userAvatar {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  object-fit: cover;
-  background: var(--color-primary-light);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   font-weight: var(--font-weight-bold);
   color: var(--color-white);
-  overflow: hidden;
   flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(111, 45, 189, 0.2);
 }
 
 .userInfo {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 1px;
 }
 
 .userName {
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
-  line-height: 1;
+  line-height: 1.2;
 }
 
 .userRole {
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   color: var(--color-text-muted);
   line-height: 1;
-}
-
-.chevron {
-  font-size: 10px;
-  color: var(--color-text-muted);
-  margin-right: 2px;
 }
 
 /* =====================
@@ -190,11 +211,26 @@
   .navbar {
     padding: 0 16px;
   }
+
+  .logoutText {
+    display: none;
+  }
+  
+  .logoutBtn {
+    width: 38px;
+    padding: 0;
+  }
 }
 
 @media (max-width: 768px) {
   .navLinks {
-    display: none; /* show hamburger menu instead on mobile */
+    display: none;
+  }
+
+  .userChip {
+    padding: 0;
+    border: none;
+    background: transparent;
   }
 
   .userInfo {

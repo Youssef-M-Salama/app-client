@@ -1,141 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/admin/pending.module.css";
-
-// ── Mock Data ──────────────────────────────────────────────────
-const CHARITIES = [
-  {
-    id: 1,
-    name: "بنك الطعام المصري",
-    email: "bankelfamasry@gmail.com",
-    city: "المحادة",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2000",
-    image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=600&q=80",
-  },
-  {
-    id: 2,
-    name: "مؤسسة كريمة العلا",
-    email: "karematakia@gmail.com",
-    city: "مرسى مطروح",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2000",
-    image: "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80",
-  },
-  {
-    id: 3,
-    name: "مؤسسة مصر الخير",
-    email: "misrelkair@gmail.com",
-    city: "القاهرة",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2000",
-    image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=600&q=80",
-  },
-  {
-    id: 4,
-    name: "جمعية الوسيم",
-    email: "alwaseem@gmail.com",
-    city: "أسوان",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2000",
-    image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&q=80",
-  },
-  {
-    id: 5,
-    name: "مؤسسة مصر خير",
-    email: "megakhair@gmail.com",
-    city: "القاهرة",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2015",
-    image: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?w=600&q=80",
-  },
-  {
-    id: 6,
-    name: "جمعية رسالة",
-    email: "resala@gmail.com",
-    city: "القاهرة",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2000",
-    image: "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=600&q=80",
-  },
-];
-
-const DONORS = [
-  {
-    id: 101,
-    name: "مصنع حديد عز",
-    email: "ezzsteel@gmail.com",
-    city: "القاهرة",
-    district: "المحادة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2010",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80",
-  },
-  {
-    id: 102,
-    name: "مطعم بازوكا",
-    email: "bazooka@gmail.com",
-    city: "مرسى مطروح",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2008",
-    image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80",
-  },
-  {
-    id: 103,
-    name: "مطعم بافالو برجر",
-    email: "buffaloburger@gmail.com",
-    city: "القاهرة",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2010",
-    image: "https://images.unsplash.com/photo-1550317138-10000687a72b?w=600&q=80",
-  },
-  {
-    id: 104,
-    name: "شركة جلوبال فروتس",
-    email: "globalfruits@gmail.com",
-    city: "أسوان",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2010",
-    image: "https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=600&q=80",
-  },
-  {
-    id: 105,
-    name: "مصنع المغربي للأحذية",
-    email: "elmaghreby@gmail.com",
-    city: "القاهرة",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2015",
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
-  },
-  {
-    id: 106,
-    name: "مؤسسة غيث للتنمية المجتمعية",
-    email: "gaith@gmail.com",
-    city: "القاهرة",
-    district: "الجيزة",
-    governorate: "القاهرة",
-    createdAt: "15/2/2000",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80",
-  },
-];
+import { useAlert } from "@/context/AlertContext";
+import adminUsersService from "@/services/adminUsersService";
 
 // ── Org Card ────────────────────────────────────────────────────
 function OrgCard({ org, onApprove, onReject }) {
+  const imageSrc = org.image || org.imageUrl || org.profilePicture || "https://placehold.co/600x160/e8e0f0/6F2DBD?text=صورة";
+  const userId = org.userId || org.id;
+
   return (
     <div className={styles.orgCard}>
       <img
-        src={org.image}
+        src={imageSrc}
         alt={org.name}
         className={styles.cardImage}
         onError={(e) => (e.currentTarget.src = "https://placehold.co/600x160/e8e0f0/6F2DBD?text=صورة")}
@@ -148,24 +26,24 @@ function OrgCard({ org, onApprove, onReject }) {
         </div>
         <div className={styles.orgDetail}>
           <span className={styles.detailLabel}>المدينة:</span>
-          <span className={styles.detailValue}>{org.governorate} - {org.district} - {org.city}</span>
+          <span className={styles.detailValue}>{org.governorate || ""} - {org.district || ""} - {org.city || ""}</span>
         </div>
         <div className={styles.orgDetail}>
           <span className={styles.detailLabel}>تاريخ الإنشاء:</span>
-          <span className={styles.detailValue}>{org.createdAt}</span>
+          <span className={styles.detailValue}>{org.createdAt ? new Date(org.createdAt).toLocaleDateString("ar-EG") : ""}</span>
         </div>
       </div>
       <div className={styles.cardFooter}>
         <button
           className={styles.btnApprove}
-          onClick={() => onApprove(org.id)}
+          onClick={() => onApprove(userId, org.name)}
           aria-label={`تأكيد ${org.name}`}
         >
           تأكيد
         </button>
         <button
           className={styles.btnReject}
-          onClick={() => onReject(org.id)}
+          onClick={() => onReject(userId, org.name)}
           aria-label={`رفض ${org.name}`}
         >
           رفض
@@ -177,26 +55,91 @@ function OrgCard({ org, onApprove, onReject }) {
 
 // ── Page ────────────────────────────────────────────────────────
 export default function PendingPage() {
+  const { showConfirm, showToast, showAlert } = useAlert();
   const [activeTab, setActiveTab] = useState("charities");
-  const [charities, setCharities] = useState(CHARITIES);
-  const [donors, setDonors] = useState(DONORS);
+  const [charities, setCharities] = useState([]);
+  const [donors, setDonors] = useState([]);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    setErrorMsg("");
+    try {
+      const res = await adminUsersService.getPendingVerifications();
+      // Defensive check for PascalCase or camelCase
+      const payload = res.data || res.Data || { charities: [], donorOrganizations: [] };
+      setCharities(payload.charities || payload.Charities || []);
+      setDonors(payload.donorOrganizations || payload.DonorOrganizations || []);
+    } catch (error) {
+      setErrorMsg(error.appMessage || "حدث خطأ أثناء جلب البيانات");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const data = activeTab === "charities" ? charities : donors;
-  const setData = activeTab === "charities" ? setCharities : setDonors;
 
   const filtered = data.filter(
     (o) =>
-      o.name.includes(search) || o.email.includes(search)
+      o.name?.includes(search) || o.email?.includes(search)
   );
 
-  function handleApprove(id) {
-    setData((prev) => prev.filter((o) => o.id !== id));
+  async function handleApprove(id, name) {
+    if (!id) {
+      showToast("خطأ: معرف المستخدم غير موجود", "error");
+      return;
+    }
+
+    showConfirm(
+      "تأكيد التوثيق",
+      `هل أنت متأكد من رغبتك في توثيق حساب "${name}"؟`,
+      async () => {
+        try {
+          await adminUsersService.verifyUser(id);
+          if (activeTab === "charities") {
+            setCharities((prev) => prev.filter((o) => (o.userId || o.id) !== id));
+          } else {
+            setDonors((prev) => prev.filter((o) => (o.userId || o.id) !== id));
+          }
+          showToast("تم توثيق الحساب بنجاح", "success");
+        } catch (error) {
+          showAlert("فشل الإجراء", error.appMessage || "تعذر التأكيد", "error");
+        }
+      }
+    );
   }
 
-  function handleReject(id) {
-    setData((prev) => prev.filter((o) => o.id !== id));
+  async function handleReject(id, name) {
+    if (!id) {
+      showToast("خطأ: معرف المستخدم غير موجود", "error");
+      return;
+    }
+
+    showConfirm(
+      "رفض التوثيق",
+      `هل أنت متأكد من رغبتك في رفض توثيق حساب "${name}"؟`,
+      async () => {
+        try {
+          await adminUsersService.rejectUser(id);
+          if (activeTab === "charities") {
+            setCharities((prev) => prev.filter((o) => (o.userId || o.id) !== id));
+          } else {
+            setDonors((prev) => prev.filter((o) => (o.userId || o.id) !== id));
+          }
+          showToast("تم رفض طلب التوثيق", "success");
+        } catch (error) {
+          showAlert("فشل الإجراء", error.appMessage || "تعذر الرفض", "error");
+        }
+      }
+    );
   }
+
 
   return (
     <div className={styles.page}>
@@ -252,21 +195,31 @@ export default function PendingPage() {
         </div>
       </div>
 
-      {/* ── Card Grid ── */}
-      <div className={styles.cardGrid}>
-        {filtered.length === 0 ? (
-          <p className={styles.emptyState}>لا توجد طلبات معلقة</p>
-        ) : (
-          filtered.map((org) => (
-            <OrgCard
-              key={org.id}
-              org={org}
-              onApprove={handleApprove}
-              onReject={handleReject}
-            />
-          ))
-        )}
-      </div>
+      {/* ── Content Area ── */}
+      {isLoading ? (
+        <p style={{ textAlign: "center", padding: "40px" }}>جاري التحميل...</p>
+      ) : errorMsg ? (
+        <div style={{ textAlign: "center", color: "red", padding: "20px" }}>
+          {errorMsg}
+          <br />
+          <button onClick={fetchData} className={styles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
+        </div>
+      ) : (
+        <div className={styles.cardGrid}>
+          {filtered.length === 0 ? (
+            <p className={styles.emptyState}>لا توجد طلبات معلقة</p>
+          ) : (
+            filtered.map((org) => (
+              <OrgCard
+                key={org.id}
+                org={org}
+                onApprove={handleApprove}
+                onReject={handleReject}
+              />
+            ))
+          )}
+        </div>
+      )}
 
     </div>
   );

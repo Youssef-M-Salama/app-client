@@ -5,30 +5,64 @@ import { usePathname } from "next/navigation";
 import styles from "@/styles/admin/adminNavbar.module.css";
 import { useAuth } from "@/context/AuthContext";
 
-const NAV_ITEMS = [
-  { label: "إدارة المستخدمين",           href: "/admin/users",   badge: 19 },
-  { label: "العروض المعلقة",             href: "/admin/offers",  badge: null },
-  { label: "اختيارات الجمعيات المعلقة", href: "/admin/needs",   badge: null },
-  { label: "طلبات التحقق المعلقة",      href: "/admin/pending", badge: 70 },
-];
-
-// Note: AdminNavbar must be a Client Component because it uses usePathname
+import { useAlert } from "@/context/AlertContext";
+import adminUsersService from "@/services/adminUsersService";
+import { useState, useEffect } from "react";
 
 export default function AdminNavbar() {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const { showConfirm } = useAlert();
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    pendingVerifications: 0,
+    pendingNeeds: 0,
+    pendingOffers: 0
+  });
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await adminUsersService.getDashboardStats();
+        // Envelope check: { success, data: { totalUsers, ... } }
+        const data = res.data || res;
+        setStats({
+          totalUsers: data.totalUsers ?? data.TotalUsers ?? data.totalUsersCount ?? data.TotalUsersCount ?? 0,
+          pendingVerifications: data.pendingVerifications ?? data.PendingVerifications ?? data.pendingVerificationsCount ?? data.PendingVerificationsCount ?? 0,
+          pendingNeeds: data.pendingCharityNeeds ?? data.PendingCharityNeeds ?? data.pendingCharityNeedsCount ?? data.PendingCharityNeedsCount ?? 0,
+          pendingOffers: data.pendingOffers ?? data.PendingOffers ?? data.pendingOffersCount ?? data.PendingOffersCount ?? 0
+        });
+      } catch (error) {
+        console.error("Failed to fetch nav stats", error);
+      }
+    }
+    fetchStats();
+    // Refresh stats every 5 minutes
+    const interval = setInterval(fetchStats, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const navItems = [
+    { label: "إدارة المستخدمين",           href: "/admin/users",   badge: stats.totalUsers },
+    { label: "العروض المعلقة",             href: "/admin/offers",  badge: stats.pendingOffers },
+    { label: "اختيارات الجمعيات المعلقة", href: "/admin/needs",   badge: stats.pendingNeeds },
+    { label: "طلبات التحقق المعلقة",      href: "/admin/pending", badge: stats.pendingVerifications },
+  ];
+
+  const displayName = user?.userName || user?.name || "أدمن";
+  const initial = displayName.charAt(0).toUpperCase();
 
   return (
     <nav className={styles.navbar}>
 
-      {/* ── Logo (right — RTL: first in DOM = visually rightmost) ── */}
+      {/* ── Logo ── */}
       <div className={styles.logo}>
         <img src="/logo-black.png" alt="وافر" />
       </div>
 
-      {/* ── Nav Links (center) ── */}
+      {/* ── Nav Links ── */}
       <ul className={styles.navLinks}>
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <li key={item.href}>
@@ -37,7 +71,7 @@ export default function AdminNavbar() {
                 className={`${styles.navLink} ${isActive ? styles.active : ""}`}
               >
                 {item.label}
-                {item.badge !== null && (
+                {item.badge > 0 && (
                   <span className={styles.badge}>{item.badge}</span>
                 )}
               </Link>
@@ -46,30 +80,33 @@ export default function AdminNavbar() {
         })}
       </ul>
 
-      {/* ── User Controls (left — RTL: last in DOM = visually leftmost) ── */}
+      {/* ── User Controls ── */}
       <div className={styles.userControls}>
         <div className={styles.userChip}>
-          <div className={styles.userAvatar}>J</div>
+          <div className={styles.userAvatar}>{initial}</div>
           <div className={styles.userInfo}>
-            <span className={styles.userName}>John Smith</span>
+            <span className={styles.userName}>{displayName}</span>
             <span className={styles.userRole}>أدمن</span>
           </div>
-          <span className={styles.chevron}>▼</span>
         </div>
-        <button className={styles.iconBtn} aria-label="الإشعارات" title="الإشعارات">
-          🔔
-        </button>
-        <button className={styles.iconBtn} aria-label="الإعدادات" title="الإعدادات">
-          ⚙️
-        </button>
-        <button 
-          className={styles.iconBtn} 
-          aria-label="تسجيل الخروج" 
-          title="تسجيل الخروج"
-          onClick={logout}
-        >
-          🚪
-        </button>
+        
+        <div className={styles.actions}>
+          <button 
+            className={`${styles.iconBtn} ${styles.logoutBtn}`} 
+            aria-label="تسجيل الخروج" 
+            title="تسجيل الخروج"
+            onClick={() => {
+              showConfirm(
+                "تسجيل الخروج",
+                "هل أنت متأكد من رغبتك في تسجيل الخروج؟",
+                logout
+              );
+            }}
+          >
+            <span className={styles.logoutIcon}>🚪</span>
+            <span className={styles.logoutText}>خروج</span>
+          </button>
+        </div>
       </div>
 
     </nav>

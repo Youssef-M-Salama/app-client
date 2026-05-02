@@ -1,100 +1,98 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/admin/table.module.css";
+import offersService from "@/services/offersService";
+import { mapCategory } from "@/utils/enumMapper";
+import { useAlert } from "@/context/AlertContext";
 
-// ── Mock Data ──────────────────────────────────────────────────
-const INITIAL_OFFERS = [
-  {
-    id: 1,
-    orgName: "مصنع أرز الدلتا",
-    orgAvatar: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=80&q=80",
-    product: "أرز - مواد غذائية - 30 كيلو جرام",
-    endDate: "11/5/2026",
-    city: "أسوان",
-    governorate: "أسوان",
-    isVerified: true,
-  },
-  {
-    id: 2,
-    orgName: "مصنع حديد عز",
-    orgAvatar: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=80&q=80",
-    product: "حديد تسليح - مواد بناء - 30 كيلو جرام",
-    endDate: "11/7/2026",
-    city: "القاهرة",
-    governorate: "القاهرة",
-    isVerified: false,
-  },
-  {
-    id: 3,
-    orgName: "مؤسسة غيث",
-    orgAvatar: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=80&q=80",
-    product: "ملابس جاهزة - ملابس - 20 كيلو جرام",
-    endDate: "14/8/2026",
-    city: "الفيوم",
-    governorate: "الفيوم",
-    isVerified: true,
-  },
-  {
-    id: 4,
-    orgName: "شركة جلوبال فروتس",
-    orgAvatar: "https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=80&q=80",
-    product: "فراولة - مواد غذائية - 20 كيلو جرام",
-    endDate: "10/7/2026",
-    city: "الغردقة",
-    governorate: "الغردقة",
-    isVerified: true,
-  },
-  {
-    id: 5,
-    orgName: "مصنع المغربي للأحذية",
-    orgAvatar: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=80&q=80",
-    product: "أحذية - أحذية جاهزة - 75 حذاء",
-    endDate: "2/2/2026",
-    city: "العامرين",
-    governorate: "مرسى مطروح",
-    isVerified: true,
-  },
-  {
-    id: 6,
-    orgName: "مطعم بازوكا",
-    orgAvatar: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=80&q=80",
-    product: "دجاج - مواد غذائية - 15 كيلو جرام",
-    endDate: "8/4/2026",
-    city: "المعادي",
-    governorate: "القاهرة",
-    isVerified: false,
-  },
-  {
-    id: 7,
-    orgName: "مطعم بافالو برجر",
-    orgAvatar: "https://images.unsplash.com/photo-1550317138-10000687a72b?w=80&q=80",
-    product: "لحمة - مواد غذائية - 30 كيلو جرام",
-    endDate: "1/8/2026",
-    city: "المهندسين",
-    governorate: "القاهرة",
-    isVerified: true,
-  },
-];
-
-// ── Page ────────────────────────────────────────────────────────
 export default function OffersPage() {
-  const [offers, setOffers] = useState(INITIAL_OFFERS);
+  const { showConfirm, showToast, showAlert } = useAlert();
+  const [offers, setOffers] = useState([]);
   const [search, setSearch] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    setErrorMsg("");
+    try {
+      const res = await offersService.getPendingOffers({ Page: 1, PageSize: 50 });
+      // Defensive check for PascalCase or camelCase
+      const payload = res.data || res.Data || [];
+      // Payload could be the array itself or an object with an items/data array
+      const items = Array.isArray(payload) ? payload : (payload.items || payload.Items || payload.data || payload.Data || []);
+      setOffers(items);
+    } catch (error) {
+      setErrorMsg(error.appMessage || "حدث خطأ أثناء جلب البيانات");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const filtered = offers.filter(
-    (o) =>
-      o.orgName.includes(search) ||
-      o.product.includes(search) ||
-      o.city.includes(search)
+    (o) => {
+      const org = o.donorOrganizationName || o.organizationName || o.name || "";
+      return org.includes(search) ||
+        (o.productName || "").includes(search) ||
+        (o.city || "").includes(search);
+    }
   );
 
-  function handleApprove(id) {
-    setOffers((prev) => prev.filter((o) => o.id !== id));
+  async function handleApprove(id) {
+    if (!id) {
+      showToast("خطأ: معرف العرض غير موجود", "error");
+      return;
+    }
+
+    showConfirm(
+      "الموافقة على العرض",
+      "هل أنت متأكد من رغبتك في الموافقة على هذا العرض؟",
+      async () => {
+        try {
+          await offersService.approveOffer(id);
+          setOffers((prev) => prev.filter((o) => (o.offerId || o.id) !== id));
+          showToast("تمت الموافقة على العرض بنجاح", "success");
+        } catch (error) {
+          if (error.apiStatus === 422) {
+            showAlert("انتهت صلاحية الإجراء", "لا يمكن تنفيذ الإجراء، قد تكون الحالة تغيرت. سيتم تحديث القائمة.", "error");
+            fetchData();
+          } else {
+            showAlert("فشل الإجراء", error.appMessage || "تعذر التأكيد", "error");
+          }
+        }
+      }
+    );
   }
 
-  function handleReject(id) {
-    setOffers((prev) => prev.filter((o) => o.id !== id));
+  async function handleReject(id) {
+    if (!id) {
+      showToast("خطأ: معرف العرض غير موجود", "error");
+      return;
+    }
+
+    showConfirm(
+      "رفض العرض",
+      "هل أنت متأكد من رغبتك في رفض هذا العرض؟",
+      async () => {
+        try {
+          await offersService.rejectOffer(id);
+          setOffers((prev) => prev.filter((o) => (o.offerId || o.id) !== id));
+          showToast("تم رفض العرض", "success");
+        } catch (error) {
+          if (error.apiStatus === 422) {
+            showAlert("انتهت صلاحية الإجراء", "لا يمكن تنفيذ الإجراء، قد تكون الحالة تغيرت. سيتم تحديث القائمة.", "error");
+            fetchData();
+          } else {
+            showAlert("فشل الإجراء", error.appMessage || "تعذر الرفض", "error");
+          }
+        }
+      }
+    );
   }
 
   return (
@@ -103,7 +101,7 @@ export default function OffersPage() {
       {/* ── Page Header ── */}
       <div className={styles.pageHeader}>
         <h1>العروض المعلقة</h1>
-        <p>إدارة جميع اختيارات الجمعيات المعلقة الموجودة و معرفة تفاصيلها</p>
+        <p>إدارة جميع عروض الجهات المانحة المعلقة وقبولها أو رفضها</p>
       </div>
 
       {/* ── Action Bar ── */}
@@ -127,23 +125,22 @@ export default function OffersPage() {
         </div>
       </div>
 
-      {/* ── Filter Row ── */}
-      <div className={styles.actionBar}>
-        <div className={styles.actionBarLeft}>
-          <button className={styles.btnOutline}>عرض الكل ▼</button>
-          <button className={styles.btnOutline}>☰ تصنيف</button>
-        </div>
-      </div>
-
       {/* ── Table Card ── */}
       <div className={styles.tableCard}>
         <div className={styles.tableCardHeader}>
-          <h2>عروض الجمعيات و المؤسسات المختلفة</h2>
-          <p>مراقبة جميع عروض الجمعيات و المؤسسات وقبولها أو رفضها</p>
+          <h2>عروض الجهات المانحة</h2>
         </div>
 
         <div className={styles.tableWrapper}>
-          {filtered.length === 0 ? (
+          {isLoading ? (
+            <p style={{ textAlign: "center", padding: "40px" }}>جاري التحميل...</p>
+          ) : errorMsg ? (
+            <div style={{ textAlign: "center", color: "red", padding: "20px" }}>
+              {errorMsg}
+              <br />
+              <button onClick={fetchData} className={styles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
+            </div>
+          ) : filtered.length === 0 ? (
             <p className={styles.emptyState}>لا توجد عروض معلقة</p>
           ) : (
             <table className={styles.table}>
@@ -159,51 +156,60 @@ export default function OffersPage() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((offer) => (
-                  <tr key={offer.id}>
-                    <td>
-                      <div className={styles.orgCell}>
-                        <img
-                          src={offer.orgAvatar}
-                          alt={offer.orgName}
-                          className={styles.orgAvatar}
-                          onError={(e) => (e.currentTarget.src = "https://placehold.co/36x36/e8e0f0/6F2DBD?text=م")}
-                        />
-                        <span className={styles.orgName}>{offer.orgName}</span>
-                      </div>
-                    </td>
-                    <td>{offer.product}</td>
-                    <td>{offer.endDate}</td>
-                    <td>{offer.city}</td>
-                    <td>{offer.governorate}</td>
-                    <td>
-                      <span className={`${styles.badge} ${offer.isVerified ? styles.badgeVerified : styles.badgeUnverified}`}>
-                        <span className={styles.badgeDot} />
-                        {offer.isVerified ? "مستخدم موثق" : "مستخدم غير موثق"}
-                      </span>
-                    </td>
-                    <td>
-                      <div className={styles.actionBtns}>
-                        <button
-                          className={styles.btnIconReject}
-                          onClick={() => handleReject(offer.id)}
-                          aria-label="رفض"
-                          title="رفض"
-                        >
-                          ✕
-                        </button>
-                        <button
-                          className={styles.btnIconApprove}
-                          onClick={() => handleApprove(offer.id)}
-                          aria-label="قبول"
-                          title="قبول"
-                        >
-                          ✓
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((offer) => {
+                  const id = offer.offerId || offer.id;
+                  const orgName = offer.donorOrganizationName || offer.organizationName || offer.name || "غير معروف";
+                  const avatar = offer.organizationImage || offer.profileImage || "https://placehold.co/36x36/e8e0f0/6F2DBD?text=م";
+                  const productDetails = `${offer.productName} - ${offer.quantity} وحدة - ${mapCategory(offer.category)}`;
+                  const isVerified = offer.isVerified !== false;
+                  const endDate = offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString("ar-EG") : "غير محدد";
+
+                  return (
+                    <tr key={id}>
+                      <td>
+                        <div className={styles.orgCell}>
+                          <img
+                            src={avatar}
+                            alt={orgName}
+                            className={styles.orgAvatar}
+                            onError={(e) => (e.currentTarget.src = "https://placehold.co/36x36/e8e0f0/6F2DBD?text=م")}
+                          />
+                          <span className={styles.orgName}>{orgName}</span>
+                        </div>
+                      </td>
+                      <td>{productDetails}</td>
+                      <td>{endDate}</td>
+                      <td>{offer.city || "غير محدد"}</td>
+                      <td>{offer.governorate || "غير محدد"}</td>
+                      <td>
+                        <span className={`${styles.badge} ${isVerified ? styles.badgeVerified : styles.badgeUnverified}`}>
+                          <span className={styles.badgeDot} />
+                          {isVerified ? "مستخدم موثق" : "مستخدم غير موثق"}
+                        </span>
+                      </td>
+                      <td>
+                        <div className={styles.actionBtns}>
+                          <button
+                            className={styles.btnIconReject}
+                            onClick={() => handleReject(id)}
+                            aria-label="رفض"
+                            title="رفض"
+                          >
+                            ✕
+                          </button>
+                          <button
+                            className={styles.btnIconApprove}
+                            onClick={() => handleApprove(id)}
+                            aria-label="قبول"
+                            title="قبول"
+                          >
+                            ✓
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           )}
