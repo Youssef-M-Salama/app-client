@@ -3,23 +3,22 @@
 import { usePathname } from "next/navigation";
 import headerStyle from "@/styles/dashboard/header.module.css";
 
-const PAGE_TITLES = {
-  "/profile":               "البيانات الشخصية",
-  "/posts":                 "المنشورات !",
-  "/browse":                "العروض والطلبات المتاحة",
-  "/requests":              "الطلبات الواردة",
-  "/notifications":         "الإشعارات",
-};
-
-const SEARCH_PLACEHOLDERS = {
-  "/posts":                "ابحث عن المنشورات...",
-  "/browse":               "ابحث في العروض والطلبات...",
-};
+import { useAuth } from "@/context/AuthContext";
 
 export default function Header({ onMenuToggle }) {
   const pathname = usePathname();
-  const title       = PAGE_TITLES[pathname]       || "مرحباً بك !";
-  const placeholder = SEARCH_PLACEHOLDERS[pathname] || "بحث...";
+  const { role } = useAuth();
+
+  const PAGE_TITLES = {
+    "/profile":               "البيانات الشخصية",
+    "/posts":                 "المنشورات !",
+    "/browse":                role === "DonorOrganization" ? "احتياجات الجمعيات" : "العروض المتاحة",
+    "/requests":              "الطلبات الواردة",
+    "/sent-requests":         "طلباتي المرسلة",
+    "/notifications":         "الإشعارات",
+  };
+
+  const title = PAGE_TITLES[pathname] || "مرحباً بك !";
 
   return (
     <header className={headerStyle.header}>
@@ -35,18 +34,6 @@ export default function Header({ onMenuToggle }) {
           ☰
         </button>
         <h1>{title}</h1>
-      </div>
-
-      {/* Search + notification */}
-      <div className={headerStyle.actions}>
-        <div className={headerStyle.searchWrapper}>
-          <i className={`fa-brands fa-sistrix ${headerStyle.searchIcon}`}></i>
-          <input
-            className={headerStyle.search}
-            placeholder={placeholder}
-          />
-        </div>
-        <button className={headerStyle.notification}>🔔</button>
       </div>
 
     </header>

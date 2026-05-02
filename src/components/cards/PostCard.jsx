@@ -20,7 +20,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
   }, []);
 
   const isOffer = role === "DonorOrganization";
-  const title = post.productName || post.title;
+  const title = post.productName;
   const categoryStr = mapCategory(post.category);
   const statusStr = mapStatus(post.status, isOffer);
   
@@ -29,7 +29,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
   const isPending = post.status === 0;
   const isApproved = post.status === 1;
 
-  const imageUrl = post.imageUrl || post.productImage || post.image || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80";
+  const imageUrl = post.productImage || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80";
 
   return (
     <div className={styles.card}>

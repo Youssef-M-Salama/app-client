@@ -1954,6 +1954,46 @@
                 }
             }
         },
+        "/api/v1/donor-organization/need-applications/sent": {
+            "get": {
+                "tags": [
+                    "Donor Organization"
+                ],
+                "summary": "Returns a paginated list of need applications sent by the donor organization\r\nto various charity needs.",
+                "parameters": [
+                    {
+                        "name": "Page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    },
+                    {
+                        "name": "PageSize",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "format": "int32"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Applications retrieved successfully."
+                    },
+                    "400": {
+                        "description": "Invalid pagination parameters."
+                    },
+                    "404": {
+                        "description": "Donor organization profile not found."
+                    },
+                    "500": {
+                        "description": "Unexpected server error."
+                    }
+                }
+            }
+        },
         "/api/v1/profile": {
             "get": {
                 "tags": [

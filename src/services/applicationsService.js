@@ -54,6 +54,13 @@ export const applicationsService = {
   rejectOfferApplication: async (offerApplicationId) => {
     const response = await apiClient.patch(`/api/v1/donor-organization/offer-applications/${offerApplicationId}/reject`);
     return response.data;
+  },
+
+  // --- DONOR SENT APPLICATIONS ---
+  getSentNeedApplications: async (params) => {
+    // params: Page, PageSize
+    const response = await apiClient.get('/api/v1/donor-organization/need-applications/sent', { params });
+    return response.data;
   }
 };
 

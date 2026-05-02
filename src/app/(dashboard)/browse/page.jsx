@@ -1,100 +1,149 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/dashboard/browse.module.css";
 import BrowseCard from "@/components/cards/BrowseCard";
 import ApplyModal from "@/components/ui/ApplyModal";
-
-const MOCK_ITEMS = [
-  {
-    id: 1,
-    title: "جمعية الوسيم",
-    description: "تحتاج الجمعية إلى تبرعات مالية مبالغ مالية سواء نقدية أو عن طريق تحويلات لوجود حالات متعددة في حاجة ماسة إلى إجراء العديد من العمليات (قلب مفتوح وغيرهم).",
-    phone: "+965 332 554 ...",
-    priority: "high",
-    logo: "", // Will fall back to placeholder in component
-    location: "القاهرة - مصر",
-  },
-  {
-    id: 2,
-    title: "مؤسسة ميجا خير",
-    description: "تبحث المؤسسة عن أدوات صحية مواد تعقيم و ضمادات وأدوية لعلاج نزلات البرد و غيرهم تحتاج إليهم في غضون أسبوع لوجود حالات في حاجة شديدة لهذه الأدوات.",
-    phone: "+965 223 485 ...",
-    priority: "medium",
-    logo: "",
-    location: "الجيزة - مصر",
-  },
-  {
-    id: 3,
-    title: "مؤسسة مصر الخير",
-    description: "تبحث المؤسسة عن أغراض للشتاء أغطية - بطاطين - جواكيت وغيرها تحتاج إلى كمية (20-50 مستلزمات الشتاء) عاجلاً نظراً إلى العديد من الأزمات الحالية و شدة برودة الشتاء.",
-    phone: "+965 647 326 ...",
-    priority: "high",
-    logo: "",
-    location: "جاردن سيتي - القاهرة",
-  },
-  {
-    id: 4,
-    title: "رسالة",
-    description: "مطلوب متطوعين للمساعدة في تعبئة كراتين رمضان وتوزيعها على المحتاجين في مختلف المحافظات.",
-    phone: "+965 111 222 ...",
-    priority: "medium",
-    logo: "",
-    location: "المهندسين - الجيزة",
-  }
-];
+import { useAuth } from "@/context/AuthContext";
+import charityNeedsService from "@/services/charityNeedsService";
+import offersService from "@/services/offersService";
+import applicationsService from "@/services/applicationsService";
 
 export default function BrowsePage() {
-  const [filter, setFilter] = useState("all");
+  const { role, user } = useAuth();
+  
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
-  const filteredItems = MOCK_ITEMS.filter((item) => {
-    if (filter === "all") return true;
-    return item.priority === filter;
-  });
+  // Filters
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetchItems();
+  }, [role, categoryFilter, search]);
+
+  const fetchItems = async () => {
+    if (!role) return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      let data = null;
+      const params = {
+        Page: 1,
+        PageSize: 50,
+        Search: search || undefined,
+        Category: categoryFilter !== "all" ? parseInt(categoryFilter) : undefined
+      };
+
+      if (role === "DonorOrganization") {
+        const response = await charityNeedsService.getPublicCharityNeeds(params);
+        data = response?.data || response;
+      } else if (role === "Charity") {
+        const response = await offersService.getPublicOffers(params);
+        data = response?.data || response;
+      }
+      
+      if (data?.items) {
+        setItems(data.items);
+      } else if (Array.isArray(data)) {
+        setItems(data);
+      } else if (data?.data?.items) {
+        setItems(data.data.items);
+      } else {
+        setItems([]);
+      }
+    } catch (err) {
+      setError(err.appMessage || "حدث خطأ أثناء تحميل البيانات.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleApplyClick = (item) => {
+    if (user?.isVerified === false) {
+      alert("مرحباً! حسابك قيد المراجعة من قبل الإدارة. ستتمكن من تقديم الطلبات بعد الموافقة.");
+      return;
+    }
+    setActionError(null);
     setSelectedItem(item);
     setIsModalOpen(true);
   };
 
-  const handleConfirmApply = (item) => {
-    console.log("Applied for item:", item.id);
-    // Here we would typically send an API request to apply
-    alert("تم تقديم الطلب بنجاح!");
+  const handleConfirmApply = async (item) => {
+    setActionError(null);
+    setIsSubmitting(true);
+    try {
+      const id = item.id || item.charityNeedId || item.offerId;
+      if (role === "DonorOrganization") {
+        await applicationsService.applyToNeed(id);
+      } else if (role === "Charity") {
+        await applicationsService.applyToOffer(id);
+      }
+      alert("تم تقديم الطلب بنجاح!");
+      setIsModalOpen(false);
+    } catch (err) {
+      setActionError(err.appMessage || "حدث خطأ أثناء تقديم الطلب.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className={styles.browsePage}>
       <div className={styles.pageActions}>
         <div className={styles.filterGroup}>
-          <span className={styles.filterLabel}>الأولوية :</span>
+          <span className={styles.filterLabel}>الفئة :</span>
           <div className={styles.filterSelectWrapper}>
             <select
               className={styles.filterSelect}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
             >
               <option value="all">الجميع</option>
-              <option value="high">قصوى</option>
-              <option value="medium">ضرورية</option>
+              <option value="0">طعام</option>
+              <option value="1">ملابس</option>
+              <option value="2">طبي</option>
+              <option value="3">تعليمي</option>
+              <option value="4">أخرى</option>
             </select>
             <i className={`fa-solid fa-chevron-down ${styles.filterChevron}`}></i>
           </div>
         </div>
+        <div className={styles.filterGroup}>
+          <span className={styles.filterLabel}>بحث :</span>
+          <input 
+            type="text" 
+            className={styles.filterSelect}
+            placeholder="ابحث هنا..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ width: "200px" }}
+          />
+        </div>
       </div>
 
+      {error && <div className={styles.errorMessage}>{error}</div>}
+
       <div className={styles.browseGrid}>
-        {filteredItems.map((item) => (
-          <BrowseCard 
-            key={item.id} 
-            item={item} 
-            onApply={handleApplyClick} 
-          />
-        ))}
-        {filteredItems.length === 0 && (
+        {isLoading ? (
+          <p>جاري التحميل...</p>
+        ) : items.length === 0 ? (
           <div className={styles.emptyState}>لا توجد طلبات متاحة تطابق الفلتر.</div>
+        ) : (
+          items.map((item, idx) => (
+            <BrowseCard 
+              key={item.id || item.charityNeedId || item.offerId || idx} 
+              item={item} 
+              onApply={handleApplyClick} 
+            />
+          ))
         )}
       </div>
 
@@ -103,6 +152,8 @@ export default function BrowsePage() {
         onClose={() => setIsModalOpen(false)}
         onApply={handleConfirmApply}
         itemData={selectedItem}
+        error={actionError}
+        isSubmitting={isSubmitting}
       />
     </div>
   );

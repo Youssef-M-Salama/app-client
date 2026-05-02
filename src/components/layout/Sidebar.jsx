@@ -7,7 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Sidebar({ onClose }) {
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
 
   return (
     <nav className={sidebarStyle.sidebar}>
@@ -44,7 +44,7 @@ export default function Sidebar({ onClose }) {
         <li className={pathname === "/browse" ? sidebarStyle.active : ""}>
           <Link href="/browse" onClick={onClose}>
             <img src="/icons/offers-icon.png" alt="offers" />
-            <span>العروض المتاحه</span>
+            <span>{role === "DonorOrganization" ? "احتياجات الجمعيات" : "العروض المتاحة"}</span>
           </Link>
         </li>
 
@@ -52,6 +52,13 @@ export default function Sidebar({ onClose }) {
           <Link href="/requests" onClick={onClose}>
             <img src="/icons/requests-icon.png" alt="needs" />
             <span>الطلبات الوارده</span>
+          </Link>
+        </li>
+
+        <li className={pathname === "/sent-requests" ? sidebarStyle.active : ""}>
+          <Link href="/sent-requests" onClick={onClose}>
+            <img src="/icons/requests-icon.png" alt="sent-needs" />
+            <span>طلباتي المرسلة</span>
           </Link>
         </li>
 

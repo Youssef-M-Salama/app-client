@@ -1,44 +1,48 @@
 "use client";
 
-import styles from "@/styles/dashboard/browse.module.css";
+import styles from "@/styles/dashboard/posts.module.css";
+import { mapCategory, mapPriority } from "@/utils/enumMapper";
 
 export default function BrowseCard({ item, onApply }) {
-  // item: { id, logo, title, description, phone, priority, type }
-  // priority can be "high" (قصوى) or "medium" (ضرورية)
-
-  const priorityClass = item.priority === "high" ? styles.priorityHigh : styles.priorityMedium;
-  const priorityText = item.priority === "high" ? "قصوى" : "ضرورية";
+  // Map API item to display values
+  const orgName = item.charityName || item.donorOrganizationName || item.organizationName || item.name;
+  const productName = item.productName;
+  const description = item.description || "";
+  const phone = item.phone || item.contactPhone || "غير متوفر";
+  const email = item.email || item.contactEmail || "غير متوفر";
+  const imageUrl = item.productImage || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80";
+  const location = item.city && item.governorate ? `${item.governorate} - ${item.city}` : (item.city || item.governorate || "غير متوفر");
+  
+  const categoryStr = item.category !== undefined ? mapCategory(item.category) : "";
 
   return (
     <div className={styles.card}>
-      <div className={styles.cardHeader}>
-        {/* Placeholder for logo if we don't have one */}
-        {item.logo ? (
-          <img src={item.logo} alt={item.title} className={styles.cardLogo} />
-        ) : (
-          <div style={{ fontSize: '40px', color: '#ccc' }}>🏢</div>
-        )}
+      <div className={styles.cardImageWrapper}>
+        <img src={imageUrl} alt={productName} />
+        {categoryStr && <div className={styles.statusBadge}>{categoryStr}</div>}
       </div>
 
       <div className={styles.cardBody}>
-        <h3 className={styles.cardTitle}>{item.title}</h3>
+        <h3 className={styles.cardTitle}>{productName}</h3>
+        <p className={styles.cardCategory}>{orgName}</p>
         
-        <p className={styles.cardDesc}>
-          {item.description}
-        </p>
+        <div className={styles.cardDetails}>
+          {item.priority !== undefined && (
+            <span className={styles[`priority${item.priority}`]}>
+              الأولوية: {mapPriority(item.priority)}
+            </span>
+          )}
+          <span>الكمية: {item.quantity || 1}</span>
+          <span>الموقع: {location}</span>
+          <span>البريد: {email}</span>
+          <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone}</span></span>
+        </div>
+
+        <p className={styles.cardDesc}>{description}</p>
         
-        <p className={styles.cardContact}>
-          رقم التواصل {item.phone}
-        </p>
-
-        <button className={styles.readMoreBtn}>عرض المزيد من التفاصيل</button>
-
-        <div className={styles.cardFooter}>
-          <div className={`${styles.priorityTag} ${priorityClass}`}>
-            {priorityText}
-          </div>
+        <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
           <button 
-            className={styles.applyBtn}
+            className={styles.publishBtn}
             onClick={() => onApply(item)}
           >
             الحصول على الطلب

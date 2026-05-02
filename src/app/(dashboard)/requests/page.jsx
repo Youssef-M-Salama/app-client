@@ -1,72 +1,114 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "@/styles/dashboard/requests.module.css";
 import RequestListCard from "@/components/cards/RequestListCard";
 import RequestActionModal from "@/components/ui/RequestActionModal";
-
-const MOCK_REQUESTS = [
-  {
-    id: 1,
-    title: "مؤسسة مصر الخير",
-    date: "5 فبراير 2026",
-    typeLabel: "العرض:",
-    description: "رأينا إعلان المؤسسة في المنشورات عن تقديمها لعدد من مؤن الشتاء والأغطية وتحتاج المؤسسة لدينا إلى هذا العرض لوجود العديد من الحالات في حاجة شديدة إليها لتجنب بها برودة الشتاء",
-    phone: "+965 332 554 ...",
-    location: "القاهرة - حي المهندسين",
-    logo: "", // Fallback
-  },
-  {
-    id: 2,
-    title: "مؤسسة فرصة حياة",
-    date: "20 فبراير 2026",
-    typeLabel: "العرض:",
-    description: "رأينا إعلان المؤسسة في المنشورات عن عرضها لعديد من قطع الأثاث وتحتاج المؤسسة لدينا إلى هذا العرض لوجود العديد من الحالات في حاجة ماسة إليها وأيضاً لتجهيز أشخاص لعرسهم",
-    phone: "+965 223 485 ...",
-    location: "القاهرة - المعادي",
-    logo: "",
-  },
-  {
-    id: 3,
-    title: "مؤسسة كريمة العلا",
-    date: "5 فبراير 2026",
-    typeLabel: "العرض:",
-    description: "رأينا إعلان المؤسسة في المنشورات عن تقديمها لعدد من أدوات البناء وتحتاج المؤسسة لدينا إلى هذا العرض لوجود حالات متضررة جداً من أمطار الشتاء وتحتاج إصلاحات عديدة",
-    phone: "+965 111 222 ...",
-    location: "الجيزة - الدقي",
-    logo: "",
-  }
-];
+import { useAuth } from "@/context/AuthContext";
+import applicationsService from "@/services/applicationsService";
+import globalPostsStyles from "@/styles/dashboard/posts.module.css";
 
 export default function RequestsPage() {
-  const [requests, setRequests] = useState(MOCK_REQUESTS);
+  const { role } = useAuth();
+  
+  const [requests, setRequests] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [successMessage, setSuccessMessage] = useState("");
   
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [actionType, setActionType] = useState(null); // 'accept' or 'reject'
+  const [actionError, setActionError] = useState(null);
+
+  useEffect(() => {
+    fetchRequests();
+  }, [role, filter]);
+
+  // Clear success message after 3 seconds
+  useEffect(() => {
+    if (successMessage) {
+      const timer = setTimeout(() => setSuccessMessage(""), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage]);
+
+  const fetchRequests = async () => {
+    if (!role || role === "Admin") return;
+    setIsLoading(true);
+    setError(null);
+    try {
+      let data = null;
+      const params = {
+        Page: 1,
+        PageSize: 50,
+        Status: filter !== "all" ? parseInt(filter) : undefined
+      };
+
+      if (role === "Charity") {
+        const response = await applicationsService.getReceivedNeedApplications(params);
+        data = response?.data || response;
+      } else if (role === "DonorOrganization") {
+        const response = await applicationsService.getReceivedOfferApplications(params);
+        data = response?.data || response;
+      }
+
+      if (data?.items) {
+        setRequests(data.items);
+      } else if (data?.data?.items) {
+        setRequests(data.data.items);
+      } else if (Array.isArray(data)) {
+        setRequests(data);
+      } else if (Array.isArray(data?.data)) {
+        setRequests(data.data);
+      } else {
+        setRequests([]);
+      }
+    } catch (err) {
+      setError(err.appMessage || "حدث خطأ أثناء تحميل الطلبات الواردة.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleOpenAccept = (item) => {
+    setActionError(null);
     setSelectedItem(item);
     setActionType("accept");
     setModalOpen(true);
   };
 
   const handleOpenReject = (item) => {
+    setActionError(null);
     setSelectedItem(item);
     setActionType("reject");
     setModalOpen(true);
   };
 
-  const handleConfirmAction = (item, type) => {
-    // type is "accept" or "reject"
-    console.log(`Action: ${type} for request ID: ${item.id}`);
-    
-    // Remove the item from the list to simulate processing
-    setRequests((prev) => prev.filter((r) => r.id !== item.id));
-    
-    // Typically show a success toast here
+  const handleConfirmAction = async (item, type) => {
+    setActionError(null);
+    setIsSubmitting(true);
+    try {
+      const id = item.id || item.needApplicationId || item.offerApplicationId;
+      if (role === "Charity") {
+        if (type === "accept") await applicationsService.acceptNeedApplication(id);
+        else if (type === "reject") await applicationsService.rejectNeedApplication(id);
+      } else if (role === "DonorOrganization") {
+        if (type === "accept") await applicationsService.acceptOfferApplication(id);
+        else if (type === "reject") await applicationsService.rejectOfferApplication(id);
+      }
+      
+      setSuccessMessage(type === "accept" ? "تم قبول الطلب بنجاح" : "تم رفض الطلب");
+      setModalOpen(false);
+      fetchRequests(); 
+    } catch (err) {
+      setActionError(err.appMessage || "حدث خطأ أثناء تنفيذ العملية.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -75,43 +117,70 @@ export default function RequestsPage() {
       {/* Header / Filter */}
       <div className={styles.pageActions}>
         <div className={styles.filterGroup}>
-          <span className={styles.filterLabel}>نوع العرض :</span>
+          <span className={styles.filterLabel}>فلترة حسب الحالة :</span>
           <div className={styles.filterSelectWrapper}>
             <select
               className={styles.filterSelect}
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
-              <option value="all">جميع العروض</option>
+              <option value="all">جميع الحالات</option>
+              <option value="0">قيد الانتظار</option>
+              <option value="1">مقبول</option>
+              <option value="2">مرفوض</option>
             </select>
             <i className={`fa-solid fa-chevron-down ${styles.filterChevron}`}></i>
           </div>
         </div>
       </div>
 
+      {error && <div className={globalPostsStyles.errorMessage}>{error}</div>}
+      {successMessage && (
+        <div style={{ 
+          backgroundColor: '#e8f5e9', 
+          color: '#2e7d32', 
+          padding: '12px', 
+          borderRadius: '8px', 
+          marginBottom: '20px', 
+          textAlign: 'center',
+          fontWeight: 'bold',
+          border: '1px solid #c8e6c9'
+        }}>
+          {successMessage}
+        </div>
+      )}
+
       {/* List */}
-      <div className={styles.requestsList}>
-        {requests.map((req) => (
-          <RequestListCard 
-            key={req.id} 
-            request={req} 
-            onAccept={handleOpenAccept}
-            onReject={handleOpenReject}
-          />
-        ))}
-        
-        {requests.length === 0 && (
-          <div className={styles.emptyState}>لا توجد طلبات واردة حالياً.</div>
+      <div className={globalPostsStyles.postsGrid}>
+        {isLoading ? (
+          <div className={globalPostsStyles.emptyState}>جاري تحميل الطلبات...</div>
+        ) : requests.length === 0 ? (
+          <div className={globalPostsStyles.emptyState}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📩</div>
+            لا توجد طلبات واردة حالياً تطابق الفلتر.
+          </div>
+        ) : (
+          requests.map((req, idx) => (
+            <RequestListCard 
+              key={req.id || req.needApplicationId || req.offerApplicationId || idx} 
+              request={req} 
+              onAccept={handleOpenAccept}
+              onReject={handleOpenReject}
+              role={role}
+            />
+          ))
         )}
       </div>
 
       {/* Action Modal */}
       <RequestActionModal 
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => !isSubmitting && setModalOpen(false)}
         onConfirm={handleConfirmAction}
         itemData={selectedItem}
         actionType={actionType}
+        error={actionError}
+        isSubmitting={isSubmitting}
       />
 
     </div>

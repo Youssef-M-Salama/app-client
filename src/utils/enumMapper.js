@@ -39,3 +39,12 @@ export const mapPriority = (priorityInt) => {
   };
   return map[priorityInt] || "غير معروف";
 };
+
+export const mapApplicationStatus = (statusInt) => {
+  const map = {
+    0: "قيد الانتظار",
+    1: "مقبول",
+    2: "مرفوض"
+  };
+  return map[statusInt] || "غير معروف";
+};
