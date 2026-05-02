@@ -111,6 +111,12 @@ export default function RequestsPage() {
     }
   };
 
+  const filteredRequests = requests.filter(req => {
+    if (filter === "all") return true;
+    const status = req.status ?? req.Status;
+    return status === parseInt(filter);
+  });
+
   return (
     <div className={styles.requestsPage}>
       
@@ -154,13 +160,13 @@ export default function RequestsPage() {
       <div className={globalPostsStyles.postsGrid}>
         {isLoading ? (
           <div className={globalPostsStyles.emptyState}>جاري تحميل الطلبات...</div>
-        ) : requests.length === 0 ? (
+        ) : filteredRequests.length === 0 ? (
           <div className={globalPostsStyles.emptyState}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📩</div>
             لا توجد طلبات واردة حالياً تطابق الفلتر.
           </div>
         ) : (
-          requests.map((req, idx) => (
+          filteredRequests.map((req, idx) => (
             <RequestListCard 
               key={req.id || req.needApplicationId || req.offerApplicationId || idx} 
               request={req} 

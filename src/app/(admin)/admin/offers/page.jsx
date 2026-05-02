@@ -1,10 +1,70 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "@/styles/admin/table.module.css";
+import styles from "@/styles/admin/pending.module.css"; // Reuse pending styles for cards
 import offersService from "@/services/offersService";
+import apiClient from "@/services/apiClient";
 import { mapCategory } from "@/utils/enumMapper";
 import { useAlert } from "@/context/AlertContext";
+
+// ── Helpers ─────────────────────────────────────────────────────
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  const baseUrl = apiClient.defaults.baseURL;
+  return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+};
+
+// ── Offer Card ──────────────────────────────────────────────────
+function OfferCard({ offer, onApprove, onReject }) {
+  const rawImg = offer.productImage || offer.imageUrl || offer.image;
+  const imageSrc = getImageUrl(rawImg) || FALLBACK_IMAGE;
+  const orgName = offer.donorOrganizationName || offer.organizationName || "جهة غير معروفة";
+  const productName = offer.productName || "منتج غير مسمى";
+  const id = offer.offerId || offer.id;
+  const expiryDate = offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString("ar-EG") : "غير محدد";
+
+  return (
+    <div className={styles.orgCard}>
+      <img
+        src={imageSrc}
+        alt=""
+        className={styles.cardImage}
+        onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
+      />
+      <div className={styles.cardBody}>
+        <h3 className={styles.orgName}>{productName}</h3>
+        <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '8px' }}>
+          {orgName}
+        </p>
+        
+        <div className={styles.orgDetail}>
+          <span className={styles.detailLabel}>الكمية:</span>
+          <span className={styles.detailValue}>{offer.quantity} وحدة</span>
+        </div>
+        <div className={styles.orgDetail}>
+          <span className={styles.detailLabel}>التصنيف:</span>
+          <span className={styles.detailValue}>{mapCategory(offer.category)}</span>
+        </div>
+        <div className={styles.orgDetail}>
+          <span className={styles.detailLabel}>تاريخ الانتهاء:</span>
+          <span className={styles.detailValue}>{expiryDate}</span>
+        </div>
+        <div className={styles.orgDetail}>
+          <span className={styles.detailLabel}>الموقع:</span>
+          <span className={styles.detailValue}>{offer.governorate || "غير محدد"} - {offer.city || "غير محدد"}</span>
+        </div>
+      </div>
+
+      <div className={styles.cardFooter}>
+        <button className={styles.btnReject} onClick={() => onReject(id)}>رفض</button>
+        <button className={styles.btnApprove} onClick={() => onApprove(id)}>قبول</button>
+      </div>
+    </div>
+  );
+}
 
 export default function OffersPage() {
   const { showConfirm, showToast, showAlert } = useAlert();
@@ -18,9 +78,7 @@ export default function OffersPage() {
     setErrorMsg("");
     try {
       const res = await offersService.getPendingOffers({ Page: 1, PageSize: 50 });
-      // Defensive check for PascalCase or camelCase
       const payload = res.data || res.Data || [];
-      // Payload could be the array itself or an object with an items/data array
       const items = Array.isArray(payload) ? payload : (payload.items || payload.Items || payload.data || payload.Data || []);
       setOffers(items);
     } catch (error) {
@@ -44,11 +102,6 @@ export default function OffersPage() {
   );
 
   async function handleApprove(id) {
-    if (!id) {
-      showToast("خطأ: معرف العرض غير موجود", "error");
-      return;
-    }
-
     showConfirm(
       "الموافقة على العرض",
       "هل أنت متأكد من رغبتك في الموافقة على هذا العرض؟",
@@ -58,23 +111,13 @@ export default function OffersPage() {
           setOffers((prev) => prev.filter((o) => (o.offerId || o.id) !== id));
           showToast("تمت الموافقة على العرض بنجاح", "success");
         } catch (error) {
-          if (error.apiStatus === 422) {
-            showAlert("انتهت صلاحية الإجراء", "لا يمكن تنفيذ الإجراء، قد تكون الحالة تغيرت. سيتم تحديث القائمة.", "error");
-            fetchData();
-          } else {
-            showAlert("فشل الإجراء", error.appMessage || "تعذر التأكيد", "error");
-          }
+          showAlert("فشل الإجراء", error.appMessage || "تعذر التأكيد", "error");
         }
       }
     );
   }
 
   async function handleReject(id) {
-    if (!id) {
-      showToast("خطأ: معرف العرض غير موجود", "error");
-      return;
-    }
-
     showConfirm(
       "رفض العرض",
       "هل أنت متأكد من رغبتك في رفض هذا العرض؟",
@@ -84,12 +127,7 @@ export default function OffersPage() {
           setOffers((prev) => prev.filter((o) => (o.offerId || o.id) !== id));
           showToast("تم رفض العرض", "success");
         } catch (error) {
-          if (error.apiStatus === 422) {
-            showAlert("انتهت صلاحية الإجراء", "لا يمكن تنفيذ الإجراء، قد تكون الحالة تغيرت. سيتم تحديث القائمة.", "error");
-            fetchData();
-          } else {
-            showAlert("فشل الإجراء", error.appMessage || "تعذر الرفض", "error");
-          }
+          showAlert("فشل الإجراء", error.appMessage || "تعذر الرفض", "error");
         }
       }
     );
@@ -97,24 +135,20 @@ export default function OffersPage() {
 
   return (
     <div className={styles.page}>
-
-      {/* ── Page Header ── */}
       <div className={styles.pageHeader}>
         <h1>العروض المعلقة</h1>
         <p>إدارة جميع عروض الجهات المانحة المعلقة وقبولها أو رفضها</p>
       </div>
 
-      {/* ── Action Bar ── */}
       <div className={styles.actionBar}>
         <div className={styles.actionBarLeft}>
-          <button className={styles.btnOutline}>⬇ تحميل التقرير</button>
-          <button className={styles.btnOutline}>⬆ تصدير كملف CSV</button>
         </div>
         <div className={styles.actionBarRight}>
           <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>🔍</span>
+            <span className={styles.searchIcon}>
+              <i className="fa-solid fa-magnifying-glass"></i>
+            </span>
             <input
-              id="offers-search"
               type="text"
               className={styles.searchInput}
               placeholder="ابحث هنا..."
@@ -125,97 +159,28 @@ export default function OffersPage() {
         </div>
       </div>
 
-      {/* ── Table Card ── */}
-      <div className={styles.tableCard}>
-        <div className={styles.tableCardHeader}>
-          <h2>عروض الجهات المانحة</h2>
+      {isLoading ? (
+        <p style={{ textAlign: "center", padding: "40px" }}>جاري التحميل...</p>
+      ) : errorMsg ? (
+        <div style={{ textAlign: "center", color: "red", padding: "20px" }}>
+          {errorMsg}
+          <br />
+          <button onClick={fetchData} className={styles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
         </div>
-
-        <div className={styles.tableWrapper}>
-          {isLoading ? (
-            <p style={{ textAlign: "center", padding: "40px" }}>جاري التحميل...</p>
-          ) : errorMsg ? (
-            <div style={{ textAlign: "center", color: "red", padding: "20px" }}>
-              {errorMsg}
-              <br />
-              <button onClick={fetchData} className={styles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
-            </div>
-          ) : filtered.length === 0 ? (
-            <p className={styles.emptyState}>لا توجد عروض معلقة</p>
-          ) : (
-            <table className={styles.table}>
-              <thead>
-                <tr>
-                  <th>الجهة المانحة</th>
-                  <th>المنتج - الكمية - التصنيف</th>
-                  <th>تاريخ الانتهاء</th>
-                  <th>المدينة</th>
-                  <th>المحافظة</th>
-                  <th>الحالة</th>
-                  <th>الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((offer) => {
-                  const id = offer.offerId || offer.id;
-                  const orgName = offer.donorOrganizationName || offer.organizationName || offer.name || "غير معروف";
-                  const avatar = offer.organizationImage || offer.profileImage || "https://placehold.co/36x36/e8e0f0/6F2DBD?text=م";
-                  const productDetails = `${offer.productName} - ${offer.quantity} وحدة - ${mapCategory(offer.category)}`;
-                  const isVerified = offer.isVerified !== false;
-                  const endDate = offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString("ar-EG") : "غير محدد";
-
-                  return (
-                    <tr key={id}>
-                      <td>
-                        <div className={styles.orgCell}>
-                          <img
-                            src={avatar}
-                            alt={orgName}
-                            className={styles.orgAvatar}
-                            onError={(e) => (e.currentTarget.src = "https://placehold.co/36x36/e8e0f0/6F2DBD?text=م")}
-                          />
-                          <span className={styles.orgName}>{orgName}</span>
-                        </div>
-                      </td>
-                      <td>{productDetails}</td>
-                      <td>{endDate}</td>
-                      <td>{offer.city || "غير محدد"}</td>
-                      <td>{offer.governorate || "غير محدد"}</td>
-                      <td>
-                        <span className={`${styles.badge} ${isVerified ? styles.badgeVerified : styles.badgeUnverified}`}>
-                          <span className={styles.badgeDot} />
-                          {isVerified ? "مستخدم موثق" : "مستخدم غير موثق"}
-                        </span>
-                      </td>
-                      <td>
-                        <div className={styles.actionBtns}>
-                          <button
-                            className={styles.btnIconReject}
-                            onClick={() => handleReject(id)}
-                            aria-label="رفض"
-                            title="رفض"
-                          >
-                            ✕
-                          </button>
-                          <button
-                            className={styles.btnIconApprove}
-                            onClick={() => handleApprove(id)}
-                            aria-label="قبول"
-                            title="قبول"
-                          >
-                            ✓
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
+      ) : filtered.length === 0 ? (
+        <p className={styles.emptyState}>لا توجد عروض معلقة</p>
+      ) : (
+        <div className={styles.cardGrid}>
+          {filtered.map((offer) => (
+            <OfferCard 
+              key={offer.offerId || offer.id} 
+              offer={offer} 
+              onApprove={handleApprove} 
+              onReject={handleReject} 
+            />
+          ))}
         </div>
-      </div>
-
+      )}
     </div>
   );
 }

@@ -4,13 +4,20 @@ import { useState, useRef, useEffect } from "react";
 import styles from "@/styles/admin/users.module.css";
 import { useAlert } from "@/context/AlertContext";
 import adminUsersService from "@/services/adminUsersService";
+import apiClient from "@/services/apiClient";
 
-// ── Mock Data for Charts ───────────────────────────────────────
-const MONTHLY_BARS = [25, 40, 55, 70, 90, 75, 60, 80, 95, 65, 50, 40];
-const BAR_LABELS   = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+// ── Helpers ─────────────────────────────────────────────────────
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  const baseUrl = apiClient.defaults.baseURL;
+  return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 // ── Row Action Dropdown ──────────────────────────────────────────
-function ActionDropdown({ user, onView, onToggle, onVerify, onReject, onDelete }) {
+function ActionDropdown({ user, onView, onToggle, onVerify, onDelete }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -57,12 +64,6 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onReject, onDelete }
             </button>
           )}
           <button
-            className={`${styles.dropdownItem} ${styles.danger}`}
-            onClick={() => { onReject(userId); setOpen(false); }}
-          >
-            رفض الحساب ✖
-          </button>
-          <button
             className={styles.dropdownItem}
             onClick={() => { onToggle(userId, isActive); setOpen(false); }}
           >
@@ -86,7 +87,8 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onReject, onDelete }
 function UserDetailModal({ user, onClose }) {
   if (!user) return null;
 
-  const avatar = user.avatar || user.profilePicture || user.imageUrl || "https://placehold.co/100x100/e8e0f0/6F2DBD?text=م";
+  const rawImg = user.imageUrl || user.ImageUrl || user.profileImage || user.ProfileImage || user.profilePicture || user.avatar || user.image || user.Image;
+  const avatar = getImageUrl(rawImg) || FALLBACK_IMAGE;
   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : "غير معروف";
   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "غير متوفر";
 
@@ -100,7 +102,7 @@ function UserDetailModal({ user, onClose }) {
         
         <div className={styles.modalBody}>
           <div className={styles.profileSection}>
-            <img src={avatar} alt={user.name} className={styles.largeAvatar} />
+            <img src={avatar} alt="" className={styles.largeAvatar} />
             <div className={styles.profileInfo}>
               <h4>{user.name}</h4>
               <span className={styles.profileRole}>{roleStr}</span>
@@ -159,6 +161,58 @@ function UserDetailModal({ user, onClose }) {
   );
 }
 
+// ── System Overview Chart ───────────────────────────────────────
+function SystemOverviewChart({ stats }) {
+  const total = stats.activeCharityNeeds + stats.activeOffers + stats.pendingVerifications;
+  
+  // Calculate segments for conic-gradient
+  const needPer = total > 0 ? (stats.activeCharityNeeds / total) * 100 : 0;
+  const offerPer = total > 0 ? (stats.activeOffers / total) * 100 : 0;
+  
+  // Colors
+  const needColor = "#FFC107";
+  const offerColor = "#E91E63";
+  const pendingColor = "#9C27B0";
+  
+  const gradient = `conic-gradient(
+    ${needColor} 0% ${needPer}%, 
+    ${offerColor} ${needPer}% ${needPer + offerPer}%, 
+    ${pendingColor} ${needPer + offerPer}% 100%
+  )`;
+
+  return (
+    <div className={styles.chartsCard}>
+      <div className={styles.barChartHeader}>
+        <span className={styles.barChartTitle}>توزيع نشاط النظام</span>
+      </div>
+      
+      <div className={styles.donutArea} style={{ flexDirection: 'row', gap: '30px', justifyContent: 'space-around', padding: '10px 0' }}>
+        <div className={styles.donutWrapper} style={{ width: '120px', height: '120px', background: gradient, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '85px', height: '85px', background: 'white', borderRadius: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.05)' }}>
+            <span style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>{total}</span>
+            <span style={{ fontSize: '9px', color: 'var(--color-text-muted)' }}>إجمالي النشاط</span>
+          </div>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: needColor }} />
+            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>احتياجات: <strong>{needPer.toFixed(0)}%</strong></span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: offerColor }} />
+            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>عروض: <strong>{offerPer.toFixed(0)}%</strong></span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: pendingColor }} />
+            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>معلق: <strong>{(100 - needPer - offerPer).toFixed(0)}%</strong></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Page ────────────────────────────────────────────────────────
 export default function UsersPage() {
   const { showConfirm, showToast, showAlert } = useAlert();
@@ -172,6 +226,32 @@ export default function UsersPage() {
   // Filters
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    activeCharityNeeds: 0,
+    activeOffers: 0,
+    pendingVerifications: 0,
+    pendingCharityNeeds: 0,
+    pendingOffers: 0
+  });
+
+  const fetchStats = async () => {
+    try {
+      const res = await adminUsersService.getDashboardStats();
+      const data = res.data || res.Data || res;
+      setStats({
+        totalUsers: data.totalUsers ?? 0,
+        activeCharityNeeds: data.activeCharityNeeds ?? 0,
+        activeOffers: data.activeOffers ?? 0,
+        pendingVerifications: data.pendingVerifications ?? 0,
+        pendingCharityNeeds: data.pendingCharityNeeds ?? 0,
+        pendingOffers: data.pendingOffers ?? 0
+      });
+    } catch (error) {
+      console.error("Failed to fetch dashboard stats", error);
+    }
+  };
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -199,6 +279,7 @@ export default function UsersPage() {
 
   useEffect(() => {
     fetchData();
+    fetchStats();
   }, [roleFilter, statusFilter]);
 
   const filtered = users.filter(
@@ -247,22 +328,6 @@ export default function UsersPage() {
     );
   }
 
-  async function handleReject(id) {
-    showConfirm(
-      "رفض الحساب",
-      "هل أنت متأكد من رغبتك في رفض هذا الحساب؟",
-      async () => {
-        try {
-          await adminUsersService.rejectUser(id);
-          showToast("تم رفض الحساب بنجاح", "success");
-          fetchData(); // Refresh list
-        } catch (error) {
-          showAlert("خطأ", error.appMessage || "حدث خطأ أثناء رفض الحساب");
-        }
-      }
-    );
-  }
-
   async function handleDelete(id) {
     // API doesn't support delete user right now, so this is disabled in UI
     console.log("Delete user", id);
@@ -271,8 +336,6 @@ export default function UsersPage() {
   function handleView(user) {
     setViewingUser(user);
   }
-
-  const maxBar = Math.max(...MONTHLY_BARS);
 
   return (
     <div className={styles.page}>
@@ -286,12 +349,12 @@ export default function UsersPage() {
       {/* ── Action Bar ── */}
       <div className={styles.actionBar}>
         <div className={styles.actionBarLeft}>
-          <button className={styles.btnOutline}>⬇ تحميل التقرير</button>
-          <button className={styles.btnOutline}>⬆ تصدير كملف CSV</button>
         </div>
         <div className={styles.actionBarRight}>
           <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>🔍</span>
+            <span className={styles.searchIcon}>
+              <i className="fa-solid fa-magnifying-glass"></i>
+            </span>
             <input
               id="users-search"
               type="text"
@@ -306,89 +369,35 @@ export default function UsersPage() {
 
       {/* ── Stats Section ── */}
       <div className={styles.statsSection}>
-
-        {/* Charts card */}
-        <div className={styles.chartsCard}>
-          <div className={styles.chartsRow}>
-
-            {/* Bar chart */}
-            <div className={styles.barChartArea}>
-              <div className={styles.barChartHeader}>
-                <span className={styles.barChartTitle}>معدل نمو المستخدمين</span>
-                <div className={styles.periodTabs}>
-                  {["يومي", "شهري", "سنوي"].map((p) => (
-                    <button
-                      key={p}
-                      className={`${styles.periodTab} ${activePeriod === p ? styles.activePeriod : ""}`}
-                      onClick={() => setActivePeriod(p)}
-                    >
-                      {p}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className={styles.barChart}>
-                {MONTHLY_BARS.map((h, i) => (
-                  <div
-                    key={i}
-                    className={styles.bar}
-                    style={{ height: `${(h / maxBar) * 100}%` }}
-                    title={`${BAR_LABELS[i]}: ${h}`}
-                  />
-                ))}
-              </div>
-              <div className={styles.barLabels}>
-                {BAR_LABELS.map((l) => (
-                  <span key={l} className={styles.barLabel}>{l}</span>
-                ))}
-              </div>
-            </div>
-
-            {/* Donut chart */}
-            <div className={styles.donutArea}>
-              <div className={styles.donutWrapper}>
-                <svg className={styles.donutSvg} width="100" height="100" viewBox="0 0 100 100">
-                  <circle className={styles.donutTrack} cx="50" cy="50" r="40" />
-                  <circle className={styles.donutFill}  cx="50" cy="50" r="40" />
-                </svg>
-                <div className={styles.donutLabel}>
-                  <span className={styles.donutPercent}>12%</span>
-                  <span className={styles.donutSub}>نمو<br/>شهري</span>
-                </div>
-              </div>
-              <div className={styles.periodTabs}>
-                <button className={`${styles.periodTab} ${styles.activePeriod}`}>شهر ▼</button>
-              </div>
-            </div>
-
-          </div>
-        </div>
+        <SystemOverviewChart stats={stats} />
 
         {/* Stats card */}
-        <div className={styles.statsCard}>
-          <p className={styles.statsCardTitle}>تفاصيل المستخدمين</p>
-          <p className={styles.statsCardSubTitle}>كل تفاصيل مجتمع المستخدمين و أعدادهم و معدل النمو الداخل لرزمة مميزة</p>
-
-          <div className={styles.totalStat}>
-            <p className={styles.totalLabel}>إجمالي المستخدمين</p>
-            <p className={styles.totalValue}>89,922</p>
+        <div className={styles.statsCard} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div>
+            <p className={styles.statsCardTitle}>تفاصيل المستخدمين</p>
+            <p className={styles.statsCardSubTitle}>نظرة عامة على إحصائيات النظام الحالية</p>
           </div>
 
-          <div className={styles.subStats}>
-            <div className={styles.subStat}>
-              <div className={styles.subStatDot} style={{ background: "#FFC107" }} />
-              <span className={styles.subStatLabel}>كسيرو</span>
-              <span className={styles.subStatValue}>41,954</span>
+          <div className={styles.totalStat} style={{ background: '#f8f9fa', padding: '16px', borderRadius: '12px', marginBottom: '16px' }}>
+            <p className={styles.totalLabel}>إجمالي المستخدمين المسجلين</p>
+            <p className={styles.totalValue} style={{ fontSize: '32px', color: 'var(--color-primary)' }}>
+              {stats.totalUsers.toLocaleString("ar-EG")}
+              <span style={{ fontSize: '14px', fontWeight: 'normal', marginRight: '8px', color: '#666' }}>مستخدم</span>
+            </p>
+          </div>
+
+          <div className={styles.subStats} style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+            <div className={styles.subStat} style={{ background: '#fff9e6', padding: '10px', borderRadius: '10px', border: '1px solid #ffeeba' }}>
+              <span className={styles.subStatLabel} style={{ fontSize: '10px', color: '#856404' }}>احتياجات نشطة</span>
+              <span className={styles.subStatValue} style={{ color: '#856404' }}>{stats.activeCharityNeeds}</span>
             </div>
-            <div className={styles.subStat}>
-              <div className={styles.subStatDot} style={{ background: "#E91E63" }} />
-              <span className={styles.subStatLabel}>إناث</span>
-              <span className={styles.subStatValue}>21,642</span>
+            <div className={styles.subStat} style={{ background: '#fff0f3', padding: '10px', borderRadius: '10px', border: '1px solid #f8d7da' }}>
+              <span className={styles.subStatLabel} style={{ fontSize: '10px', color: '#721c24' }}>عروض نشطة</span>
+              <span className={styles.subStatValue} style={{ color: '#721c24' }}>{stats.activeOffers}</span>
             </div>
-            <div className={styles.subStat}>
-              <div className={styles.subStatDot} style={{ background: "#9C27B0" }} />
-              <span className={styles.subStatLabel}>موبايل</span>
-              <span className={styles.subStatValue}>26,344</span>
+            <div className={styles.subStat} style={{ background: '#f3e5f5', padding: '10px', borderRadius: '10px', border: '1px solid #e1bee7' }}>
+              <span className={styles.subStatLabel} style={{ fontSize: '10px', color: '#4a148c' }}>تحققات معلقة</span>
+              <span className={styles.subStatValue} style={{ color: '#4a148c' }}>{stats.pendingVerifications}</span>
             </div>
           </div>
         </div>
@@ -446,7 +455,8 @@ export default function UsersPage() {
               <tbody>
                 {filtered.map((user) => {
                   const userId = user.userId || user.id;
-                  const avatar = user.avatar || user.profilePicture || user.imageUrl || "https://placehold.co/36x36/e8e0f0/6F2DBD?text=م";
+                  const rawImg = user.imageUrl || user.ImageUrl || user.profileImage || user.ProfileImage || user.profilePicture || user.avatar || user.image || user.Image;
+                  const avatar = getImageUrl(rawImg) || FALLBACK_IMAGE;
                   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : (user.role || "غير معروف");
                   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "";
                   const isVerified = user.isVerified !== false; // handle nullish
@@ -460,9 +470,9 @@ export default function UsersPage() {
                         <div className={styles.userCell}>
                           <img
                             src={avatar}
-                            alt={user.name}
+                            alt=""
                             className={styles.userAvatar}
-                            onError={(e) => (e.currentTarget.src = "https://placehold.co/36x36/e8e0f0/6F2DBD?text=م")}
+                            onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
                           />
                           <span className={styles.userName}>{user.name}</span>
                         </div>
@@ -488,7 +498,6 @@ export default function UsersPage() {
                           onView={handleView}
                           onToggle={handleToggle}
                           onVerify={handleVerify}
-                          onReject={handleReject}
                           onDelete={handleDelete}
                         />
                       </td>

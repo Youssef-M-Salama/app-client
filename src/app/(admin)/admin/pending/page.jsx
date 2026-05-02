@@ -4,22 +4,35 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/admin/pending.module.css";
 import { useAlert } from "@/context/AlertContext";
 import adminUsersService from "@/services/adminUsersService";
+import apiClient from "@/services/apiClient";
+
+// ── Helpers ─────────────────────────────────────────────────────
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  const baseUrl = apiClient.defaults.baseURL;
+  return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 // ── Org Card ────────────────────────────────────────────────────
 function OrgCard({ org, onApprove, onReject }) {
-  const imageSrc = org.image || org.imageUrl || org.profilePicture || "https://placehold.co/600x160/e8e0f0/6F2DBD?text=صورة";
-  const userId = org.userId || org.id;
+  const rawImg = org.imageUrl || org.ImageUrl || org.image || org.profilePicture;
+  const imageSrc = getImageUrl(rawImg) || FALLBACK_IMAGE;
+  const name = org.charityName || org.donorOrganizationName || org.name;
+  const userId = org.userId || org.id || org.charityId || org.donorOrganizationId;
 
   return (
     <div className={styles.orgCard}>
       <img
         src={imageSrc}
-        alt={org.name}
+        alt=""
         className={styles.cardImage}
-        onError={(e) => (e.currentTarget.src = "https://placehold.co/600x160/e8e0f0/6F2DBD?text=صورة")}
+        onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
       />
       <div className={styles.cardBody}>
-        <p className={styles.orgName}>{org.name}</p>
+        <p className={styles.orgName}>{name}</p>
         <div className={styles.orgDetail}>
           <span className={styles.detailLabel}>الإيميل:</span>
           <span className={styles.detailValue} dir="ltr">{org.email}</span>
@@ -36,15 +49,15 @@ function OrgCard({ org, onApprove, onReject }) {
       <div className={styles.cardFooter}>
         <button
           className={styles.btnApprove}
-          onClick={() => onApprove(userId, org.name)}
-          aria-label={`تأكيد ${org.name}`}
+          onClick={() => onApprove(userId, name)}
+          aria-label={`تأكيد ${name}`}
         >
           تأكيد
         </button>
         <button
           className={styles.btnReject}
-          onClick={() => onReject(userId, org.name)}
-          aria-label={`رفض ${org.name}`}
+          onClick={() => onReject(userId, name)}
+          aria-label={`رفض ${name}`}
         >
           رفض
         </button>
@@ -68,10 +81,10 @@ export default function PendingPage() {
     setErrorMsg("");
     try {
       const res = await adminUsersService.getPendingVerifications();
-      // Defensive check for PascalCase or camelCase
-      const payload = res.data || res.Data || { charities: [], donorOrganizations: [] };
-      setCharities(payload.charities || payload.Charities || []);
-      setDonors(payload.donorOrganizations || payload.DonorOrganizations || []);
+      // Defensive check for PascalCase or camelCase based on live API response
+      const payload = res.data || res.Data || { pendingCharities: [], pendingDonors: [] };
+      setCharities(payload.pendingCharities || payload.charities || payload.Charities || []);
+      setDonors(payload.pendingDonors || payload.donorOrganizations || payload.DonorOrganizations || []);
     } catch (error) {
       setErrorMsg(error.appMessage || "حدث خطأ أثناء جلب البيانات");
     } finally {
@@ -86,8 +99,10 @@ export default function PendingPage() {
   const data = activeTab === "charities" ? charities : donors;
 
   const filtered = data.filter(
-    (o) =>
-      o.name?.includes(search) || o.email?.includes(search)
+    (o) => {
+      const name = o.charityName || o.donorOrganizationName || o.name || "";
+      return name.includes(search) || o.email?.includes(search);
+    }
   );
 
   async function handleApprove(id, name) {
@@ -211,7 +226,7 @@ export default function PendingPage() {
           ) : (
             filtered.map((org) => (
               <OrgCard
-                key={org.id}
+                key={org.userId || org.id || org.charityId || org.donorOrganizationId}
                 org={org}
                 onApprove={handleApprove}
                 onReject={handleReject}

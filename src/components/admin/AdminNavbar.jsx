@@ -7,7 +7,18 @@ import { useAuth } from "@/context/AuthContext";
 
 import { useAlert } from "@/context/AlertContext";
 import adminUsersService from "@/services/adminUsersService";
+import apiClient from "@/services/apiClient";
 import { useState, useEffect } from "react";
+
+// ── Helpers ─────────────────────────────────────────────────────
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  const baseUrl = apiClient.defaults.baseURL;
+  return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 export default function AdminNavbar() {
   const pathname = usePathname();
@@ -45,12 +56,13 @@ export default function AdminNavbar() {
   const navItems = [
     { label: "إدارة المستخدمين",           href: "/admin/users",   badge: stats.totalUsers },
     { label: "العروض المعلقة",             href: "/admin/offers",  badge: stats.pendingOffers },
-    { label: "اختيارات الجمعيات المعلقة", href: "/admin/needs",   badge: stats.pendingNeeds },
-    { label: "طلبات التحقق المعلقة",      href: "/admin/pending", badge: stats.pendingVerifications },
+    { label: "احتياجات الجمعيات المعلقة", href: "/admin/needs",   badge: stats.pendingNeeds },
   ];
 
   const displayName = user?.userName || user?.name || "أدمن";
   const initial = displayName.charAt(0).toUpperCase();
+  const rawImg = user?.imageUrl || user?.ImageUrl || user?.profilePicture || user?.avatar || user?.image;
+  const userImage = getImageUrl(rawImg);
 
   return (
     <nav className={styles.navbar}>
@@ -83,7 +95,19 @@ export default function AdminNavbar() {
       {/* ── User Controls ── */}
       <div className={styles.userControls}>
         <div className={styles.userChip}>
-          <div className={styles.userAvatar}>{initial}</div>
+          <div className={styles.userAvatar}>
+            {userImage ? (
+              <img 
+                src={userImage} 
+                alt="" 
+                className={styles.avatarImg} 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement.innerHTML = initial;
+                }} 
+              />
+            ) : initial}
+          </div>
           <div className={styles.userInfo}>
             <span className={styles.userName}>{displayName}</span>
             <span className={styles.userRole}>أدمن</span>
