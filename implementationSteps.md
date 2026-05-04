@@ -75,7 +75,7 @@ In all **UI components**: service methods return the envelope — use `result.da
 - [x] **Phase 2: Core Dashboards (My Posts)** — **DONE** ✅
 - [x] **Phase 3: Applications Workflow** — **DONE** ✅
 - [x] **Phase 4: Admin Controls** — **DONE** ✅
-- [ ] Phase 5: Profile Management
+- [x] **Phase 5: Profile Management** — **DONE** ✅
 
 ---
 
