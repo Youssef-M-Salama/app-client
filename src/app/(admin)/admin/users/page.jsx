@@ -99,7 +99,7 @@ function UserDetailModal({ user, onClose }) {
           <h3>تفاصيل المستخدم</h3>
           <button className={styles.closeBtn} onClick={onClose}>×</button>
         </div>
-        
+
         <div className={styles.modalBody}>
           <div className={styles.profileSection}>
             <img src={avatar} alt="" className={styles.largeAvatar} />
@@ -118,7 +118,7 @@ function UserDetailModal({ user, onClose }) {
               <span className={styles.infoLabel}>تاريخ الانضمام</span>
               <span className={styles.infoValue}>{createdAt}</span>
             </div>
-            
+
             {user.phone && (
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>رقم الهاتف</span>
@@ -164,16 +164,16 @@ function UserDetailModal({ user, onClose }) {
 // ── System Overview Chart ───────────────────────────────────────
 function SystemOverviewChart({ stats }) {
   const total = stats.activeCharityNeeds + stats.activeOffers + stats.pendingVerifications;
-  
+
   // Calculate segments for conic-gradient
   const needPer = total > 0 ? (stats.activeCharityNeeds / total) * 100 : 0;
   const offerPer = total > 0 ? (stats.activeOffers / total) * 100 : 0;
-  
+
   // Colors
   const needColor = "#FFC107";
   const offerColor = "#E91E63";
   const pendingColor = "#9C27B0";
-  
+
   const gradient = `conic-gradient(
     ${needColor} 0% ${needPer}%, 
     ${offerColor} ${needPer}% ${needPer + offerPer}%, 
@@ -185,7 +185,7 @@ function SystemOverviewChart({ stats }) {
       <div className={styles.barChartHeader}>
         <span className={styles.barChartTitle}>توزيع نشاط النظام</span>
       </div>
-      
+
       <div className={styles.donutArea} style={{ flexDirection: 'row', gap: '30px', justifyContent: 'space-around', padding: '10px 0' }}>
         <div className={styles.donutWrapper} style={{ width: '120px', height: '120px', background: gradient, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: '85px', height: '85px', background: 'white', borderRadius: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.05)' }}>
@@ -222,7 +222,7 @@ export default function UsersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   const [viewingUser, setViewingUser] = useState(null);
-  
+
   // Filters
   const [roleFilter, setRoleFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -288,7 +288,7 @@ export default function UsersPage() {
 
   async function handleToggle(id, currentStatus) {
     const actionText = currentStatus ? "إيقاف" : "تفعيل";
-    
+
     showConfirm(
       `${actionText} الحساب`,
       `هل أنت متأكد من رغبتك في ${actionText} هذا المستخدم؟`,
@@ -460,7 +460,7 @@ export default function UsersPage() {
                   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : (user.role || "غير معروف");
                   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "";
                   const isVerified = user.isVerified !== false; // handle nullish
-                  
+
                   return (
                     <tr key={userId}>
                       <td>
@@ -511,9 +511,9 @@ export default function UsersPage() {
       </div>
 
       {/* ── Detail Modal ── */}
-      <UserDetailModal 
-        user={viewingUser} 
-        onClose={() => setViewingUser(null)} 
+      <UserDetailModal
+        user={viewingUser}
+        onClose={() => setViewingUser(null)}
       />
 
     </div>

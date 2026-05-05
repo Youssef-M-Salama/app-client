@@ -26,6 +26,8 @@ const RULES = {
   },
   phone: {
     required: true,
+    pattern: /^(01[0125][0-9]{8}|1[0125][0-9]{8})$/,
+    patternMsg: 'يرجى إدخال رقم هاتف مصري صحيح (مثال: 10xxxxxxxxx)',
     label: 'رقم الهاتف',
   },
   password: {
@@ -346,19 +348,55 @@ export default function RegisterForm({ authStyles, regStyles }) {
         {/* ── Phone ── */}
         <div className={authStyles.formField}>
           <label htmlFor="reg-phone">رقم الهاتف</label>
-          <input
-            id="reg-phone"
-            name="phone"
-            type="tel"
-            placeholder="01xxxxxxxxx"
-            value={values.phone}
-            onChange={handleChange}
-            onBlur={handleBlur}
+          <div
             className={inputClass('phone')}
-            autoComplete="tel"
-            dir="ltr"
-            style={{ textAlign: 'left' }}
-          />
+            style={{
+              display: 'flex',
+              direction: 'ltr',
+              alignItems: 'center',
+              border: getError('phone') ? '1px solid #ef4444' : '1px solid #e2e8f0',
+              borderRadius: '12px',
+              overflow: 'hidden',
+              background: '#fff',
+            }}
+          >
+            <span
+              style={{
+                padding: '0 16px',
+                background: '#f8fafc',
+                color: '#64748b',
+                borderRight: '1px solid #e2e8f0',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                fontSize: '15px',
+                fontWeight: '600',
+              }}
+            >
+              +20
+            </span>
+            <input
+              id="reg-phone"
+              name="phone"
+              type="tel"
+              placeholder="10xxxxxxxxx"
+              value={values.phone.replace(/^\+20/, '')}
+              onChange={(e) => {
+                handleChange({ target: { name: 'phone', value: e.target.value } });
+              }}
+              onBlur={handleBlur}
+              autoComplete="tel"
+              dir="ltr"
+              style={{
+                border: 'none',
+                flex: 1,
+                padding: '14px 16px',
+                outline: 'none',
+                width: '100%',
+                background: 'transparent',
+              }}
+            />
+          </div>
           {getError('phone') && (
             <span className={authStyles.fieldError}>{getError('phone')}</span>
           )}

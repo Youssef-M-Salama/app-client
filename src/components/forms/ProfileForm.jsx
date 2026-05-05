@@ -43,6 +43,21 @@ const EDIT_ICON_STYLE = {
 // Wrapper style with extra left padding to make room for the icon
 const EDITABLE_WRAPPER_STYLE = { paddingLeft: '38px' };
 
+// For phone inputs (room for icon + "+20")
+const PHONE_WRAPPER_STYLE = { paddingLeft: '75px' };
+
+const PHONE_PREFIX_STYLE = {
+  position: 'absolute',
+  left: '38px',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  color: '#64748b',
+  fontWeight: '600',
+  pointerEvents: 'none',
+  fontSize: '15px',
+  direction: 'ltr',
+};
+
 // ─── Change Password Section ──────────────────────────────────────────────────
 function ChangePasswordSection() {
   const { showToast } = useAlert();
@@ -224,8 +239,24 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
     // Send only non-empty fields
     const payload = {};
     Object.entries(form).forEach(([k, v]) => {
-      if (v !== '') payload[k] = v;
+      if (v !== '') {
+        if (k === 'phone' || k === 'whatsapp') {
+          payload[k] = v.replace(/^\+20/, '');
+        } else {
+          payload[k] = v;
+        }
+      }
     });
+
+    const phonePattern = /^(01[0125][0-9]{8}|1[0125][0-9]{8})$/;
+    if (payload.phone && !phonePattern.test(payload.phone)) {
+      setFieldErrors(prev => ({ ...prev, phone: ['يرجى إدخال رقم هاتف مصري صحيح (مثال: 10xxxxxxxxx)'] }));
+      return;
+    }
+    if (payload.whatsapp && !phonePattern.test(payload.whatsapp)) {
+      setFieldErrors(prev => ({ ...prev, whatsapp: ['يرجى إدخال رقم واتساب مصري صحيح (مثال: 10xxxxxxxxx)'] }));
+      return;
+    }
 
     if (onSave) await onSave(payload, setFieldErrors, setGeneralError);
   };
@@ -290,13 +321,16 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
         {/* ── Row 3: Phone (editable) + Whatsapp (editable) ── */}
         <div className={styles.formRow}>
           <div className={styles.formField}>
-            <div className={styles.inputWrapper} style={EDITABLE_WRAPPER_STYLE}>
+            <div className={styles.inputWrapper} style={PHONE_WRAPPER_STYLE}>
               <img src="/icons/editIcon.png" alt="" style={EDIT_ICON_STYLE} />
+              <span style={PHONE_PREFIX_STYLE}>+20</span>
               <input
                 type="text"
                 placeholder=" "
-                value={form.phone}
+                value={form.phone.replace(/^\+20/, '')}
                 onChange={e => handleChange('phone', e.target.value)}
+                style={{ direction: 'ltr', textAlign: 'left' }}
+                dir="ltr"
               />
               <label>رقم الهاتف</label>
             </div>
@@ -308,13 +342,16 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
           </div>
 
           <div className={styles.formField}>
-            <div className={styles.inputWrapper} style={EDITABLE_WRAPPER_STYLE}>
+            <div className={styles.inputWrapper} style={PHONE_WRAPPER_STYLE}>
               <img src="/icons/editIcon.png" alt="" style={EDIT_ICON_STYLE} />
+              <span style={PHONE_PREFIX_STYLE}>+20</span>
               <input
                 type="text"
                 placeholder=" "
-                value={form.whatsapp}
+                value={form.whatsapp.replace(/^\+20/, '')}
                 onChange={e => handleChange('whatsapp', e.target.value)}
+                style={{ direction: 'ltr', textAlign: 'left' }}
+                dir="ltr"
               />
               <label>واتساب</label>
             </div>
