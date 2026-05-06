@@ -127,7 +127,7 @@ export default function AdminNavbar() {
               );
             }}
           >
-            <span className={styles.logoutIcon}>🚪</span>
+            <span className={styles.logoutIcon}><i className="fa-solid fa-arrow-right-from-bracket"></i></span>
             <span className={styles.logoutText}>خروج</span>
           </button>
         </div>

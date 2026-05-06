@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/admin/pending.module.css"; // Reuse pending styles for cards
 import charityNeedsService from "@/services/charityNeedsService";
 import apiClient from "@/services/apiClient";
-import { mapCategory, mapPriority } from "@/utils/enumMapper";
+import { mapCategory, mapPriority, mapUnit } from "@/utils/enumMapper";
 import { useAlert } from "@/context/AlertContext";
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -41,7 +41,7 @@ function NeedCard({ need, onApprove, onReject }) {
         
         <div className={styles.orgDetail}>
           <span className={styles.detailLabel}>الكمية:</span>
-          <span className={styles.detailValue}>{need.quantity} وحدة</span>
+          <span className={styles.detailValue}>{need.quantity} {mapUnit(need.unit)}</span>
         </div>
         <div className={styles.orgDetail}>
           <span className={styles.detailLabel}>التصنيف:</span>

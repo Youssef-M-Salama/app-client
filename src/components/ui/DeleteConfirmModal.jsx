@@ -15,7 +15,7 @@ export default function DeleteConfirmModal({ isOpen, onClose, onConfirm, postTit
   return (
     <div className={styles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className={`${styles.modal} ${styles.deleteModal}`} role="dialog" aria-modal="true">
-        <span className={styles.deleteIcon}>🗑️</span>
+        <span className={styles.deleteIcon}><i className="fa-solid fa-trash-can"></i></span>
         <p className={styles.deleteText}>حذف المنشور</p>
         <p className={styles.deleteSubText}>
           هل أنت متأكد من حذف &quot;{postTitle}&quot;؟<br />لا يمكن التراجع عن هذا الإجراء.

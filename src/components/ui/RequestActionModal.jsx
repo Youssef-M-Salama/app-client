@@ -17,7 +17,7 @@ export default function RequestActionModal({ isOpen, onClose, onConfirm, itemDat
   const orgName = itemData.charityName || itemData.donorOrganizationName || itemData.applicantName || itemData.organizationName || itemData.title || "المؤسسة";
   const productName = itemData.productName || itemData.offerTitle || itemData.charityNeedTitle || "طلب غير معروف";
   
-  const icon = isAccept ? "✓" : "✕";
+  const icon = isAccept ? <i className="fa-solid fa-check"></i> : <i className="fa-solid fa-xmark"></i>;
   const title = isAccept ? "تأكيد القبول" : "تأكيد الرفض";
   const description = isAccept 
     ? `هل أنت متأكد من قبول الطلب المقدم من "${orgName}" بخصوص "${productName}"؟`
@@ -34,7 +34,7 @@ export default function RequestActionModal({ isOpen, onClose, onConfirm, itemDat
         </div>
 
         <h2 className={styles.modalTitle}>{title}</h2>
-        {error && <div style={{ color: 'red', marginBottom: '10px', fontSize: '14px' }}>{error}</div>}
+        {error && <div style={{ color: '#d32f2f', marginBottom: '10px', fontSize: '14px', background: '#ffebee', padding: '8px', borderRadius: '4px', textAlign: 'center' }}><i className="fa-solid fa-triangle-exclamation" style={{ marginLeft: "8px" }}></i> {error}</div>}
         <p className={styles.modalDesc}>{description}</p>
 
         <div className={styles.modalActions}>

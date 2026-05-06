@@ -1,7 +1,9 @@
 "use client";
 
 import styles from "@/styles/dashboard/posts.module.css";
-import { mapCategory, mapPriority } from "@/utils/enumMapper";
+import { mapCategory, mapPriority, mapUnit } from "@/utils/enumMapper";
+
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
 
 export default function BrowseCard({ item, onApply }) {
   // Map API item to display values
@@ -10,7 +12,7 @@ export default function BrowseCard({ item, onApply }) {
   const description = item.description || "";
   const phone = item.phone || item.contactPhone || "غير متوفر";
   const email = item.email || item.contactEmail || "غير متوفر";
-  const imageUrl = item.productImage || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80";
+  const imageUrl = item.productImage || FALLBACK_IMAGE;
   const location = item.city && item.governorate ? `${item.governorate} - ${item.city}` : (item.city || item.governorate || "غير متوفر");
   
   const categoryStr = item.category !== undefined ? mapCategory(item.category) : "";
@@ -32,7 +34,7 @@ export default function BrowseCard({ item, onApply }) {
               الأولوية: {mapPriority(item.priority)}
             </span>
           )}
-          <span>الكمية: {item.quantity || 1}</span>
+          <span>الكمية: {item.quantity || 1} {mapUnit(item.unit)}</span>
           <span>الموقع: {location}</span>
           <span>البريد: {email}</span>
           <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone}</span></span>

@@ -8,9 +8,11 @@ import { useAuth } from "@/context/AuthContext";
 import charityNeedsService from "@/services/charityNeedsService";
 import offersService from "@/services/offersService";
 import applicationsService from "@/services/applicationsService";
+import { useAlert } from "@/context/AlertContext";
 
 export default function BrowsePage() {
   const { role, user } = useAuth();
+  const { showAlert, showToast } = useAlert();
   
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +70,7 @@ export default function BrowsePage() {
 
   const handleApplyClick = (item) => {
     if (user?.isVerified === false) {
-      alert("مرحباً! حسابك قيد المراجعة من قبل الإدارة. ستتمكن من تقديم الطلبات بعد الموافقة.");
+      showAlert("حساب غير موثق", "مرحباً! حسابك قيد المراجعة من قبل الإدارة. ستتمكن من تقديم الطلبات بعد الموافقة.", "warning");
       return;
     }
     setActionError(null);
@@ -86,7 +88,7 @@ export default function BrowsePage() {
       } else if (role === "Charity") {
         await applicationsService.applyToOffer(id);
       }
-      alert("تم تقديم الطلب بنجاح!");
+      showToast("تم تقديم الطلب بنجاح!", "success");
       setIsModalOpen(false);
     } catch (err) {
       setActionError(err.appMessage || "حدث خطأ أثناء تقديم الطلب.");

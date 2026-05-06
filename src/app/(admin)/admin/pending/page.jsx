@@ -173,7 +173,7 @@ export default function PendingPage() {
         </div>
         <div className={styles.actionBarRight}>
           <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>🔍</span>
+            <span className={styles.searchIcon}><i className="fa-solid fa-magnifying-glass"></i></span>
             <input
               id="pending-search"
               type="text"

@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import styles from "@/styles/dashboard/posts.module.css";
-import { mapCategory, mapStatus, mapPriority } from "@/utils/enumMapper";
+import { mapCategory, mapStatus, mapPriority, mapUnit } from "@/utils/enumMapper";
+
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
 
 export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -29,7 +31,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
   const isPending = post.status === 0;
   const isApproved = post.status === 1;
 
-  const imageUrl = post.productImage || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80";
+  const imageUrl = post.productImage || FALLBACK_IMAGE;
 
   return (
     <div className={styles.card}>
@@ -65,7 +67,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
                       onClick={() => { onDelete(post); setMenuOpen(false); }}
                       role="menuitem"
                     >
-                      <span>🗑️</span> حذف
+                      <span><i className="fa-solid fa-trash"></i></span> حذف
                     </button>
                   </>
                 )}
@@ -75,7 +77,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
                     onClick={() => { onFulfill(post.id || post.charityNeedId || post.offerId); setMenuOpen(false); }}
                     role="menuitem"
                   >
-                    <span>✅</span> اكتمل
+                    <span><i className="fa-solid fa-check"></i></span> اكتمل
                   </button>
                 )}
               </div>
@@ -90,7 +92,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
         <p className={styles.cardCategory}>{categoryStr}</p>
         
         <div className={styles.cardDetails}>
-          <span>الكمية: {post.quantity}</span>
+          <span>الكمية: {post.quantity} {mapUnit(post.unit)}</span>
           {!isOffer && post.priority !== undefined && (
             <span className={styles[`priority${post.priority}`]}>
               الأولوية: {mapPriority(post.priority)}

@@ -11,6 +11,18 @@ const CATEGORY_OPTIONS = [
   { value: 4, label: "أخرى" }
 ];
 
+const UNIT_OPTIONS = [
+  { value: 0, label: "طن (Ton)" },
+  { value: 1, label: "كجم (Kg)" },
+  { value: 2, label: "جرام (Gram)" },
+  { value: 3, label: "لتر (Liter)" },
+  { value: 4, label: "مللتر (Ml)" },
+  { value: 5, label: "عبوة (Pack)" },
+  { value: 6, label: "صندوق (Box)" },
+  { value: 7, label: "علبة (Can)" },
+  { value: 8, label: "قطعة (Piece)" }
+];
+
 const PRIORITY_OPTIONS = [
   { value: 0, label: "عاجل" },
   { value: 1, label: "عالي" },
@@ -18,7 +30,7 @@ const PRIORITY_OPTIONS = [
   { value: 3, label: "منخفض" }
 ];
 
-export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, role, fieldErrors = {} }) {
+export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, role, fieldErrors = {}, generalError }) {
   const isEdit = Boolean(initialData);
   const isCharity = role === "Charity";
 
@@ -26,6 +38,7 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
     title: "",
     category: 0,
     quantity: 1,
+    unit: 8,
     description: "",
     priority: 2,
     expiryDate: "",
@@ -40,6 +53,7 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
         title: initialData.productName || initialData.title || "",
         category: initialData.category !== undefined ? initialData.category : 0,
         quantity: initialData.quantity || 1,
+        unit: initialData.unit !== undefined ? initialData.unit : 8,
         description: initialData.description || "",
         priority: initialData.priority !== undefined ? initialData.priority : 2,
         expiryDate: initialData.expiryDate ? initialData.expiryDate.split("T")[0] : "",
@@ -51,6 +65,7 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
         title: "", 
         category: 0, 
         quantity: 1, 
+        unit: 8,
         description: "", 
         priority: 2, 
         expiryDate: "", 
@@ -80,7 +95,7 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
     const { name, value } = e.target;
     setForm((prev) => ({ 
       ...prev, 
-      [name]: name === "category" || name === "priority" || name === "quantity" 
+      [name]: name === "category" || name === "priority" || name === "quantity" || name === "unit"
         ? (value === "" ? "" : Number(value)) 
         : value 
     }));
@@ -107,6 +122,12 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
           </button>
         </div>
 
+        {generalError && (
+          <div className={styles.inputError} style={{ padding: "0 24px", marginBottom: "16px", fontSize: "15px", color: "#dc3545" }}>
+            <i className="fa-solid fa-triangle-exclamation" style={{ marginLeft: "8px" }}></i> {generalError}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit}>
           {/* Image Upload */}
           <div
@@ -120,7 +141,7 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
               <img src={form.imagePreview} alt="معاينة الصورة" />
             ) : (
               <>
-                <span className={styles.uploadIcon}>🖼</span>
+                <span className={styles.uploadIcon}><i className="fa-regular fa-image"></i></span>
                 <p className={styles.uploadText}>أضف صورة للمنشور</p>
               </>
             )}
@@ -179,7 +200,8 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
                 id="post-quantity"
                 className={styles.formInput}
                 type="number"
-                min="1"
+                step="0.01"
+                min="0.01"
                 name="quantity"
                 value={form.quantity}
                 onChange={handleChange}
@@ -190,6 +212,27 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
               )}
             </div>
 
+            <div className={styles.formGroup} style={{ marginBottom: 0 }}>
+              <label className={styles.formLabel} htmlFor="post-unit">الوحدة</label>
+              <select
+                id="post-unit"
+                className={styles.formInput}
+                name="unit"
+                value={form.unit}
+                onChange={handleChange}
+                required
+              >
+                {UNIT_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              {fieldErrors.Unit && (
+                <p className={styles.inputError}>{fieldErrors.Unit[0]}</p>
+              )}
+            </div>
+          </div>
+
+          <div className={styles.formRow}>
             {isCharity ? (
               <div className={styles.formGroup} style={{ marginBottom: 0 }}>
                 <label className={styles.formLabel} htmlFor="post-priority">الأولوية</label>
@@ -226,6 +269,7 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
                 )}
               </div>
             )}
+            <div className={styles.formGroup} style={{ marginBottom: 0 }}></div>
           </div>
 
           {/* Description */}

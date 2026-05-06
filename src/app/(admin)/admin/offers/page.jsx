@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/admin/pending.module.css"; // Reuse pending styles for cards
 import offersService from "@/services/offersService";
 import apiClient from "@/services/apiClient";
-import { mapCategory } from "@/utils/enumMapper";
+import { mapCategory, mapUnit } from "@/utils/enumMapper";
 import { useAlert } from "@/context/AlertContext";
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -42,7 +42,7 @@ function OfferCard({ offer, onApprove, onReject }) {
         
         <div className={styles.orgDetail}>
           <span className={styles.detailLabel}>الكمية:</span>
-          <span className={styles.detailValue}>{offer.quantity} وحدة</span>
+          <span className={styles.detailValue}>{offer.quantity} {mapUnit(offer.unit)}</span>
         </div>
         <div className={styles.orgDetail}>
           <span className={styles.detailLabel}>التصنيف:</span>

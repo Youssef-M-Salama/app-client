@@ -31,7 +31,7 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
 
         <h2 className={styles.modalTitle}>تأكيد الطلب</h2>
         
-        {error && <div style={{marginBottom: "15px", color: '#d32f2f', textAlign: 'center', fontWeight: '500', padding: '10px', background: '#ffebee', borderRadius: '4px'}}>{error}</div>}
+        {error && <div style={{marginBottom: "15px", color: '#d32f2f', textAlign: 'center', fontWeight: '500', padding: '10px', background: '#ffebee', borderRadius: '4px'}}><i className="fa-solid fa-triangle-exclamation" style={{ marginLeft: "8px" }}></i> {error}</div>}
 
         <p style={{ textAlign: "center", marginBottom: "24px", color: "#555", fontSize: "16px", lineHeight: "1.5" }}>
           هل أنت متأكد من رغبتك في التقديم على هذا الطلب المقدم من <strong>{orgName}</strong>؟

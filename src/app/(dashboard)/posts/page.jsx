@@ -9,11 +9,13 @@ import { useAuth } from "@/context/AuthContext";
 import charityNeedsService from "@/services/charityNeedsService";
 import offersService from "@/services/offersService";
 import { mapCategory } from "@/utils/enumMapper";
+import { useAlert } from "@/context/AlertContext";
 
 const CATEGORIES = ["جميع المنشورات", "طعام", "ملابس", "طبي", "تعليمي", "أخرى"];
 
 export default function PostsPage() {
   const { role, user } = useAuth();
+  const { showAlert, showToast } = useAlert();
   
   const [posts, setPosts] = useState([]);
   const [filter, setFilter] = useState("جميع المنشورات");
@@ -79,12 +81,13 @@ export default function PostsPage() {
       fd.append("Category", form.category);
       fd.append("ProductName", form.title);
       fd.append("Quantity", form.quantity || 1);
+      fd.append("Unit", form.unit !== undefined ? form.unit : 8);
       fd.append("Description", form.description);
       if (form.phone) fd.append("Phone", form.phone); // Not in API strictly but okay
       if (form.image) fd.append("ProductImage", form.image);
 
       if (role === "Charity") {
-        fd.append("Priority", form.priority || 2);
+        fd.append("Priority", form.priority !== undefined ? form.priority : 2);
         await charityNeedsService.createCharityNeed(fd);
       } else if (role === "DonorOrganization") {
         fd.append("ExpiryDate", form.expiryDate ? new Date(form.expiryDate).toISOString() : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString());
@@ -107,11 +110,12 @@ export default function PostsPage() {
       fd.append("Category", form.category);
       fd.append("ProductName", form.title);
       fd.append("Quantity", form.quantity || 1);
+      fd.append("Unit", form.unit !== undefined ? form.unit : 8);
       fd.append("Description", form.description);
       if (form.image) fd.append("ProductImage", form.image);
 
       if (role === "Charity") {
-        fd.append("Priority", form.priority || 2);
+        fd.append("Priority", form.priority !== undefined ? form.priority : 2);
         await charityNeedsService.updateCharityNeed(editPost.id || editPost.charityNeedId || editPost.offerId, fd);
       } else if (role === "DonorOrganization") {
         fd.append("ExpiryDate", form.expiryDate ? new Date(form.expiryDate).toISOString() : editPost.expiryDate);
@@ -136,8 +140,9 @@ export default function PostsPage() {
       }
       setDeletePost(null);
       fetchPosts();
+      showToast("تم حذف المنشور بنجاح", "success");
     } catch (err) {
-      alert(err.appMessage || "لا يمكن حذف المنشور. يجب أن يكون قيد المراجعة.");
+      showAlert("فشل الإجراء", err.appMessage || "لا يمكن حذف المنشور. يجب أن يكون قيد المراجعة.", "error");
       setDeletePost(null);
     }
   }
@@ -150,8 +155,9 @@ export default function PostsPage() {
         await offersService.fulfillOffer(postId);
       }
       fetchPosts();
+      showToast("تم إكمال المنشور بنجاح", "success");
     } catch (err) {
-      alert(err.appMessage || "حدث خطأ أثناء إكمال المنشور.");
+      showAlert("خطأ", err.appMessage || "حدث خطأ أثناء إكمال المنشور.", "error");
     }
   }
 
@@ -183,7 +189,7 @@ export default function PostsPage() {
             className={styles.addPostBtn}
             onClick={() => {
               if (user?.isVerified === false) {
-                alert("يجب تفعيل حسابك من قبل الإدارة لتتمكن من النشر.");
+                showAlert("غير مسموح", "يجب تفعيل حسابك من قبل الإدارة لتتمكن من النشر.", "warning");
                 return;
               }
               setAddModalOpen(true);
@@ -233,6 +239,7 @@ export default function PostsPage() {
           initialData={null}
           role={role}
           fieldErrors={fieldErrors}
+          generalError={actionError}
         />
       )}
 
@@ -249,6 +256,7 @@ export default function PostsPage() {
           initialData={editPost}
           role={role}
           fieldErrors={fieldErrors}
+          generalError={actionError}
         />
       )}
 

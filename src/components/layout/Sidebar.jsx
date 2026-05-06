@@ -94,7 +94,7 @@ export default function Sidebar({ onClose }) {
 
         <li className={pathname === "/sent-requests" ? sidebarStyle.active : ""}>
           <Link href="/sent-requests" onClick={onClose}>
-            <img src="/icons/requests-icon.png" alt="sent-needs" />
+            <i className="fa-regular fa-paper-plane" style={{ fontSize: '18px', width: '18px', textAlign: 'center' }}></i>
             <span>طلباتي المرسلة</span>
             {stats.sent > 0 && (
               <span className={sidebarStyle.badge}>{stats.sent}</span>

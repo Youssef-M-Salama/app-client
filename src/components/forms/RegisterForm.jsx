@@ -217,7 +217,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
     return (
       <div className={authStyles.formContent}>
         <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-          <div style={{ fontSize: '3.5rem', marginBottom: '1.25rem' }}>✉️</div>
+          <div style={{ fontSize: '3.5rem', marginBottom: '1.25rem' }}><i className="fa-solid fa-envelope" style={{ color: "#171123" }}></i></div>
           <h2 className={authStyles.formTitle} style={{ fontSize: '28px' }}>
             تحقق من بريدك الإلكتروني
           </h2>
@@ -275,7 +275,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
             fontWeight: 600,
           }}
         >
-          ⚠️ {generalError}
+          <i className="fa-solid fa-triangle-exclamation" style={{ marginLeft: "8px" }}></i> {generalError}
         </div>
       )}
 

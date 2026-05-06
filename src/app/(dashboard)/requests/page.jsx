@@ -162,7 +162,7 @@ export default function RequestsPage() {
           <div className={globalPostsStyles.emptyState}>جاري تحميل الطلبات...</div>
         ) : filteredRequests.length === 0 ? (
           <div className={globalPostsStyles.emptyState}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>📩</div>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}><i className="fa-solid fa-envelope-open-text" style={{ color: "#171123" }}></i></div>
             لا توجد طلبات واردة حالياً تطابق الفلتر.
           </div>
         ) : (

@@ -17,7 +17,7 @@ const getImageUrl = (path) => {
 };
 
 // ── Row Action Dropdown ──────────────────────────────────────────
-function ActionDropdown({ user, onView, onToggle, onVerify, onDelete }) {
+function ActionDropdown({ user, onView, onToggle, onVerify }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -52,7 +52,7 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onDelete }) {
               className={styles.dropdownItem}
               onClick={() => { onView(user); setOpen(false); }}
             >
-              عرض التفاصيل 📄
+              <i className="fa-solid fa-file-lines" style={{ marginLeft: '8px' }}></i> عرض التفاصيل
             </button>
           )}
           {!isVerified && (
@@ -60,22 +60,14 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onDelete }) {
               className={styles.dropdownItem}
               onClick={() => { onVerify(userId); setOpen(false); }}
             >
-              توثيق الحساب ✅
+              <i className="fa-solid fa-check" style={{ marginLeft: '8px' }}></i> توثيق الحساب
             </button>
           )}
           <button
             className={styles.dropdownItem}
             onClick={() => { onToggle(userId, isActive); setOpen(false); }}
           >
-            {isActive ? "إيقاف الحساب 🚫" : "تفعيل الحساب 🟢"}
-          </button>
-          <button
-            className={`${styles.dropdownItem} ${styles.danger}`}
-            onClick={() => { onDelete(userId); setOpen(false); }}
-            disabled
-            title="الحذف غير متوفر حالياً"
-          >
-            حذف المستخدم 🗑
+            {isActive ? <><i className="fa-solid fa-ban" style={{ marginLeft: '8px' }}></i> إيقاف الحساب</> : <><i className="fa-solid fa-circle-check" style={{ marginLeft: '8px' }}></i> تفعيل الحساب</>}
           </button>
         </div>
       )}
@@ -328,11 +320,6 @@ export default function UsersPage() {
     );
   }
 
-  async function handleDelete(id) {
-    // API doesn't support delete user right now, so this is disabled in UI
-    console.log("Delete user", id);
-  }
-
   function handleView(user) {
     setViewingUser(user);
   }
@@ -498,7 +485,6 @@ export default function UsersPage() {
                           onView={handleView}
                           onToggle={handleToggle}
                           onVerify={handleVerify}
-                          onDelete={handleDelete}
                         />
                       </td>
                     </tr>

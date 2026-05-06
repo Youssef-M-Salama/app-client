@@ -48,3 +48,18 @@ export const mapApplicationStatus = (statusInt) => {
   };
   return map[statusInt] || "غير معروف";
 };
+
+export const mapUnit = (unitInt) => {
+  const map = {
+    0: "طن",
+    1: "كجم",
+    2: "جرام",
+    3: "لتر",
+    4: "مللتر",
+    5: "عبوة",
+    6: "صندوق",
+    7: "علبة",
+    8: "قطعة"
+  };
+  return map[unitInt] || "غير معروف";
+};

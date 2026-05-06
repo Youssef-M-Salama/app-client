@@ -89,7 +89,7 @@ export default function SentRequestsPage() {
           <div className={styles.emptyState}>جاري تحميل الطلبات...</div>
         ) : filteredRequests.length === 0 ? (
           <div className={styles.emptyState}>
-             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📩</div>
+             <div style={{ fontSize: '48px', marginBottom: '16px' }}><i className="fa-solid fa-envelope-open-text" style={{ color: "#171123" }}></i></div>
              لا توجد طلبات مرسلة حالياً تطابق الفلتر.
           </div>
         ) : (

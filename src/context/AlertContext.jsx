@@ -52,7 +52,7 @@ export const AlertProvider = ({ children }) => {
         {toasts.map((t) => (
           <div key={t.id} className={`${styles.toast} ${styles[`toast${t.type.charAt(0).toUpperCase() + t.type.slice(1)}`]}`}>
             <span className={styles.toastIcon}>
-              {t.type === 'success' ? '✅' : t.type === 'error' ? '❌' : 'ℹ️'}
+              {t.type === 'success' ? <i className="fa-solid fa-check-circle"></i> : t.type === 'error' ? <i className="fa-solid fa-circle-xmark"></i> : <i className="fa-solid fa-circle-info"></i>}
             </span>
             <span className={styles.toastMessage}>{t.message}</span>
           </div>
@@ -64,7 +64,7 @@ export const AlertProvider = ({ children }) => {
         <div className={styles.overlay} onClick={closeAlert}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={`${styles.iconWrapper} ${styles[`icon${alert.type.charAt(0).toUpperCase() + alert.type.slice(1)}`]}`}>
-              {alert.type === 'success' ? '✔' : '✖'}
+              {alert.type === 'success' ? <i className="fa-solid fa-check"></i> : <i className="fa-solid fa-xmark"></i>}
             </div>
             <h3 className={styles.title}>{alert.title}</h3>
             <p className={styles.message}>{alert.message}</p>
@@ -82,7 +82,7 @@ export const AlertProvider = ({ children }) => {
         <div className={styles.overlay} onClick={closeConfirm}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={`${styles.iconWrapper} ${styles.iconConfirm}`}>
-              ❓
+              <i className="fa-solid fa-circle-question" style={{ fontSize: "3rem" }}></i>
             </div>
             <h3 className={styles.title}>{confirm.title}</h3>
             <p className={styles.message}>{confirm.message}</p>

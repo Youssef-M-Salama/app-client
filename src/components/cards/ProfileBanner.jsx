@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import apiClient from '@/services/apiClient';
 import styles from '@/styles/profile/ProfileBanner.module.css';
+import { useAlert } from "@/context/AlertContext";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 const getImageUrl = (path) => {
@@ -21,6 +22,7 @@ const ALLOWED_EXTS = ['.jpg', '.jpeg', '.png', '.webp'];
 
 export default function ProfileBanner({ imageUrl, isUploading, onFileSelect }) {
   const fileRef = useRef(null);
+  const { showAlert } = useAlert();
 
   // Local preview URL — set immediately when a file is chosen
   // so the user sees the new image without waiting for the API or a page reload
@@ -48,13 +50,13 @@ export default function ProfileBanner({ imageUrl, isUploading, onFileSelect }) {
     // ── Validate extension ────────────────────────────────────────
     const ext = '.' + file.name.split('.').pop().toLowerCase();
     if (!ALLOWED_EXTS.includes(ext)) {
-      alert(`صيغة الملف غير مدعومة. الصيغ المسموح بها: ${ALLOWED_EXTS.join(', ')}`);
+      showAlert("صيغة غير مدعومة", `صيغة الملف غير مدعومة. الصيغ المسموح بها: ${ALLOWED_EXTS.join(', ')}`, "error");
       return;
     }
 
     // ── Validate size (5 MB max) ──────────────────────────────────
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-      alert(`حجم الصورة يتجاوز الحد المسموح به (${MAX_SIZE_MB} ميجابايت).`);
+      showAlert("حجم كبير جداً", `حجم الصورة يتجاوز الحد المسموح به (${MAX_SIZE_MB} ميجابايت).`, "error");
       return;
     }
 

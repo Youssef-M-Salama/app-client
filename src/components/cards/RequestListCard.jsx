@@ -1,7 +1,9 @@
 "use client";
 
 import styles from "@/styles/dashboard/posts.module.css";
-import { mapApplicationStatus } from "@/utils/enumMapper";
+import { mapApplicationStatus, mapUnit } from "@/utils/enumMapper";
+
+const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
 
 export default function RequestListCard({ request, onAccept, onReject, role, isSent = false }) {
   const id = request.id || request.needApplicationId || request.offerApplicationId;
@@ -13,7 +15,7 @@ export default function RequestListCard({ request, onAccept, onReject, role, isS
   const phone = request.contactPhone || request.phone;
   const email = request.email || request.contactEmail;
   const location = request.city && request.governorate ? `${request.governorate} - ${request.city}` : (request.city || request.governorate || "غير متوفر");
-  const logo = request.productImage || "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=600&q=80";
+  const logo = request.productImage || FALLBACK_IMAGE;
   
   const productName = request.productName;
   
@@ -43,6 +45,9 @@ export default function RequestListCard({ request, onAccept, onReject, role, isS
         <p className={styles.cardCategory}>{typeLabel} {orgName}</p>
 
         <div className={styles.cardDetails}>
+          {request.quantity !== undefined && (
+            <span>الكمية: {request.quantity} {mapUnit(request.unit)}</span>
+          )}
           <span>الموقع: {location}</span>
           <span>البريد: {email}</span>
           <span>رقم التواصل: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone}</span></span>
