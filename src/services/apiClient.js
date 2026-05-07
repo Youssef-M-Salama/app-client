@@ -30,23 +30,23 @@ apiClient.interceptors.response.use(
   },
   async (error) => {
     const originalRequest = error.config;
-    
+
     // Check if error is 401 (Unauthorized) and request hasn't been retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         const refreshToken = Cookies.get('refreshToken');
-        
+
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
-        
+
         // Make request to get new token (using base axios to avoid interceptor loop)
         const res = await axios.post(`${apiClient.defaults.baseURL}/api/v1/auth/refresh`, {
           refreshToken
         });
-        
+
         // If successful, save new tokens.
         // The refresh endpoint also wraps its response in the standard envelope:
         // { success, message, data: { token, refreshToken, ... } }
@@ -68,25 +68,25 @@ apiClient.interceptors.response.use(
         // Refresh failed, clear tokens and redirect to login
         Cookies.remove('accessToken');
         Cookies.remove('refreshToken');
-        
+
         // Only redirect if we're in the browser environment
         if (typeof window !== 'undefined') {
           // Adjust this route based on your app's structure (e.g., /auth/login)
-          window.location.href = '/login'; 
+          window.location.href = '/login';
         }
-        
+
         return Promise.reject(refreshError);
       }
     }
-    
+
     // Format error for the UI components
     if (error.response) {
       const status = error.response.status;
       const data = error.response.data;
-      
+
       let appMessage = data?.message || 'حدث خطأ غير متوقع.';
       let validationErrors = null;
-      
+
       if (status === 400) {
         // The backend wraps validation errors inside the envelope:
         // { error: { details: { errors: { FieldName: ["message"] } } } }
@@ -115,7 +115,7 @@ apiClient.interceptors.response.use(
       } else if (status >= 500) {
         appMessage = 'حدث خطأ في الخادم. يرجى المحاولة مرة أخرى لاحقاً.';
       }
-      
+
       // Attach parsed info to the error object so UI components can easily use it
       error.appMessage = appMessage;
       error.validationErrors = validationErrors;
@@ -127,7 +127,7 @@ apiClient.interceptors.response.use(
       // Something happened in setting up the request
       error.appMessage = error.message;
     }
-    
+
     return Promise.reject(error);
   }
 );

@@ -27,12 +27,6 @@ export default function LoginPage() {
         <div className={authStyles.imageLogo}>
           <img src="/logo-white.png" alt="وافر" />
         </div>
-
-        {/* "We Care" text overlay */}
-        <div className={authStyles.imageOverlayText}>
-          <span className={authStyles.overlayFirstWord}>We</span>
-          <span className={authStyles.overlaySecondWord}>Care</span>
-        </div>
       </div>
     </>
   )

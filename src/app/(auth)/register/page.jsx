@@ -30,7 +30,9 @@ export default function RegisterPage() {
 
         {/* وافر branding in the center of the image */}
         <div className={authStyles.registerBrand}>
-          <div className={authStyles.registerBrandTitle}>وافـــر</div>
+          <div className={authStyles.registerBrandLogo}>
+            <img src="/logo-white.png" alt="وافر" />
+          </div>
           <div className={authStyles.registerBrandSubtitle}>ابدأ رحلتك هنـا</div>
         </div>
 

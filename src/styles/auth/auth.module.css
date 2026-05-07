@@ -17,6 +17,8 @@
 .card {
     width: 100%;
     max-width: 1100px;
+    height: 680px;
+    max-height: calc(100vh - 48px);
     min-height: 520px;
     background-color: #ffffff;
     border-radius: 28px;
@@ -155,6 +157,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
+    flex-direction: row-reverse;
     gap: 12px;
     padding: 10px 16px;
     border-radius: 12px;
@@ -208,19 +211,23 @@
     color: #ffffff;
 }
 
-.registerBrandTitle {
-    font-family: 'Almarai', sans-serif;
-    font-size: clamp(48px, 6vw, 80px);
-    font-weight: 800;
-    letter-spacing: -1px;
-    line-height: 1;
+.registerBrandLogo {
+    display: flex;
+    justify-content: center;
     margin-bottom: 12px;
+}
+
+.registerBrandLogo img {
+    width: clamp(120px, 12vw, 180px);
+    height: auto;
+    filter: brightness(0) invert(1);
 }
 
 .registerBrandSubtitle {
     font-size: clamp(14px, 1.5vw, 18px);
     font-weight: 400;
     opacity: 0.9;
+    padding-bottom: 30px;
 }
 
 /* ========== FORM CONTENT PANEL ========== */
@@ -239,6 +246,7 @@
 /* ========== FORM HEADING ========== */
 .formHeading {
     margin-bottom: 28px;
+    text-align: center;
 }
 
 .formTitle {
@@ -249,12 +257,14 @@
     line-height: 1.1;
     margin-bottom: 6px;
     letter-spacing: -0.5px;
+    text-align: center;
 }
 
 .formSubtitle {
     font-size: 14px;
     color: #888;
     font-weight: 400;
+    text-align: center;
 }
 
 /* ========== SOCIAL BUTTONS (Register) ========== */

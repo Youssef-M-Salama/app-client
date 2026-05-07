@@ -101,7 +101,7 @@ export default function LoginForm({ authStyles }) {
             </button>
           </div>
           <span className={authStyles.fieldHint}>
-            يجب أن يكون الباسورد من 3 أحرف على الأقل
+            {/* يجب أن يكون الباسورد من 3 أحرف على الأقل */}
           </span>
         </div>
 
@@ -116,10 +116,10 @@ export default function LoginForm({ authStyles }) {
         </button>
       </form>
 
-      {/* Forgot password */}
+      {/* Sign up link */}
       <p className={authStyles.forgotLink}>
-        نسيت الباسورد؟{' '}
-        <Link href="/forgot-password">إعادة تعيين</Link>
+        ليس لديك حساب؟{' '}
+        <Link href="/register">إنشاء حساب</Link>
       </p>
     </div>
   );
