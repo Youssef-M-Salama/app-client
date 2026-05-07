@@ -51,3 +51,6 @@ apiDocs.json
 # IDEs
 .vscode/
 .idea/
+
+# documentation
+docs/
