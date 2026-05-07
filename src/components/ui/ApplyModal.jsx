@@ -19,6 +19,7 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
   const priorityText = itemData.priority !== undefined ? mapPriority(itemData.priority) : "غير محدد";
   const location = itemData.city && itemData.governorate ? `${itemData.governorate} - ${itemData.city}` : (itemData.city || itemData.governorate || "غير متوفر");
   const phone = itemData.phone || itemData.contactPhone || "غير متوفر";
+  const whatsapp = itemData.whatsapp;
   const email = itemData.email || itemData.contactEmail || "غير متوفر";
 
   return (
@@ -57,6 +58,22 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
               <span style={{ color: "#777", fontWeight: "500" }}>رقم التواصل:</span>
               <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", direction: "ltr" }}>{phone}</span>
             </div>
+            {whatsapp && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "#777", fontWeight: "500" }}>
+                  <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', marginLeft: '4px' }}></i>
+                  واتساب:
+                </span>
+                <a
+                  href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ fontWeight: '600', color: '#25D366', fontSize: '15px', direction: 'ltr', textDecoration: 'none' }}
+                >
+                  {whatsapp}
+                </a>
+              </div>
+            )}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ color: "#777", fontWeight: "500" }}>البريد الإلكتروني:</span>
               <span style={{ fontWeight: "600", color: "#333", fontSize: "15px" }}>{email}</span>

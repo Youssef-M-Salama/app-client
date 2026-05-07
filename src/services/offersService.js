@@ -58,12 +58,12 @@ export const offersService = {
   },
 
   approveOffer: async (offerId) => {
-    const response = await apiClient.post('/api/v1/admin/offers/approve', { offerId });
+    const response = await apiClient.patch('/api/v1/admin/offers/approve', { offerId });
     return response.data;
   },
 
   rejectOffer: async (offerId) => {
-    const response = await apiClient.post('/api/v1/admin/offers/reject', { offerId });
+    const response = await apiClient.patch('/api/v1/admin/offers/reject', { offerId });
     return response.data;
   }
 };

@@ -105,7 +105,14 @@ export default function RequestsPage() {
       setModalOpen(false);
       fetchRequests(); 
     } catch (err) {
-      setActionError(err.appMessage || "حدث خطأ أثناء تنفيذ العملية.");
+      // 400: parent offer/need already fulfilled — backend returns Arabic message directly
+      // 422: application not in Pending status
+      // Both cases: err.appMessage is already set correctly by apiClient interceptor
+      const message =
+        err.response?.data?.message ||
+        err.appMessage ||
+        "حدث خطأ أثناء تنفيذ العملية.";
+      setActionError(message);
     } finally {
       setIsSubmitting(false);
     }

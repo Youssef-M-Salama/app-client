@@ -11,10 +11,11 @@ export default function BrowseCard({ item, onApply }) {
   const productName = item.productName;
   const description = item.description || "";
   const phone = item.phone || item.contactPhone || "غير متوفر";
+  const whatsapp = item.whatsapp;
   const email = item.email || item.contactEmail || "غير متوفر";
   const imageUrl = item.productImage || FALLBACK_IMAGE;
   const location = item.city && item.governorate ? `${item.governorate} - ${item.city}` : (item.city || item.governorate || "غير متوفر");
-  
+
   const categoryStr = item.category !== undefined ? mapCategory(item.category) : "";
 
   return (
@@ -27,7 +28,7 @@ export default function BrowseCard({ item, onApply }) {
       <div className={styles.cardBody}>
         <h3 className={styles.cardTitle}>{productName}</h3>
         <p className={styles.cardCategory}>{orgName}</p>
-        
+
         <div className={styles.cardDetails}>
           {item.priority !== undefined && (
             <span className={styles[`priority${item.priority}`]}>
@@ -38,12 +39,26 @@ export default function BrowseCard({ item, onApply }) {
           <span>الموقع: {location}</span>
           <span>البريد: {email}</span>
           <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone}</span></span>
+          {whatsapp && (
+            <span>
+              <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', marginLeft: '4px' }}></i>
+              واتساب:{" "}
+              <a
+                href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ direction: 'ltr', display: 'inline-block', color: '#25D366', fontWeight: '600', textDecoration: 'none' }}
+              >
+                {whatsapp}
+              </a>
+            </span>
+          )}
         </div>
 
         <p className={styles.cardDesc}>{description}</p>
-        
+
         <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
-          <button 
+          <button
             className={styles.publishBtn}
             onClick={() => onApply(item)}
           >

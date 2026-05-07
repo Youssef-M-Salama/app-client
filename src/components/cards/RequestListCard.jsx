@@ -7,18 +7,21 @@ const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/
 
 export default function RequestListCard({ request, onAccept, onReject, role, isSent = false }) {
   const id = request.id || request.needApplicationId || request.offerApplicationId;
-  const orgName = isSent 
+  const orgName = isSent
     ? (request.organizationName || request.charityName || request.donorOrganizationName)
     : (request.applicantName || request.charityName || request.donorOrganizationName || request.organizationName);
-  
+
   const date = request.createdAt ? new Date(request.createdAt).toLocaleDateString("ar-EG") : "";
   const phone = request.contactPhone || request.phone;
+  const whatsapp = request.whatsapp;
   const email = request.email || request.contactEmail;
   const location = request.city && request.governorate ? `${request.governorate} - ${request.city}` : (request.city || request.governorate || "غير متوفر");
   const logo = request.productImage || FALLBACK_IMAGE;
-  
+
   const productName = request.productName;
-  
+  // Parent need/offer description (new API fields)
+  const parentDescription = request.needDescription || request.offerDescription;
+
   let typeLabel = "";
   if (isSent) {
     typeLabel = role === "Charity" ? "طلب على عرض:" : "طلب على احتياج:";
@@ -51,21 +54,49 @@ export default function RequestListCard({ request, onAccept, onReject, role, isS
           <span>الموقع: {location}</span>
           <span>البريد: {email}</span>
           <span>رقم التواصل: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone}</span></span>
+          {whatsapp && (
+            <span>
+              <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', marginLeft: '4px' }}></i>
+              واتساب:{" "}
+              <a
+                href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ direction: 'ltr', display: 'inline-block', color: '#25D366', fontWeight: '600', textDecoration: 'none' }}
+              >
+                {whatsapp}
+              </a>
+            </span>
+          )}
         </div>
 
-        <p className={styles.cardDesc}>{request.description || request.message}</p>
+        {/* Applicant message/description */}
+        {(request.description || request.message) && (
+          <p className={styles.cardDesc}>{request.description || request.message}</p>
+        )}
+
+        {/* Parent need/offer description (new field) */}
+        {parentDescription && (
+          <div style={{ marginTop: '8px', padding: '10px 12px', background: '#f3f0fa', borderRadius: '8px', borderRight: '3px solid #6F2DBD' }}>
+            <span style={{ fontSize: '12px', color: '#6F2DBD', fontWeight: '600', display: 'block', marginBottom: '4px' }}>
+              {request.needDescription ? 'وصف الاحتياج:' : 'وصف العرض:'}
+            </span>
+            <p style={{ margin: 0, fontSize: '13px', color: '#444', lineHeight: '1.6' }}>{parentDescription}</p>
+          </div>
+        )}
+
         <p className={styles.timestamp}>{date ? `تاريخ الطلب: ${date}` : ""}</p>
-        
+
         {!isSent && isPending && (
           <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '10px' }}>
-            <button 
+            <button
               className={styles.publishBtn}
               onClick={() => onAccept(request)}
               style={{ background: '#27ae60', flex: 1, margin: 0 }}
             >
               قبول
             </button>
-            <button 
+            <button
               className={styles.publishBtn}
               onClick={() => onReject(request)}
               style={{ background: '#c0392b', flex: 1, margin: 0 }}

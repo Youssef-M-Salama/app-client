@@ -46,7 +46,7 @@ export const charityNeedsService = {
   },
 
   fulfillCharityNeed: async (id) => {
-    const response = await apiClient.post(`/api/v1/charity/charity-needs/${id}/fulfill`);
+    const response = await apiClient.patch(`/api/v1/charity/charity-needs/${id}/fulfill`);
     return response.data;
   },
 
@@ -58,12 +58,12 @@ export const charityNeedsService = {
   },
 
   approveCharityNeed: async (charityNeedId) => {
-    const response = await apiClient.post('/api/v1/admin/charity-needs/approve', { charityNeedId });
+    const response = await apiClient.patch('/api/v1/admin/charity-needs/approve', { charityNeedId });
     return response.data;
   },
 
   rejectCharityNeed: async (charityNeedId) => {
-    const response = await apiClient.post('/api/v1/admin/charity-needs/reject', { charityNeedId });
+    const response = await apiClient.patch('/api/v1/admin/charity-needs/reject', { charityNeedId });
     return response.data;
   }
 };

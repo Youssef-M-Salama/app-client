@@ -24,10 +24,17 @@ export default function BrowsePage() {
   // Filters
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce: only update debouncedSearch 400ms after user stops typing
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(timer);
+  }, [search]);
 
   useEffect(() => {
     fetchItems();
-  }, [role, categoryFilter, search]);
+  }, [role, categoryFilter, debouncedSearch]);
 
   const fetchItems = async () => {
     if (!role) return;
@@ -38,7 +45,7 @@ export default function BrowsePage() {
       const params = {
         Page: 1,
         PageSize: 50,
-        Search: search || undefined,
+        Search: debouncedSearch || undefined,
         Category: categoryFilter !== "all" ? parseInt(categoryFilter) : undefined
       };
 

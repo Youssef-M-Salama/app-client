@@ -25,12 +25,12 @@ export const applicationsService = {
   },
 
   acceptNeedApplication: async (needApplicationId) => {
-    const response = await apiClient.post(`/api/v1/charity/applications/${needApplicationId}/accept`);
+    const response = await apiClient.patch(`/api/v1/charity/applications/${needApplicationId}/accept`);
     return response.data;
   },
 
   rejectNeedApplication: async (needApplicationId) => {
-    const response = await apiClient.post(`/api/v1/charity/applications/${needApplicationId}/reject`);
+    const response = await apiClient.patch(`/api/v1/charity/applications/${needApplicationId}/reject`);
     return response.data;
   },
 

@@ -56,7 +56,7 @@
             }
         },
         "/api/v1/admin/verifications/verify": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Admin"
                 ],
@@ -104,62 +104,13 @@
                 }
             }
         },
-        "/api/v1/admin/verifications/reject": {
-            "post": {
-                "tags": [
-                    "Admin"
-                ],
-                "summary": "Rejects a user registration, changing their ApplicationStatus to Rejected.",
-                "description": "Field Constraints:\r\n- UserId: Required, valid GUID",
-                "requestBody": {
-                    "description": "Request containing the user ID to reject.",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ActionUserRequestDTO"
-                            }
-                        },
-                        "text/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ActionUserRequestDTO"
-                            }
-                        },
-                        "application/*+json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ActionUserRequestDTO"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "User rejected successfully."
-                    },
-                    "400": {
-                        "description": "Validation error."
-                    },
-                    "401": {
-                        "description": "Unauthorized access."
-                    },
-                    "403": {
-                        "description": "Forbidden access, not an Admin."
-                    },
-                    "404": {
-                        "description": "User not found."
-                    },
-                    "500": {
-                        "description": "Unexpected server error."
-                    }
-                }
-            }
-        },
         "/api/v1/admin/charity-needs/pending": {
             "get": {
                 "tags": [
                     "Admin"
                 ],
                 "summary": "Gets pending charity needs awaiting admin approval.\r\nReturns charity needs with status Pending (0).",
-                "description": "Priority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)\r\n\r\nCategory: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50",
+                "description": "Priority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)\r\n\r\nCategory: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50",
                 "parameters": [
                     {
                         "name": "Page",
@@ -198,7 +149,7 @@
             }
         },
         "/api/v1/admin/charity-needs/approve": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Admin"
                 ],
@@ -250,7 +201,7 @@
             }
         },
         "/api/v1/admin/charity-needs/reject": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Admin"
                 ],
@@ -307,7 +258,7 @@
                     "Admin"
                 ],
                 "summary": "Gets pending offers awaiting admin approval.\r\nReturns offers with status Pending (0).",
-                "description": "Status: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)\r\n\r\nCategory: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50",
+                "description": "Status: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)\r\n\r\nCategory: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50",
                 "parameters": [
                     {
                         "name": "Page",
@@ -346,7 +297,7 @@
             }
         },
         "/api/v1/admin/offers/approve": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Admin"
                 ],
@@ -398,7 +349,7 @@
             }
         },
         "/api/v1/admin/offers/reject": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Admin"
                 ],
@@ -508,7 +459,7 @@
             }
         },
         "/api/v1/admin/users/deactivate": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Admin"
                 ],
@@ -557,7 +508,7 @@
             }
         },
         "/api/v1/admin/users/activate": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Admin"
                 ],
@@ -868,14 +819,15 @@
                     "Charity"
                 ],
                 "summary": "Creates a new charity need for the authenticated charity.\r\nThe need is created with status Pending and must be approved by admin\r\nbefore it becomes visible to donor organizations.\r\nAccepts multipart/form-data to support an optional product image.",
-                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nField Constraints:\r\n- Category: Required, valid ProductCategory enum (0-4)\r\n- ProductName: Required, max 200 characters\r\n- Quantity: Required, minimum 1\r\n- Priority: Required, valid CharityNeedPriority enum (0-3)\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)\r\n\r\nField Constraints:\r\n- Category: Required, valid ProductCategory enum (0-4)\r\n- ProductName: Required, max 200 characters\r\n- Quantity: Required, minimum 0.01\r\n- Unit: Required, valid MeasurementUnit enum (0-8)\r\n- Priority: Required, valid CharityNeedPriority enum (0-3)\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
                             "schema": {
                                 "required": [
                                     "ProductName",
-                                    "Quantity"
+                                    "Quantity",
+                                    "Unit"
                                 ],
                                 "type": "object",
                                 "properties": {
@@ -888,10 +840,13 @@
                                         "type": "string"
                                     },
                                     "Quantity": {
-                                        "maximum": 2147483647,
-                                        "minimum": 1,
-                                        "type": "integer",
-                                        "format": "int32"
+                                        "maximum": 7.922816251426434E+28,
+                                        "minimum": 0.01,
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "Unit": {
+                                        "$ref": "#/components/schemas/MeasurementUnit"
                                     },
                                     "Priority": {
                                         "$ref": "#/components/schemas/CharityNeedPriority"
@@ -915,6 +870,9 @@
                                     "style": "form"
                                 },
                                 "Quantity": {
+                                    "style": "form"
+                                },
+                                "Unit": {
                                     "style": "form"
                                 },
                                 "Priority": {
@@ -1037,7 +995,7 @@
                     "Charity"
                 ],
                 "summary": "Updates a pending charity need owned by the authenticated charity.\r\nOnly fields provided (non-null) are applied.\r\nAccepts multipart/form-data to support an optional replacement image.",
-                "description": "Field Constraints:\r\n- ProductName: Optional, max 200 characters\r\n- Quantity: Optional, minimum 1\r\n- Category: Optional, valid ProductCategory enum\r\n- Priority: Optional, valid CharityNeedPriority enum\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "description": "Field Constraints:\r\n- ProductName: Optional, max 200 characters\r\n- Quantity: Optional, minimum 0.01\r\n- Unit: Optional, valid MeasurementUnit enum (0-8)\r\n- Category: Optional, valid ProductCategory enum\r\n- Priority: Optional, valid CharityNeedPriority enum\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
                 "parameters": [
                     {
                         "name": "charityNeedId",
@@ -1065,10 +1023,13 @@
                                         "type": "string"
                                     },
                                     "Quantity": {
-                                        "maximum": 2147483647,
-                                        "minimum": 1,
-                                        "type": "integer",
-                                        "format": "int32"
+                                        "maximum": 7.922816251426434E+28,
+                                        "minimum": 0.01,
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "Unit": {
+                                        "$ref": "#/components/schemas/MeasurementUnit"
                                     },
                                     "Priority": {
                                         "$ref": "#/components/schemas/CharityNeedPriority"
@@ -1092,6 +1053,9 @@
                                     "style": "form"
                                 },
                                 "Quantity": {
+                                    "style": "form"
+                                },
+                                "Unit": {
                                     "style": "form"
                                 },
                                 "Priority": {
@@ -1165,7 +1129,7 @@
             }
         },
         "/api/v1/charity/charity-needs/{charityNeedId}/fulfill": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Charity"
                 ],
@@ -1243,7 +1207,7 @@
             }
         },
         "/api/v1/charity/applications/{needApplicationId}/accept": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Charity"
                 ],
@@ -1264,6 +1228,9 @@
                     "200": {
                         "description": "Need application accepted."
                     },
+                    "400": {
+                        "description": "The charity need is already fulfilled."
+                    },
                     "403": {
                         "description": "The application does not belong to this charity's need."
                     },
@@ -1280,7 +1247,7 @@
             }
         },
         "/api/v1/charity/applications/{needApplicationId}/reject": {
-            "post": {
+            "patch": {
                 "tags": [
                     "Charity"
                 ],
@@ -1340,6 +1307,9 @@
                     },
                     "201": {
                         "description": "Application submitted successfully."
+                    },
+                    "400": {
+                        "description": "The offer is already fulfilled."
                     },
                     "403": {
                         "description": "Charity account is not verified or active."
@@ -1459,7 +1429,7 @@
                     "Donor Organization"
                 ],
                 "summary": "Creates a new offer for the authenticated donor organization.\r\nThe offer is created with status Pending and must be approved by admin\r\nbefore it becomes visible to charities.\r\nAccepts multipart/form-data to support an optional product image.",
-                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nField Constraints:\r\n- ProductName: Required, max 200 characters\r\n- Quantity: Required, minimum 1\r\n- Category: Required, valid ProductCategory enum\r\n- ExpiryDate: Required, must be a future date\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)\r\n\r\nField Constraints:\r\n- ProductName: Required, max 200 characters\r\n- Quantity: Required, minimum 0.01\r\n- Unit: Required, valid MeasurementUnit enum (0-8)\r\n- Category: Required, valid ProductCategory enum\r\n- ExpiryDate: Required, must be a future date\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
                 "requestBody": {
                     "content": {
                         "multipart/form-data": {
@@ -1467,7 +1437,8 @@
                                 "required": [
                                     "ExpiryDate",
                                     "ProductName",
-                                    "Quantity"
+                                    "Quantity",
+                                    "Unit"
                                 ],
                                 "type": "object",
                                 "properties": {
@@ -1480,10 +1451,13 @@
                                         "type": "string"
                                     },
                                     "Quantity": {
-                                        "maximum": 2147483647,
-                                        "minimum": 1,
-                                        "type": "integer",
-                                        "format": "int32"
+                                        "maximum": 7.922816251426434E+28,
+                                        "minimum": 0.01,
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "Unit": {
+                                        "$ref": "#/components/schemas/MeasurementUnit"
                                     },
                                     "ExpiryDate": {
                                         "type": "string",
@@ -1508,6 +1482,9 @@
                                     "style": "form"
                                 },
                                 "Quantity": {
+                                    "style": "form"
+                                },
+                                "Unit": {
                                     "style": "form"
                                 },
                                 "ExpiryDate": {
@@ -1634,7 +1611,7 @@
                     "Donor Organization"
                 ],
                 "summary": "Updates a pending offer owned by the authenticated donor organization.\r\nOnly fields provided (non-null) are applied.\r\nAccepts multipart/form-data to support an optional replacement image.",
-                "description": "Field Constraints:\r\n- ProductName: Optional, max 200 characters\r\n- Quantity: Optional, minimum 1\r\n- Category: Optional, valid ProductCategory enum\r\n- ExpiryDate: Optional, must be a future date\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
+                "description": "Field Constraints:\r\n- ProductName: Optional, max 200 characters\r\n- Quantity: Optional, minimum 0.01\r\n- Unit: Optional, valid MeasurementUnit enum (0-8)\r\n- Category: Optional, valid ProductCategory enum\r\n- ExpiryDate: Optional, must be a future date\r\n- ProductImage: Optional, allowed formats: .jpg, .jpeg, .png, .webp, max 2MB",
                 "parameters": [
                     {
                         "name": "offerId",
@@ -1662,10 +1639,13 @@
                                         "type": "string"
                                     },
                                     "Quantity": {
-                                        "maximum": 2147483647,
-                                        "minimum": 1,
-                                        "type": "integer",
-                                        "format": "int32"
+                                        "maximum": 7.922816251426434E+28,
+                                        "minimum": 0.01,
+                                        "type": "number",
+                                        "format": "double"
+                                    },
+                                    "Unit": {
+                                        "$ref": "#/components/schemas/MeasurementUnit"
                                     },
                                     "ExpiryDate": {
                                         "type": "string",
@@ -1690,6 +1670,9 @@
                                     "style": "form"
                                 },
                                 "Quantity": {
+                                    "style": "form"
+                                },
+                                "Unit": {
                                     "style": "form"
                                 },
                                 "ExpiryDate": {
@@ -1862,6 +1845,9 @@
                     "200": {
                         "description": "Offer application accepted."
                     },
+                    "400": {
+                        "description": "The offer is already fulfilled."
+                    },
                     "403": {
                         "description": "The application does not belong to this donor organization's offer."
                     },
@@ -1938,6 +1924,9 @@
                     },
                     "201": {
                         "description": "Application submitted successfully."
+                    },
+                    "400": {
+                        "description": "The charity need is already fulfilled."
                     },
                     "403": {
                         "description": "Donor organization account is not verified or active."
@@ -2161,7 +2150,7 @@
                     "Public"
                 ],
                 "summary": "Browse all approved charity requests with optional filters and pagination.\r\nOnly returns charity needs with status Approved (1).",
-                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Category: Optional, valid ProductCategory enum (0-4)\r\n- Priority: Optional, valid CharityNeedPriority enum (0-3)\r\n- City: Optional, filter by city\r\n- Governorate: Optional, filter by governorate\r\n- Search: Optional, search by product name",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Category: Optional, valid ProductCategory enum (0-4)\r\n- Priority: Optional, valid CharityNeedPriority enum (0-3)\r\n- City: Optional, filter by city\r\n- Governorate: Optional, filter by governorate\r\n- Search: Optional, search by product name",
                 "parameters": [
                     {
                         "name": "Category",
@@ -2229,7 +2218,7 @@
                     "Public"
                 ],
                 "summary": "Returns a single approved charity need by its identifier.\r\nOnly returns charity needs with status Approved (1).",
-                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nPriority: 0 (Urgent), 1 (High), 2 (Normal), 3 (Low)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Fulfilled)",
                 "parameters": [
                     {
                         "name": "charityNeedId",
@@ -2261,7 +2250,7 @@
                     "Public"
                 ],
                 "summary": "Browse all approved offers with optional filters and pagination.\r\nOnly returns offers with status Approved (1).",
-                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Category: Optional, valid ProductCategory enum (0-4)\r\n- City: Optional, filter by city\r\n- Governorate: Optional, filter by governorate\r\n- Search: Optional, search by product name",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)\r\n\r\nField Constraints (query):\r\n- Page: Optional, default 1, minimum 1\r\n- PageSize: Optional, default 10, max 50\r\n- Category: Optional, valid ProductCategory enum (0-4)\r\n- City: Optional, filter by city\r\n- Governorate: Optional, filter by governorate\r\n- Search: Optional, search by product name",
                 "parameters": [
                     {
                         "name": "Category",
@@ -2329,7 +2318,7 @@
                     "Public"
                 ],
                 "summary": "Returns a single approved offer by its identifier.\r\nOnly returns offers with status Approved (1).",
-                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)",
+                "description": "Category: 0 (Food), 1 (Clothing), 2 (Medical), 3 (Education), 4 (Other)\r\n\r\nStatus: 0 (Pending), 1 (Approved), 2 (Rejected), 3 (Expired), 4 (Fulfilled)\r\n\r\nUnit: 0 (Ton), 1 (Kg), 2 (Gram), 3 (Liter), 4 (Ml), 5 (Pack), 6 (Box), 7 (Can), 8 (Piece)",
                 "parameters": [
                     {
                         "name": "offerId",
@@ -2360,7 +2349,7 @@
                 "tags": [
                     "Public"
                 ],
-                "summary": "Returns platform-wide statistics for the public landing page.\r\nIncludes total approved charity needs, total approved offers, and user counts.",
+                "summary": "Returns platform-wide statistics for the public landing page.\r\nIncludes total fulfilled donation events, active needs/offers, and organization counts.",
                 "responses": {
                     "200": {
                         "description": "Statistics retrieved successfully."
@@ -2485,6 +2474,21 @@
                 },
                 "additionalProperties": false
             },
+            "MeasurementUnit": {
+                "enum": [
+                    0,
+                    1,
+                    2,
+                    3,
+                    4,
+                    5,
+                    6,
+                    7,
+                    8
+                ],
+                "type": "integer",
+                "format": "int32"
+            },
             "OfferStatus": {
                 "enum": [
                     0,
@@ -2552,8 +2556,8 @@
                     },
                     "phone": {
                         "minLength": 1,
-                        "type": "string",
-                        "format": "tel"
+                        "pattern": "^(01[0125][0-9]{8}|1[0125][0-9]{8})$",
+                        "type": "string"
                     },
                     "description": {
                         "maxLength": 1000,
@@ -2562,6 +2566,7 @@
                         "nullable": true
                     },
                     "whatsapp": {
+                        "pattern": "^(01[0125][0-9]{8}|1[0125][0-9]{8})$",
                         "type": "string",
                         "nullable": true
                     },
@@ -2606,11 +2611,12 @@
                 "type": "object",
                 "properties": {
                     "phone": {
+                        "pattern": "^(01[0125][0-9]{8}|1[0125][0-9]{8})$",
                         "type": "string",
-                        "format": "tel",
                         "nullable": true
                     },
                     "whatsapp": {
+                        "pattern": "^(01[0125][0-9]{8}|1[0125][0-9]{8})$",
                         "type": "string",
                         "nullable": true
                     },

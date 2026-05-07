@@ -12,12 +12,12 @@ export const adminUsersService = {
   },
 
   verifyUser: async (userId) => {
-    const response = await apiClient.post('/api/v1/admin/verifications/verify', { userId });
+    const response = await apiClient.patch('/api/v1/admin/verifications/verify', { userId });
     return response.data;
   },
 
   rejectUser: async (userId) => {
-    const response = await apiClient.post('/api/v1/admin/verifications/reject', { userId });
+    const response = await apiClient.patch('/api/v1/admin/verifications/reject', { userId });
     return response.data;
   },
 
@@ -28,12 +28,12 @@ export const adminUsersService = {
   },
 
   deactivateUser: async (userId) => {
-    const response = await apiClient.post('/api/v1/admin/users/deactivate', { userId });
+    const response = await apiClient.patch('/api/v1/admin/users/deactivate', { userId });
     return response.data;
   },
 
   activateUser: async (userId) => {
-    const response = await apiClient.post('/api/v1/admin/users/activate', { userId });
+    const response = await apiClient.patch('/api/v1/admin/users/activate', { userId });
     return response.data;
   }
 };
