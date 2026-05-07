@@ -116,10 +116,10 @@ export default function LoginForm({ authStyles }) {
         </button>
       </form>
 
-      {/* Forgot password */}
+      {/* Sign up link */}
       <p className={authStyles.forgotLink}>
-        نسيت الباسورد؟{' '}
-        <Link href="/forgot-password">إعادة تعيين</Link>
+        ليس لديك حساب؟{' '}
+        <Link href="/register">إنشاء حساب</Link>
       </p>
     </div>
   );
