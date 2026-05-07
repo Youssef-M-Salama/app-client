@@ -4,13 +4,13 @@ import React, { useState, useCallback } from 'react';
 import Link from 'next/link';
 import authService from '@/services/authService';
 
-// ─── Validation Rules (mirror API constraints exactly) ───────────────────────
+// ─── Validation Rules ─────────────────────────────────────────────────────────
 const RULES = {
   name: {
     required: true,
     min: 3,
     max: 200,
-    label: 'اسم المنظمه',
+    label: 'الاسم الكامل',
   },
   username: {
     required: true,
@@ -24,52 +24,31 @@ const RULES = {
     patternMsg: 'صيغة البريد الإلكتروني غير صحيحة',
     label: 'البريد الإلكتروني',
   },
-  phone: {
-    required: true,
-    pattern: /^(01[0125][0-9]{8}|1[0125][0-9]{8})$/,
-    patternMsg: 'يرجى إدخال رقم هاتف مصري صحيح (مثال: 10xxxxxxxxx)',
-    label: 'رقم الهاتف',
-  },
   password: {
     required: true,
     min: 5,
-    label: 'كلمة المرور',
-  },
-  confirmPassword: {
-    required: true,
-    min: 1,
-    label: 'تأكيد كلمة المرور',
+    label: 'الباسورد',
   },
 };
 
-/** Validates a single field. Returns error string or null. */
-function validateField(name, value, allValues) {
+function validateField(name, value) {
   const rule = RULES[name];
   if (!rule) return null;
-
   const val = typeof value === 'string' ? value.trim() : value;
-
   if (rule.required && !val) return `${rule.label} مطلوب`;
-  if (!val) return null; // optional + empty → no error
-
+  if (!val) return null;
   if (rule.min && val.length < rule.min)
     return `${rule.label} يجب أن يكون ${rule.min} أحرف على الأقل`;
   if (rule.max && val.length > rule.max)
     return `${rule.label} يجب ألا يتجاوز ${rule.max} حرف`;
-  if (rule.pattern && !rule.pattern.test(val))
-    return rule.patternMsg;
-
-  if (name === 'confirmPassword' && val !== allValues.password)
-    return 'كلمة المرور وتأكيدها غير متطابقتين';
-
+  if (rule.pattern && !rule.pattern.test(val)) return rule.patternMsg;
   return null;
 }
 
-/** Validates all fields. Returns { fieldName: "error msg" | null } */
 function validateAll(values) {
   const errors = {};
   Object.keys(RULES).forEach((name) => {
-    errors[name] = validateField(name, values[name] ?? '', values);
+    errors[name] = validateField(name, values[name] ?? '');
   });
   return errors;
 }
@@ -80,39 +59,31 @@ export default function RegisterForm({ authStyles, regStyles }) {
     name: '',
     username: '',
     email: '',
-    phone: '',
     password: '',
-    confirmPassword: '',
     accountType: 0,
   });
 
-  // touched: which fields the user has interacted with (blur or submit attempt)
+  const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState({});
-  // clientErrors: from client-side validation
   const [clientErrors, setClientErrors] = useState({});
-  // serverErrors: field errors returned by the API (400)
   const [serverErrors, setServerErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
   // ── Helpers ──
-  /** Get the visible error for a field (server wins over client) */
   const getError = useCallback(
     (name) => {
       if (!touched[name] && !Object.keys(serverErrors).length) return null;
-      // Server error (PascalCase key lookup)
       const serverKey = Object.keys(serverErrors).find(
         (k) => k.toLowerCase() === name.toLowerCase()
       );
       if (serverKey) return serverErrors[serverKey]?.[0] ?? null;
-      // Client error (only after touched)
       return touched[name] ? clientErrors[name] ?? null : null;
     },
     [touched, clientErrors, serverErrors]
   );
 
-  /** True if field has a value and no error */
   const isValid = useCallback(
     (name) => {
       const val = values[name];
@@ -122,24 +93,27 @@ export default function RegisterForm({ authStyles, regStyles }) {
     [values, getError]
   );
 
+  const inputClass = (name) => {
+    const err = getError(name);
+    const valid = isValid(name);
+    if (err) return authStyles.inputError;
+    if (valid) return authStyles.inputValid;
+    return '';
+  };
+
   // ── Handlers ──
   const handleChange = (e) => {
     const { name, value } = e.target;
     const newValues = { ...values, [name]: value };
     setValues(newValues);
-
-    // Live-validate this field once it has been touched
     if (touched[name]) {
       setClientErrors((prev) => ({
         ...prev,
-        [name]: validateField(name, value, newValues),
+        [name]: validateField(name, value),
       }));
     }
-
-    // Clear server error for this field when user starts editing
-    if (serverErrors[name] || Object.keys(serverErrors).some(
-      (k) => k.toLowerCase() === name.toLowerCase()
-    )) {
+    // clear matching server error
+    if (Object.keys(serverErrors).some((k) => k.toLowerCase() === name.toLowerCase())) {
       const updated = { ...serverErrors };
       Object.keys(updated).forEach((k) => {
         if (k.toLowerCase() === name.toLowerCase()) delete updated[k];
@@ -151,10 +125,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
   const handleBlur = (e) => {
     const { name, value } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
-    setClientErrors((prev) => ({
-      ...prev,
-      [name]: validateField(name, value, values),
-    }));
+    setClientErrors((prev) => ({ ...prev, [name]: validateField(name, value) }));
   };
 
   const handleAccountTypeChange = (val) => {
@@ -166,16 +137,12 @@ export default function RegisterForm({ authStyles, regStyles }) {
     setGeneralError('');
     setServerErrors({});
 
-    // Mark every field as touched to show all errors
     const allTouched = Object.fromEntries(Object.keys(RULES).map((k) => [k, true]));
     setTouched(allTouched);
 
-    // Run full client validation
     const errors = validateAll(values);
     setClientErrors(errors);
-
-    const hasErrors = Object.values(errors).some(Boolean);
-    if (hasErrors) return; // stop — don't hit the API
+    if (Object.values(errors).some(Boolean)) return;
 
     setIsLoading(true);
     try {
@@ -184,16 +151,14 @@ export default function RegisterForm({ authStyles, regStyles }) {
         name: values.name.trim(),
         username: values.username.trim(),
         email: values.email.trim(),
-        phone: values.phone.trim(),
         password: values.password,
-        confirmPassword: values.confirmPassword,
+        // confirmPassword mirrors password so backend validation passes
+        confirmPassword: values.password,
       });
       setSuccess(true);
     } catch (error) {
       if (error.validationErrors) {
-        // Map server field errors back to the form
         setServerErrors(error.validationErrors);
-        // Re-touch all so errors are visible
         setTouched(allTouched);
       } else {
         setGeneralError(error.appMessage || 'حدث خطأ غير متوقع. حاول مجدداً.');
@@ -203,21 +168,14 @@ export default function RegisterForm({ authStyles, regStyles }) {
     }
   };
 
-  // ── Input class helper ──
-  const inputClass = (name) => {
-    const err = getError(name);
-    const valid = isValid(name);
-    if (err) return authStyles.inputError;
-    if (valid) return authStyles.inputValid;
-    return '';
-  };
-
   // ─── Success Screen ────────────────────────────────────────────────────────
   if (success) {
     return (
       <div className={authStyles.formContent}>
         <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-          <div style={{ fontSize: '3.5rem', marginBottom: '1.25rem' }}><i className="fa-solid fa-envelope" style={{ color: "#171123" }}></i></div>
+          <div style={{ fontSize: '3.5rem', marginBottom: '1.25rem' }}>
+            <i className="fa-solid fa-envelope" style={{ color: '#171123' }} />
+          </div>
           <h2 className={authStyles.formTitle} style={{ fontSize: '28px' }}>
             تحقق من بريدك الإلكتروني
           </h2>
@@ -239,10 +197,8 @@ export default function RegisterForm({ authStyles, regStyles }) {
               background: '#171123',
               color: '#fff',
               borderRadius: '12px',
-              textDecoration: 'none',
               fontWeight: 700,
               fontSize: '15px',
-              transition: 'opacity 0.2s',
             }}
           >
             الذهاب لتسجيل الدخول
@@ -255,42 +211,53 @@ export default function RegisterForm({ authStyles, regStyles }) {
   // ─── Register Form ─────────────────────────────────────────────────────────
   return (
     <div className={authStyles.formContent}>
+
+      {/* Heading */}
       <div className={authStyles.formHeading}>
-        <h2 className={authStyles.formTitle}>إنشاء حساب جديد</h2>
+        <h1 className={authStyles.formTitle}>إنشاء حساب جديد</h1>
         <p className={authStyles.formSubtitle}>ابدأ رحلتك الآن</p>
       </div>
 
+      {/* Social buttons */}
+      <div className={authStyles.socialRow}>
+        <button type="button" className={authStyles.socialBtn} id="reg-google">
+          {/* Google SVG icon */}
+          <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+          </svg>
+          Google
+        </button>
+        <button type="button" className={`${authStyles.socialBtn} ${authStyles.socialBtnGithub}`} id="reg-github">
+          <i className="fa-brands fa-github" />
+          Github
+        </button>
+      </div>
+
+      {/* Divider */}
+      <div className={authStyles.divider}>أو</div>
+
       {/* General Error Banner */}
       {generalError && (
-        <div
-          role="alert"
-          style={{
-            background: '#fef2f2',
-            border: '1px solid #fca5a5',
-            color: '#991b1b',
-            borderRadius: '10px',
-            padding: '0.7rem 1rem',
-            marginBottom: '1.25rem',
-            fontSize: '14px',
-            fontWeight: 600,
-          }}
-        >
-          <i className="fa-solid fa-triangle-exclamation" style={{ marginLeft: "8px" }}></i> {generalError}
+        <div role="alert" className={authStyles.errorBanner}>
+          <i className="fa-solid fa-triangle-exclamation" />
+          {generalError}
         </div>
       )}
 
       <form onSubmit={handleSubmit} noValidate>
 
-        {/* ── Row 1: Name + Username ── */}
+        {/* Row: Name + Username */}
         <div className={authStyles.firstLine}>
-          {/* Name */}
           <div className={authStyles.formField}>
             <label htmlFor="reg-name">الاسم الكامل</label>
             <input
               id="reg-name"
               name="name"
               type="text"
-              placeholder="اسم الجمعية أو المؤسسة"
+              placeholder="ولسون فيسك"
               value={values.name}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -302,14 +269,13 @@ export default function RegisterForm({ authStyles, regStyles }) {
             )}
           </div>
 
-          {/* Username */}
           <div className={authStyles.formField}>
             <label htmlFor="reg-username">اسم المستخدم</label>
             <input
               id="reg-username"
               name="username"
               type="text"
-              placeholder="charity_01"
+              placeholder="فيسك_011"
               value={values.username}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -324,14 +290,14 @@ export default function RegisterForm({ authStyles, regStyles }) {
           </div>
         </div>
 
-        {/* ── Email ── */}
+        {/* Email */}
         <div className={authStyles.formField}>
           <label htmlFor="reg-email">البريد الإلكتروني</label>
           <input
             id="reg-email"
             name="email"
             type="email"
-            placeholder="example@gmail.com"
+            placeholder="eg. johnfrans@gmail.com"
             value={values.email}
             onChange={handleChange}
             onBlur={handleBlur}
@@ -345,134 +311,74 @@ export default function RegisterForm({ authStyles, regStyles }) {
           )}
         </div>
 
-        {/* ── Phone ── */}
+        {/* Password */}
         <div className={authStyles.formField}>
-          <label htmlFor="reg-phone">رقم الهاتف</label>
-          <div
-            className={inputClass('phone')}
-            style={{
-              display: 'flex',
-              direction: 'ltr',
-              alignItems: 'center',
-              border: getError('phone') ? '1px solid #ef4444' : '1px solid #e2e8f0',
-              borderRadius: '12px',
-              overflow: 'hidden',
-              background: '#fff',
-            }}
-          >
-            <span
-              style={{
-                padding: '0 16px',
-                background: '#f8fafc',
-                color: '#64748b',
-                borderRight: '1px solid #e2e8f0',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                fontSize: '15px',
-                fontWeight: '600',
-              }}
-            >
-              +20
-            </span>
-            <input
-              id="reg-phone"
-              name="phone"
-              type="tel"
-              placeholder="10xxxxxxxxx"
-              value={values.phone.replace(/^\+20/, '')}
-              onChange={(e) => {
-                handleChange({ target: { name: 'phone', value: e.target.value } });
-              }}
-              onBlur={handleBlur}
-              autoComplete="tel"
-              dir="ltr"
-              style={{
-                border: 'none',
-                flex: 1,
-                padding: '14px 16px',
-                outline: 'none',
-                width: '100%',
-                background: 'transparent',
-              }}
-            />
-          </div>
-          {getError('phone') && (
-            <span className={authStyles.fieldError}>{getError('phone')}</span>
-          )}
-        </div>
-
-        {/* ── Row 2: Password + Confirm ── */}
-        <div className={authStyles.firstLine}>
-          {/* Password */}
-          <div className={authStyles.formField}>
-            <label htmlFor="reg-password">كلمة المرور</label>
+          <label htmlFor="reg-password">الباسورد</label>
+          <div className={authStyles.passwordWrapper}>
             <input
               id="reg-password"
               name="password"
-              type="password"
-              placeholder="5 أحرف على الأقل"
+              type={showPassword ? 'text' : 'password'}
+              placeholder="••••••••••••••"
               value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
               className={inputClass('password')}
               autoComplete="new-password"
             />
-            {getError('password') && (
-              <span className={authStyles.fieldError}>{getError('password')}</span>
-            )}
+            <button
+              type="button"
+              className={authStyles.eyeToggle}
+              onClick={() => setShowPassword((v) => !v)}
+              tabIndex={-1}
+              aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+            >
+              <i className={showPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
+            </button>
           </div>
+          {getError('password') && (
+            <span className={authStyles.fieldError}>{getError('password')}</span>
+          )}
+          {!getError('password') && (
+            <span className={authStyles.fieldHint}>
+              يجب أن يكون الباسورد من 8 أحرف على الأقل
+            </span>
+          )}
+        </div>
 
-          {/* Confirm Password */}
-          <div className={authStyles.formField}>
-            <label htmlFor="reg-confirmPassword">تأكيد كلمة المرور</label>
-            <input
-              id="reg-confirmPassword"
-              name="confirmPassword"
-              type="password"
-              placeholder="أعد كتابة كلمة المرور"
-              value={values.confirmPassword}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={inputClass('confirmPassword')}
-              autoComplete="new-password"
-            />
-            {getError('confirmPassword') && (
-              <span className={authStyles.fieldError}>{getError('confirmPassword')}</span>
-            )}
+        {/* Account Type */}
+        <div className={authStyles.accountTypeSection}>
+          <div style={{ position: 'relative' }}>
+            <span className={authStyles.accountTypeTitle}>التسجيل ك:</span>
+            <div className={authStyles.accountTypeInner}>
+              <label className={authStyles.checkboxLabel}>
+                <input
+                  type="radio"
+                  name="accountType"
+                  value={0}
+                  checked={values.accountType === 0}
+                  onChange={() => handleAccountTypeChange(0)}
+                />
+                <span>جمعية خيرية</span>
+              </label>
+              <label className={authStyles.checkboxLabel}>
+                <input
+                  type="radio"
+                  name="accountType"
+                  value={1}
+                  checked={values.accountType === 1}
+                  onChange={() => handleAccountTypeChange(1)}
+                />
+                <span>مؤسسة إنتاجية (مطاعم، شركات، محلات ملابس ...)</span>
+              </label>
+            </div>
           </div>
         </div>
 
-        {/* ── Account Type ── */}
-        <div className={regStyles.radioSection}>
-          <div className={regStyles.radioTitle}>التسجيل ك:</div>
-          <div className={regStyles.radioLine}>
-            <label className={regStyles.radioLabel}>
-              <input
-                type="radio"
-                name="accountType"
-                value={0}
-                checked={values.accountType === 0}
-                onChange={() => handleAccountTypeChange(0)}
-              />
-              <span>جمعية خيرية</span>
-            </label>
-            <label className={regStyles.radioLabel}>
-              <input
-                type="radio"
-                name="accountType"
-                value={1}
-                checked={values.accountType === 1}
-                onChange={() => handleAccountTypeChange(1)}
-              />
-              <span>مؤسسة مانحة (مطاعم، شركات، محلات ملابس ...)</span>
-            </label>
-          </div>
-        </div>
-
-        {/* ── Submit ── */}
+        {/* Submit */}
         <button
           type="submit"
+          id="reg-submit"
           className={authStyles.submitBtn}
           disabled={isLoading}
         >
@@ -491,7 +397,6 @@ export default function RegisterForm({ authStyles, regStyles }) {
           ) : 'إنشاء حساب'}
         </button>
 
-        {/* CSS for spinner inside button */}
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </form>
 

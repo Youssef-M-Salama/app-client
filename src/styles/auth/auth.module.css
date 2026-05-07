@@ -1,6 +1,6 @@
-/* auth.module.css - Layout + Common Form Styles */
+/* auth.module.css — redesigned to match new Login & Register UI */
 
-/* ========== LAYOUT (existing) ========== */
+/* ========== PAGE WRAPPER ========== */
 .container {
     background-image: url('/bg-img.jpg');
     background-size: cover;
@@ -9,236 +9,409 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 24px 16px;
     box-sizing: border-box;
-    overflow: hidden;
 }
 
+/* ========== MAIN CARD ========== */
 .card {
     width: 100%;
     max-width: 1100px;
-    min-height: 500px;
-    background-color: #FFFFFF;
-    border-radius: 30px;
-    box-shadow: -1px 10px 19px 0 rgba(0, 0, 0, 0.43);
+    min-height: 520px;
+    background-color: #ffffff;
+    border-radius: 28px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28);
     display: flex;
-    flex-direction: column;
+    direction: ltr;
+    /* Force LTR so flex order matches design regardless of global RTL */
     overflow: hidden;
     position: relative;
 }
 
-.topBar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    z-index: 10;
-    padding: 24px 40px 0 40px;
-    box-sizing: border-box;
-}
-
+/* ========== BACK BUTTON — absolute on card ========== */
 .backButton {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    z-index: 20;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #171123;
     border: none;
     cursor: pointer;
-    background: transparent;
-    padding: 16px 24px;
-    order: 2;
-}
-
-.backButton i {
-    font-size: clamp(32px, 8vw, 50px);
-    color: #171123;
-}
-
-.logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px 24px;
-    max-width: 160px;
-    width: auto;
-    height: auto;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    text-decoration: none;
 }
 
-.logoImg {
+.backButton:hover {
+    background-color: #2d1f4a;
+    transform: scale(1.05);
+}
+
+.backButton i {
+    font-size: 18px;
+    color: #ffffff;
+}
+
+/* ========== IMAGE PANEL (shared) ========== */
+.formImage {
+    position: relative;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.formImage img.mainImage {
     width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Dark gradient overlay on image */
+.formImage::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+            rgba(23, 17, 35, 0.25) 0%,
+            rgba(23, 17, 35, 0.55) 100%);
+    pointer-events: none;
+}
+
+/* Logo on the image panel */
+.imageLogo {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 10;
+    width: auto;
     height: auto;
     max-width: 120px;
 }
 
-/* ========== COMMON FORM STYLES (shared by register & login) ========== */
-.formContainer {
-    display: flex;
-    min-height: 100%;
-    flex-wrap: wrap;
+.imageLogo img {
+    width: 100%;
+    height: auto;
+    filter: brightness(0) invert(1);
+    /* force white */
 }
 
-.formImage {
+/* ── LOGIN: image on RIGHT ── */
+.imageRight {
+    width: 55%;
+    border-radius: 0 28px 28px 0;
+}
+
+/* ── REGISTER: image on LEFT ── */
+.imageLeft {
+    width: 50%;
+    border-radius: 28px 0 0 28px;
+}
+
+/* "We Care" / steps text overlay */
+.imageOverlayText {
+    position: absolute;
+    bottom: 10%;
+    left: 8%;
+    z-index: 10;
+    color: #ffffff;
+}
+
+.overlayFirstWord {
+    font-family: var(--font-pirata), cursive;
+    font-weight: 400;
+    font-size: clamp(36px, 4vw, 60px);
+    line-height: 1;
+    display: block;
+}
+
+.overlaySecondWord {
+    font-family: var(--font-pinyon), cursive;
+    font-weight: 400;
+    font-size: clamp(70px, 9vw, 140px);
+    line-height: 0.85;
+    display: block;
+}
+
+/* Register steps panel on image */
+.stepsPanel {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: 85%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.stepItem {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    direction: rtl;
+    transition: background 0.2s ease;
+}
+
+.stepItem:first-child {
+    background: rgba(255, 255, 255, 0.95);
+    color: #171123;
+}
+
+.stepItem:not(:first-child) {
+    background: rgba(23, 17, 35, 0.55);
+    color: #ffffff;
+    backdrop-filter: blur(4px);
+}
+
+.stepNumber {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 16px;
-    position: relative;
-    width: 50%;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
 }
 
-.formImage img {
-    width: 100%;
-    height: 100%;
-    max-width: none;
-    max-height: none;
-    object-fit: cover;
-    z-index: 0;
+.stepItem:first-child .stepNumber {
+    background: #171123;
+    color: #fff;
 }
 
-.imgRegister {
-    /* Image on Left (Register): Large curve on the right-side top and bottom */
-    border-radius: 40px 160px 40px 40px;
+.stepItem:not(:first-child) .stepNumber {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
 }
 
-.imgLogin {
-    /* Image on Right (Login): Large curve on the left-side top and bottom */
-    border-radius: 160px 40px 40px 40px;
-}
-
-.formImage .imageOverlayBox {
-    z-index: 3;
-    left: 290px;
-    top: 100px;
-    width: 160px;
-    height: 160px;
-    object-fit: cover;
+/* Register branding on image */
+.registerBrand {
     position: absolute;
-    border: 5px solid #FFFFFF;
-    border-radius: 24px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.formImage .imageOverlayBoxLogin {
-    left: 100px;
-}
-
-.firstWord {
-    position: absolute;
-    bottom: 35%;
+    top: 50%;
     left: 50%;
-    color: #FFFFFF;
-    line-height: 100%;
-    letter-spacing: 0%;
-    font-family: var(--font-pirata), cursive;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-align: center;
+    color: #ffffff;
+}
+
+.registerBrandTitle {
+    font-family: 'Almarai', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    line-height: 1;
+    margin-bottom: 12px;
+}
+
+.registerBrandSubtitle {
+    font-size: clamp(14px, 1.5vw, 18px);
     font-weight: 400;
-    font-size: clamp(40px, 6vw, 80px);
-    z-index: 2;
+    opacity: 0.9;
 }
 
-.secondWord {
-    position: absolute;
-    bottom: 10%;
-    left: 25%;
-    color: #FFFFFF;
-    line-height: 100%;
-    letter-spacing: 0%;
-    font-family: var(--font-pinyon), cursive;
-    font-weight: 400;
-    font-size: clamp(80px, 12vw, 180px);
-    z-index: 2;
-}
-
-.imageOverlayBox {
-    position: absolute;
-    bottom: 80px;
-    left: -40px;
-    /* Sticks out over the form area */
-    width: 220px;
-    height: 200px;
-    border: 3px solid #1E88E5;
-    /* Bright blue color */
-    z-index: 1;
-    border-radius: 0;
-    pointer-events: none;
-}
-
+/* ========== FORM CONTENT PANEL ========== */
 .formContent {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px 44px;
+    min-width: 0;
+    direction: rtl;
     text-align: right;
-    padding: 24px 32px;
-    min-width: 280px;
+    overflow-y: auto;
 }
 
+/* ========== FORM HEADING ========== */
 .formHeading {
-    text-align: center;
-    font-family: Almarai;
-    margin-bottom: 32px;
+    margin-bottom: 28px;
 }
 
 .formTitle {
-    font-size: 40px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    line-height: 100%;
+    font-family: 'Almarai', sans-serif;
+    font-size: clamp(28px, 3.5vw, 42px);
+    font-weight: 800;
     color: #161616;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
 }
 
 .formSubtitle {
-    font-size: 16px;
-    color: #666;
-    margin-bottom: 24px;
-    font-weight: 700;
-    line-height: 100%;
+    font-size: 14px;
+    color: #888;
+    font-weight: 400;
 }
 
+/* ========== SOCIAL BUTTONS (Register) ========== */
+.socialRow {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.socialBtn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    background: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    color: #171123;
+    cursor: pointer;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    font-family: 'Almarai', sans-serif;
+}
+
+.socialBtn:hover {
+    border-color: #bbb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    background: #fafafa;
+}
+
+.socialBtn i {
+    font-size: 16px;
+}
+
+.socialBtnGithub i {
+    color: #171123;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    color: #bbb;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e5e5e5;
+}
+
+/* ========== FORM FIELDS ========== */
 .formField {
     position: relative;
     display: flex;
     flex-direction: column;
     width: 100%;
-    margin-bottom: 20px;
-    margin-top: 8px;
+    margin-bottom: 22px;
 }
 
 .formField label {
     position: absolute;
     top: -10px;
-    right: 24px;
-    background-color: #FFFFFF;
-    padding: 0 10px;
-    font-size: 14px;
+    right: 18px;
+    background-color: #ffffff;
+    padding: 0 8px;
+    font-size: 13px;
     font-weight: 700;
     color: #171123;
     z-index: 2;
-    margin-bottom: 0;
     pointer-events: none;
+    white-space: nowrap;
 }
 
 .formField input {
     width: 100%;
-    padding: 14px 20px;
+    padding: 13px 18px;
     font-size: 14px;
-    border: 1.5px solid #000000;
+    border: 1.5px solid #d4d4d4;
     border-radius: 12px;
-    background-color: transparent;
+    background-color: #ffffff;
     text-align: right;
     direction: rtl;
-    transition: all 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
     box-sizing: border-box;
+    color: #171123;
+    font-family: 'Almarai', sans-serif;
 }
 
-.firstLine {
-    display: flex;
-    column-gap: 24px;
-    flex-wrap: wrap;
-}
-
-.firstLine .formField {
-    flex: 1;
-    min-width: 180px;
-    margin-bottom: 16px;
+.formField input::placeholder {
+    color: #c0c0c0;
+    font-size: 13px;
 }
 
 .formField input:focus {
     outline: none;
     border-color: #171123;
-    box-shadow: 0 0 0 2px rgba(23, 17, 35, 0.1);
+    box-shadow: 0 0 0 3px rgba(23, 17, 35, 0.08);
+}
+
+/* Two-column row */
+.firstLine {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.firstLine .formField {
+    flex: 1;
+    min-width: 160px;
+}
+
+/* ── Password field with eye toggle ── */
+.passwordWrapper {
+    position: relative;
+}
+
+.passwordWrapper input {
+    padding-left: 44px;
+    /* space for the icon on left */
+}
+
+.eyeToggle {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #aaa;
+    font-size: 15px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s ease;
+    z-index: 3;
+}
+
+.eyeToggle:hover {
+    color: #555;
+}
+
+.fieldHint {
+    display: block;
+    margin-top: 5px;
+    font-size: 11.5px;
+    color: #aaa;
+    padding-right: 4px;
 }
 
 /* ── Validation States ── */
@@ -249,7 +422,7 @@
 
 .formField input.inputError:focus {
     border-color: #dc2626;
-    box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
 }
 
 .formField input.inputValid {
@@ -258,7 +431,7 @@
 
 .formField input.inputValid:focus {
     border-color: #16a34a;
-    box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
 }
 
 .fieldError {
@@ -272,64 +445,228 @@
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-/* ── Submit Button States ── */
-.submitBtn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-    transform: none;
+/* ========== ACCOUNT TYPE CHECKBOXES ========== */
+.accountTypeSection {
+    margin: 4px 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.submitBtn:hover:not(:disabled) {
-    opacity: 0.9;
+.accountTypeTitle {
+    font-size: 13px;
+    font-weight: 700;
+    color: #171123;
+    margin-bottom: 10px;
+    position: absolute;
+    top: -10px;
+    right: 18px;
+    background: #fff;
+    padding: 0 8px;
+    z-index: 2;
+    pointer-events: none;
+    white-space: nowrap;
 }
 
+.accountTypeInner {
+    border: 1.5px solid #d4d4d4;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #333;
+    direction: rtl;
+    user-select: none;
+}
+
+.checkboxLabel input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d4d4d4;
+    border-radius: 5px;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    background-color: transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+}
+
+.checkboxLabel input[type="radio"]:checked {
+    background-color: #171123;
+    border-color: #171123;
+}
+
+.checkboxLabel input[type="radio"]:checked::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 11px;
+}
+
+/* ========== SUBMIT BUTTON ========== */
 .submitBtn {
     width: 100%;
-    padding: 16px;
+    padding: 15px;
     background-color: #171123;
-    color: white;
+    color: #ffffff;
     border: none;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
     margin-bottom: 16px;
-    transition: transform 0.1s ease, opacity 0.2s;
-    box-shadow: 0 4px 10px rgba(23, 17, 35, 0.2);
+    margin-top: 4px;
+    transition: transform 0.1s ease, opacity 0.2s ease, background-color 0.2s ease;
+    box-shadow: 0 4px 14px rgba(23, 17, 35, 0.25);
+    font-family: 'Almarai', sans-serif;
 }
 
-.submitBtn:active {
-    transform: scale(0.98);
+.submitBtn:hover:not(:disabled) {
+    background-color: #2a1d47;
+    opacity: 0.95;
 }
 
+.submitBtn:active:not(:disabled) {
+    transform: scale(0.985);
+}
+
+.submitBtn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ========== LINK TEXT ========== */
 .linkText {
     text-align: center;
     font-size: 14px;
     color: #666;
-    margin-top: auto;
+    margin-top: 4px;
 }
 
 .linkText a {
-    color: #4f46e5;
+    color: #171123;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .linkText a:hover {
     text-decoration: underline;
 }
 
-/* Responsive for forms */
+/* ========== FORGOT PASSWORD ========== */
+.forgotLink {
+    text-align: center;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
 
+.forgotLink a {
+    color: #171123;
+    font-weight: 700;
+    text-decoration: none;
+}
 
-@media (max-width: 968px) {
-    .formContainer {
-        gap: 30px;
-        padding: 24px 32px;
+.forgotLink a:hover {
+    text-decoration: underline;
+}
+
+/* ========== PHONE FIELD ========== */
+.phoneWrapper {
+    display: flex;
+    direction: ltr;
+    align-items: center;
+    border: 1.5px solid #d4d4d4;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.phoneWrapper:focus-within {
+    border-color: #171123;
+    box-shadow: 0 0 0 3px rgba(23, 17, 35, 0.08);
+}
+
+.phoneWrapper.phoneError {
+    border-color: #dc2626;
+}
+
+.phonePrefix {
+    padding: 0 14px;
+    background: #f8f8f8;
+    color: #555;
+    border-right: 1.5px solid #d4d4d4;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+    min-height: 46px;
+}
+
+.phoneInput {
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    flex: 1;
+    padding: 13px 14px !important;
+    outline: none;
+    background: transparent;
+}
+
+/* ========== ERROR BANNER ========== */
+.errorBanner {
+    background: #fef2f2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    margin-bottom: 1.25rem;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+    .card {
+        flex-direction: column;
+        min-height: auto;
+        max-width: 520px;
     }
 
     .formImage {
@@ -337,60 +674,33 @@
     }
 
     .formContent {
-        padding: 20px 24px;
-        width: 100%;
+        padding: 48px 32px 36px;
     }
 
     .firstLine {
-        gap: 0;
         flex-direction: column;
+        gap: 0;
+    }
+
+    .socialRow {
+        flex-direction: row;
     }
 }
 
-@media (max-width: 768px) {
-    .formContainer {
-        padding: 16px 20px;
+@media (max-width: 600px) {
+    .container {
+        padding: 16px 12px;
     }
 
     .formContent {
-        padding: 16px;
+        padding: 48px 22px 28px;
     }
 
     .formTitle {
-        font-size: 28px;
-    }
-}
-
-/* Small screen adjustments for topBar */
-@media (max-width: 768px) {
-    .container {
-        padding: 40px 16px;
+        font-size: 26px;
     }
 
-    .card {
-        min-height: auto;
-    }
-
-    .topBar {
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .backButton {
-        padding: 12px 16px;
-    }
-
-    .logo {
-        padding: 12px 16px;
-    }
-}
-
-@media (max-width: 480px) {
-    .backButton i {
-        font-size: 32px;
-    }
-
-    .logo {
-        max-width: 100px;
+    .socialRow {
+        flex-direction: column;
     }
 }

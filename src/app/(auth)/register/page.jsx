@@ -1,19 +1,52 @@
-// app/auth/register/page.jsx
+// app/(auth)/register/page.jsx
 import React from 'react'
+import Link from 'next/link'
 import RegisterForm from '@/components/forms/RegisterForm'
-import authStyles from '@/styles/auth/auth.module.css'   // common styles
-import regStyles from '@/styles/auth/register.module.css' // radio styles
+import authStyles from '@/styles/auth/auth.module.css'
+import regStyles from '@/styles/auth/register.module.css'
+
+const STEPS = [
+  'قم بالتسجيل في حسابك',
+  'تحقق من عنوان بريدك الإلكتروني',
+  'أكمل البيانات الأساسية وتوثيق الحساب',
+  'استمتع برحلتك',
+]
 
 export default function RegisterPage() {
   return (
-    <div className={authStyles.formContainer}>
-      <RegisterForm authStyles={authStyles} regStyles={regStyles} />
-      <div className={authStyles.formImage}>
-        <img src="/signup-image.jpg" alt="Signup" className={authStyles.imgRegister} />
-        <img src="/carBag.jpg" alt="" className={authStyles.imageOverlayBox} />
-        <p className={authStyles.firstWord}>We</p>
-        <p className={authStyles.secondWord}>Care</p>
+    <>
+      {/* Back button — absolute on card */}
+      <Link href="/" className={authStyles.backButton} aria-label="العودة">
+        <i className="fa-solid fa-chevron-left" />
+      </Link>
+
+      {/* Image — LEFT side */}
+      <div className={`${authStyles.formImage} ${authStyles.imageLeft}`}>
+        <img
+          src="/signup-image.jpg"
+          alt=""
+          className={authStyles.mainImage}
+        />
+
+        {/* وافر branding in the center of the image */}
+        <div className={authStyles.registerBrand}>
+          <div className={authStyles.registerBrandTitle}>وافـــر</div>
+          <div className={authStyles.registerBrandSubtitle}>ابدأ رحلتك هنـا</div>
+        </div>
+
+        {/* Steps panel at the bottom */}
+        <div className={authStyles.stepsPanel}>
+          {STEPS.map((step, i) => (
+            <div key={i} className={authStyles.stepItem}>
+              <span>{step}</span>
+              <span className={authStyles.stepNumber}>{i + 1}</span>
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* Form — RIGHT side */}
+      <RegisterForm authStyles={authStyles} regStyles={regStyles} />
+    </>
   )
 }

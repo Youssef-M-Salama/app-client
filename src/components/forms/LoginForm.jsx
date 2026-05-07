@@ -12,18 +12,15 @@ export default function LoginForm({ authStyles }) {
   const [formData, setFormData] = useState({
     usernameOrEmail: '',
     password: '',
-    rememberMe: false,
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errorMessage) setErrorMessage('');
   };
 
@@ -33,19 +30,9 @@ export default function LoginForm({ authStyles }) {
     setErrorMessage('');
 
     try {
-      // AuthContext.login() returns the unwrapped payload: { role, token, userId, ... }
       const payload = await login(formData);
-
-      // role is an integer in the payload: 0=Charity, 1=DonorOrganization, 2=Admin
       const roleInt = Number(payload?.role);
-
-      if (roleInt === 2) {
-        // Admin → go to admin dashboard
-        router.push('/admin');
-      } else {
-        // Charity (0) or DonorOrganization (1) → go to main dashboard
-        router.push('/posts');
-      }
+      router.push(roleInt === 2 ? '/admin' : '/posts');
     } catch (error) {
       setErrorMessage(error.appMessage || 'حدث خطأ غير متوقع. حاول مجدداً.');
     } finally {
@@ -55,64 +42,73 @@ export default function LoginForm({ authStyles }) {
 
   return (
     <div className={authStyles.formContent}>
+
+      {/* Heading */}
       <div className={authStyles.formHeading}>
-        <h2 className={authStyles.formTitle}>تسجيل الدخول</h2>
-        <p className={authStyles.formSubtitle}>ابدأ رحلتك الآن</p>
+        <h1 className={authStyles.formTitle}>تسجيل الدخول</h1>
+        <p className={authStyles.formSubtitle}>مرحباً بعودتك!</p>
       </div>
 
       {/* Error Banner */}
       {errorMessage && (
-        <div
-          role="alert"
-          style={{
-            background: '#fef2f2',
-            border: '1px solid #fca5a5',
-            color: '#991b1b',
-            borderRadius: '8px',
-            padding: '0.65rem 1rem',
-            marginBottom: '1rem',
-            fontSize: '0.9rem',
-          }}
-        >
+        <div role="alert" className={authStyles.errorBanner}>
+          <i className="fa-solid fa-circle-exclamation" />
           {errorMessage}
         </div>
       )}
 
       <form onSubmit={handleSubmit} noValidate>
-        {/* Username or Email */}
+
+        {/* Email */}
         <div className={authStyles.formField}>
-          <label htmlFor="login-usernameOrEmail">
-            البريد الإلكتروني أو اسم المستخدم
-          </label>
+          <label htmlFor="login-email">البريد الإلكتروني</label>
           <input
-            id="login-usernameOrEmail"
+            id="login-email"
             type="text"
             name="usernameOrEmail"
-            placeholder="example@gmail.com أو username01"
+            placeholder="eg. johnfrans@gmail.com"
             value={formData.usernameOrEmail}
             onChange={handleChange}
             required
             autoComplete="username"
+            dir="ltr"
+            style={{ textAlign: 'left' }}
           />
         </div>
 
         {/* Password */}
         <div className={authStyles.formField}>
-          <label htmlFor="login-password">كلمة المرور</label>
-          <input
-            id="login-password"
-            type="password"
-            name="password"
-            placeholder="**********"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            autoComplete="current-password"
-          />
+          <label htmlFor="login-password">الباسورد</label>
+          <div className={authStyles.passwordWrapper}>
+            <input
+              id="login-password"
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              placeholder="••••••••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className={authStyles.eyeToggle}
+              onClick={() => setShowPassword((v) => !v)}
+              tabIndex={-1}
+              aria-label={showPassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+            >
+              <i className={showPassword ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'} />
+            </button>
+          </div>
+          <span className={authStyles.fieldHint}>
+            يجب أن يكون الباسورد من 3 أحرف على الأقل
+          </span>
         </div>
 
+        {/* Submit */}
         <button
           type="submit"
+          id="login-submit"
           className={authStyles.submitBtn}
           disabled={isLoading}
         >
@@ -120,8 +116,10 @@ export default function LoginForm({ authStyles }) {
         </button>
       </form>
 
-      <p className={authStyles.linkText}>
-        ليس لديك حساب؟ <Link href="/register">إنشاء حساب جديد</Link>
+      {/* Forgot password */}
+      <p className={authStyles.forgotLink}>
+        نسيت الباسورد؟{' '}
+        <Link href="/forgot-password">إعادة تعيين</Link>
       </p>
     </div>
   );
