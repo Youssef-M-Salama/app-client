@@ -39,3 +39,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local files
+UI.pdf
+src/CLAUDE.md
+frontend_business_rules.md
+implementation_plan.md.resolved
+implementationSteps.md
+apiDocs.json
+
+# IDEs
+.vscode/
+.idea/
