@@ -14,13 +14,13 @@ function getOrgInfo(profile) {
 
   if (profile.role === 0 && profile.charityDetails) {
     return {
-      name:        profile.charityDetails.charityName        || '',
+      name: profile.charityDetails.charityName || '',
       description: profile.charityDetails.charityDescription || '',
     };
   }
   if (profile.role === 1 && profile.donorDetails) {
     return {
-      name:        profile.donorDetails.donorName        || '',
+      name: profile.donorDetails.donorOrganizationName || '',
       description: profile.donorDetails.donorDescription || '',
     };
   }
@@ -30,13 +30,13 @@ function getOrgInfo(profile) {
 
 // ─── Edit Icon (left side of editable inputs) ─────────────────────────────────
 const EDIT_ICON_STYLE = {
-  position:  'absolute',
-  left:      '12px',
-  top:       '50%',
+  position: 'absolute',
+  left: '12px',
+  top: '50%',
   transform: 'translateY(-50%)',
-  width:     '18px',
-  height:    '18px',
-  opacity:   0.5,
+  width: '18px',
+  height: '18px',
+  opacity: 0.5,
   pointerEvents: 'none',
 };
 
@@ -64,12 +64,12 @@ function ChangePasswordSection() {
 
   const [form, setForm] = useState({
     currentPassword: '',
-    newPassword:     '',
+    newPassword: '',
     confirmPassword: '',
   });
-  const [fieldErrors,   setFieldErrors]   = useState({});
-  const [generalError,  setGeneralError]  = useState('');
-  const [isSaving,      setIsSaving]      = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [generalError, setGeneralError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (field, val) => {
     setForm(prev => ({ ...prev, [field]: val }));
@@ -99,7 +99,7 @@ function ChangePasswordSection() {
     try {
       await profileService.changePassword({
         currentPassword: form.currentPassword,
-        newPassword:     form.newPassword,
+        newPassword: form.newPassword,
         confirmPassword: form.confirmPassword,
       });
       showToast('تم تغيير كلمة المرور بنجاح', 'success');
@@ -203,24 +203,24 @@ function ChangePasswordSection() {
 // ─── Main Profile Form ────────────────────────────────────────────────────────
 export default function ProfileForm({ profile, isSaving, onSave }) {
   const [form, setForm] = useState({
-    phone:       '',
-    whatsapp:    '',
-    city:        '',
+    phone: '',
+    whatsapp: '',
+    city: '',
     governorate: '',
-    postalCode:  '',
+    postalCode: '',
   });
-  const [fieldErrors,  setFieldErrors]  = useState({});
+  const [fieldErrors, setFieldErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
 
   // Pre-fill when profile loads
   useEffect(() => {
     if (profile) {
       setForm({
-        phone:       profile.phone       || '',
-        whatsapp:    profile.whatsapp    || '',
-        city:        profile.city        || '',
+        phone: profile.phone || '',
+        whatsapp: profile.whatsapp || '',
+        city: profile.city || '',
         governorate: profile.governorate || '',
-        postalCode:  profile.postalCode  || '',
+        postalCode: profile.postalCode || '',
       });
     }
   }, [profile]);
