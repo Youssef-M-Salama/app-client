@@ -35,10 +35,15 @@ export default function BrowseCard({ item, onApply }) {
               الأولوية: {mapPriority(item.priority)}
             </span>
           )}
-          <span>الكمية: {item.quantity || 1} {mapUnit(item.unit)}</span>
+          {item.expiryDate && (
+            <span style={{ color: '#d32f2f', fontWeight: 'bold' }}>
+              تاريخ الانتهاء: {new Date(item.expiryDate).toLocaleDateString("ar-EG")}
+            </span>
+          )}
+          <span>الكمية: {(item.quantity || 1).toLocaleString("ar-EG")} {mapUnit(item.unit)}</span>
           <span>الموقع: {location}</span>
-          <span>البريد: {email}</span>
-          <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone}</span></span>
+          <span>البريد: {email !== "غير متوفر" ? <a href={`mailto:${email}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{email}</a> : email}</span>
+          <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone !== "غير متوفر" ? <a href={`tel:${phone}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{phone}</a> : phone}</span></span>
           {whatsapp && (
             <span>
               <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', marginLeft: '4px' }}></i>

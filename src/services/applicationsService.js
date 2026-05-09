@@ -61,6 +61,11 @@ export const applicationsService = {
     // params: Page, PageSize
     const response = await apiClient.get('/api/v1/donor-organization/need-applications/sent', { params });
     return response.data;
+  },
+
+  cancelNeedApplication: async (needApplicationId) => {
+    const response = await apiClient.delete(`/api/v1/donor-organization/need-applications/${needApplicationId}`);
+    return response.data;
   }
 };
 

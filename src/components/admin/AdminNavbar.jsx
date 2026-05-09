@@ -84,7 +84,7 @@ export default function AdminNavbar() {
               >
                 {item.label}
                 {item.badge > 0 && (
-                  <span className={styles.badge}>{item.badge}</span>
+                  <span className={styles.badge}>{item.badge.toLocaleString("ar-EG")}</span>
                 )}
               </Link>
             </li>

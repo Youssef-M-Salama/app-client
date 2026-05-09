@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "@/styles/admin/pending.module.css"; // Reuse pending styles for cards
+import styles from "@/styles/dashboard/posts.module.css";
+import pendingStyles from "@/styles/admin/pending.module.css";
 import offersService from "@/services/offersService";
 import apiClient from "@/services/apiClient";
 import { mapCategory, mapUnit } from "@/utils/enumMapper";
@@ -17,7 +18,7 @@ const getImageUrl = (path) => {
   return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 };
 
-// ── Offer Card ──────────────────────────────────────────────────
+// ── Offer Card (Dashboard Style) ───────────────────────────────
 function OfferCard({ offer, onApprove, onReject }) {
   const rawImg = offer.productImage || offer.imageUrl || offer.image;
   const imageSrc = getImageUrl(rawImg) || FALLBACK_IMAGE;
@@ -25,42 +26,60 @@ function OfferCard({ offer, onApprove, onReject }) {
   const productName = offer.productName || "منتج غير مسمى";
   const id = offer.offerId || offer.id;
   const expiryDate = offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString("ar-EG") : "غير محدد";
+  const location = offer.city && offer.governorate ? `${offer.governorate} - ${offer.city}` : (offer.city || offer.governorate || "غير متوفر");
 
   return (
-    <div className={styles.orgCard}>
-      <img
-        src={imageSrc}
-        alt=""
-        className={styles.cardImage}
-        onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
-      />
-      <div className={styles.cardBody}>
-        <h3 className={styles.orgName}>{productName}</h3>
-        <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '8px' }}>
-          {orgName}
-        </p>
-        
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>الكمية:</span>
-          <span className={styles.detailValue}>{offer.quantity} {mapUnit(offer.unit)}</span>
-        </div>
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>التصنيف:</span>
-          <span className={styles.detailValue}>{mapCategory(offer.category)}</span>
-        </div>
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>تاريخ الانتهاء:</span>
-          <span className={styles.detailValue}>{expiryDate}</span>
-        </div>
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>الموقع:</span>
-          <span className={styles.detailValue}>{offer.governorate || "غير محدد"} - {offer.city || "غير محدد"}</span>
-        </div>
+    <div className={styles.card}>
+      <div className={styles.cardImageWrapper}>
+        <img src={imageSrc} alt={productName} onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)} />
+        <div className={styles.statusBadge}>{mapCategory(offer.category)}</div>
       </div>
 
-      <div className={styles.cardFooter}>
-        <button className={styles.btnReject} onClick={() => onReject(id)}>رفض</button>
-        <button className={styles.btnApprove} onClick={() => onApprove(id)}>قبول</button>
+      <div className={styles.cardBody}>
+        <h3 className={styles.cardTitle}>{productName}</h3>
+        <p className={styles.cardCategory}>{orgName}</p>
+
+        <div className={styles.cardDetails}>
+          <span>الكمية: {offer.quantity.toLocaleString("ar-EG")} {mapUnit(offer.unit)}</span>
+          <span>الموقع: {location}</span>
+          <span style={{ color: '#d32f2f', fontWeight: 'bold' }}>تاريخ الانتهاء: {expiryDate}</span>
+
+          {/* Contact info directly in card */}
+          <span>البريد: {offer.email || "غير متوفر"}</span>
+          <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{offer.phone || "غير متوفر"}</span></span>
+          {offer.whatsapp && (
+            <span>واتساب: <span style={{ direction: 'ltr', display: 'inline-block' }}>{offer.whatsapp}</span></span>
+          )}
+        </div>
+
+        {offer.description && (
+          <p className={styles.cardDesc} style={{ marginBottom: '4px', webkitLineClamp: 'unset', display: 'block' }}>
+            <strong>وصف المنتج:</strong> {offer.description}
+          </p>
+        )}
+
+        {offer.donorOraganizationDesctption && (
+          <p className={styles.cardDesc} style={{ webkitLineClamp: 'unset', display: 'block' }}>
+            <strong>عن المؤسسة:</strong> {offer.donorOraganizationDesctption}
+          </p>
+        )}
+
+        <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '10px' }}>
+          <button
+            className={styles.publishBtn}
+            style={{ background: '#27ae60', flex: 1, margin: 0 }}
+            onClick={() => onApprove(id)}
+          >
+            قبول
+          </button>
+          <button
+            className={styles.publishBtn}
+            style={{ background: '#c0392b', flex: 1, margin: 0 }}
+            onClick={() => onReject(id)}
+          >
+            رفض
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -134,23 +153,23 @@ export default function OffersPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.pageHeader}>
+    <div className={pendingStyles.page}>
+      <div className={pendingStyles.pageHeader}>
         <h1>العروض المعلقة</h1>
-        <p>إدارة جميع عروض الجهات المانحة المعلقة وقبولها أو رفضها</p>
+        <p>إدارة جميع العروض المعلقة وقبولها أو رفضها</p>
       </div>
 
-      <div className={styles.actionBar}>
-        <div className={styles.actionBarLeft}>
+      <div className={pendingStyles.actionBar}>
+        <div className={pendingStyles.actionBarLeft}>
         </div>
-        <div className={styles.actionBarRight}>
-          <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>
+        <div className={pendingStyles.actionBarRight}>
+          <div className={pendingStyles.searchWrapper}>
+            <span className={pendingStyles.searchIcon}>
               <i className="fa-solid fa-magnifying-glass"></i>
             </span>
             <input
               type="text"
-              className={styles.searchInput}
+              className={pendingStyles.searchInput}
               placeholder="ابحث هنا..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -165,18 +184,18 @@ export default function OffersPage() {
         <div style={{ textAlign: "center", color: "red", padding: "20px" }}>
           {errorMsg}
           <br />
-          <button onClick={fetchData} className={styles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
+          <button onClick={fetchData} className={pendingStyles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
         </div>
       ) : filtered.length === 0 ? (
-        <p className={styles.emptyState}>لا توجد عروض معلقة</p>
+        <p className={pendingStyles.emptyState}>لا توجد عروض معلقة</p>
       ) : (
-        <div className={styles.cardGrid}>
+        <div className={pendingStyles.cardGrid}>
           {filtered.map((offer) => (
-            <OfferCard 
-              key={offer.offerId || offer.id} 
-              offer={offer} 
-              onApprove={handleApprove} 
-              onReject={handleReject} 
+            <OfferCard
+              key={offer.offerId || offer.id}
+              offer={offer}
+              onApprove={handleApprove}
+              onReject={handleReject}
             />
           ))}
         </div>

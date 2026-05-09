@@ -47,14 +47,12 @@ function ActionDropdown({ user, onView, onToggle, onVerify }) {
       </button>
       {open && (
         <div className={styles.dropdown}>
-          {hasExtraInfo && (
-            <button
-              className={styles.dropdownItem}
-              onClick={() => { onView(user); setOpen(false); }}
-            >
-              <i className="fa-solid fa-file-lines" style={{ marginLeft: '8px' }}></i> عرض التفاصيل
-            </button>
-          )}
+          <button
+            className={styles.dropdownItem}
+            onClick={() => { onView(user); setOpen(false); }}
+          >
+            <i className="fa-solid fa-file-lines" style={{ marginLeft: '8px' }}></i> عرض التفاصيل
+          </button>
           {!isVerified && (
             <button
               className={styles.dropdownItem}
@@ -83,6 +81,7 @@ function UserDetailModal({ user, onClose }) {
   const avatar = getImageUrl(rawImg) || FALLBACK_IMAGE;
   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : "غير معروف";
   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "غير متوفر";
+  const isVerified = user.isVerified !== false;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -94,38 +93,60 @@ function UserDetailModal({ user, onClose }) {
 
         <div className={styles.modalBody}>
           <div className={styles.profileSection}>
-            <img src={avatar} alt="" className={styles.largeAvatar} />
+            <div className={styles.avatarWrapper}>
+              <img src={avatar} alt="" className={styles.largeAvatar} />
+              <div className={`${styles.statusIndicator} ${user.isActive ? styles.active : styles.inactive}`} title={user.isActive ? "نشط" : "غير نشط"} />
+            </div>
             <div className={styles.profileInfo}>
               <h4>{user.name}</h4>
-              <span className={styles.profileRole}>{roleStr}</span>
+              <div className={styles.profileBadges}>
+                <span className={styles.profileRoleBadge}>{roleStr}</span>
+                <span className={`${styles.verificationBadge} ${isVerified ? styles.verified : styles.unverified}`}>
+                  {isVerified ? "موثق" : "بانتظار التوثيق"}
+                </span>
+              </div>
             </div>
           </div>
 
           <div className={styles.infoGrid}>
             <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>اسم المستخدم</span>
+              <span className={styles.infoValue}>{user.userName || "غير متوفر"}</span>
+            </div>
+            <div className={styles.infoItem}>
               <span className={styles.infoLabel}>البريد الإلكتروني</span>
-              <span className={styles.infoValue} style={{ direction: "ltr", textAlign: "right" }}>{user.email}</span>
+              <span className={styles.infoValue} style={{ direction: "ltr", textAlign: "right" }}>
+                <a href={`mailto:${user.email}`} className={styles.link}>{user.email}</a>
+              </span>
             </div>
             <div className={styles.infoItem}>
               <span className={styles.infoLabel}>تاريخ الانضمام</span>
               <span className={styles.infoValue}>{createdAt}</span>
             </div>
-
-            {user.phone && (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>رقم الهاتف</span>
-                <span className={styles.infoValue} style={{ direction: "ltr", textAlign: "right" }}>{user.phone}</span>
-              </div>
-            )}
-
-            {(user.governorate || user.city) && (
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>الموقع</span>
-                <span className={styles.infoValue}>
-                  {user.governorate}{user.city ? ` - ${user.city}` : ""}
-                </span>
-              </div>
-            )}
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>رقم الهاتف</span>
+              <span className={styles.infoValue} style={{ direction: "ltr", textAlign: "right" }}>
+                {user.phone ? (
+                  <a href={`tel:${user.phone}`} className={styles.link}>{user.phone}</a>
+                ) : "غير متوفر"}
+              </span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>واتساب</span>
+              <span className={styles.infoValue} style={{ direction: "ltr", textAlign: "right" }}>
+                {user.whatsapp ? (
+                  <a href={`https://wa.me/${user.whatsapp.replace('+', '')}`} target="_blank" rel="noopener noreferrer" style={{ color: '#25D366', fontWeight: 'bold' }}>
+                    {user.whatsapp} <i className="fa-brands fa-whatsapp"></i>
+                  </a>
+                ) : "غير متوفر"}
+              </span>
+            </div>
+            <div className={styles.infoItem}>
+              <span className={styles.infoLabel}>الموقع</span>
+              <span className={styles.infoValue}>
+                {user.governorate || "غير محدد"}{user.city ? ` - ${user.city}` : ""}
+              </span>
+            </div>
 
             {user.description && (
               <div className={`${styles.infoItem} ${styles.fullWidth}`}>
@@ -181,7 +202,7 @@ function SystemOverviewChart({ stats }) {
       <div className={styles.donutArea} style={{ flexDirection: 'row', gap: '30px', justifyContent: 'space-around', padding: '10px 0' }}>
         <div className={styles.donutWrapper} style={{ width: '120px', height: '120px', background: gradient, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ width: '85px', height: '85px', background: 'white', borderRadius: '50%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', boxShadow: 'inset 0 2px 10px rgba(0,0,0,0.05)' }}>
-            <span style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>{total}</span>
+            <span style={{ fontSize: '18px', fontWeight: 'bold', color: 'var(--color-text-primary)' }}>{total.toLocaleString("ar-EG")}</span>
             <span style={{ fontSize: '9px', color: 'var(--color-text-muted)' }}>إجمالي النشاط</span>
           </div>
         </div>
@@ -189,15 +210,15 @@ function SystemOverviewChart({ stats }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', justifyContent: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: needColor }} />
-            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>احتياجات: <strong>{needPer.toFixed(0)}%</strong></span>
+            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>احتياجات: <strong>{Number(needPer.toFixed(0)).toLocaleString("ar-EG")}%</strong></span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: offerColor }} />
-            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>عروض: <strong>{offerPer.toFixed(0)}%</strong></span>
+            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>عروض: <strong>{Number(offerPer.toFixed(0)).toLocaleString("ar-EG")}%</strong></span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <div style={{ width: '10px', height: '10px', borderRadius: '2px', background: pendingColor }} />
-            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>معلق: <strong>{(100 - needPer - offerPer).toFixed(0)}%</strong></span>
+            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>معلق: <strong>{Number((100 - needPer - offerPer).toFixed(0)).toLocaleString("ar-EG")}%</strong></span>
           </div>
         </div>
       </div>
@@ -376,15 +397,15 @@ export default function UsersPage() {
           <div className={styles.subStats} style={{ gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
             <div className={styles.subStat} style={{ background: '#fff9e6', padding: '10px', borderRadius: '10px', border: '1px solid #ffeeba' }}>
               <span className={styles.subStatLabel} style={{ fontSize: '10px', color: '#856404' }}>احتياجات نشطة</span>
-              <span className={styles.subStatValue} style={{ color: '#856404' }}>{stats.activeCharityNeeds}</span>
+              <span className={styles.subStatValue} style={{ color: '#856404' }}>{stats.activeCharityNeeds.toLocaleString("ar-EG")}</span>
             </div>
             <div className={styles.subStat} style={{ background: '#fff0f3', padding: '10px', borderRadius: '10px', border: '1px solid #f8d7da' }}>
               <span className={styles.subStatLabel} style={{ fontSize: '10px', color: '#721c24' }}>عروض نشطة</span>
-              <span className={styles.subStatValue} style={{ color: '#721c24' }}>{stats.activeOffers}</span>
+              <span className={styles.subStatValue} style={{ color: '#721c24' }}>{stats.activeOffers.toLocaleString("ar-EG")}</span>
             </div>
             <div className={styles.subStat} style={{ background: '#f3e5f5', padding: '10px', borderRadius: '10px', border: '1px solid #e1bee7' }}>
               <span className={styles.subStatLabel} style={{ fontSize: '10px', color: '#4a148c' }}>تحققات معلقة</span>
-              <span className={styles.subStatValue} style={{ color: '#4a148c' }}>{stats.pendingVerifications}</span>
+              <span className={styles.subStatValue} style={{ color: '#4a148c' }}>{stats.pendingVerifications.toLocaleString("ar-EG")}</span>
             </div>
           </div>
         </div>
@@ -464,7 +485,9 @@ export default function UsersPage() {
                           <span className={styles.userName}>{user.name}</span>
                         </div>
                       </td>
-                      <td style={{ direction: "ltr", textAlign: "right" }}>{user.email}</td>
+                      <td style={{ direction: "ltr", textAlign: "right" }}>
+                        <a href={`mailto:${user.email}`} className={styles.link}>{user.email}</a>
+                      </td>
                       <td>{roleStr}</td>
                       <td>
                         <span className={`${styles.badge} ${user.isActive ? styles.badgeActive : styles.badgeInactive}`}>

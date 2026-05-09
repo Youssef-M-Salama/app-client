@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styles from "@/styles/admin/pending.module.css"; // Reuse pending styles for cards
+import styles from "@/styles/dashboard/posts.module.css";
+import pendingStyles from "@/styles/admin/pending.module.css";
 import charityNeedsService from "@/services/charityNeedsService";
 import apiClient from "@/services/apiClient";
 import { mapCategory, mapPriority, mapUnit } from "@/utils/enumMapper";
@@ -17,49 +18,69 @@ const getImageUrl = (path) => {
   return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 };
 
-// ── Need Card ───────────────────────────────────────────────────
+// ── Need Card (Dashboard Style) ────────────────────────────────
 function NeedCard({ need, onApprove, onReject }) {
   const rawImg = need.productImage || need.imageUrl || need.image;
   const imageSrc = getImageUrl(rawImg) || FALLBACK_IMAGE;
   const orgName = need.charityName || need.organizationName || "جمعية غير معروفة";
   const productName = need.productName || "منتج غير مسمى";
   const id = need.charityNeedId || need.id;
+  const location = need.city && need.governorate ? `${need.governorate} - ${need.city}` : (need.city || need.governorate || "غير متوفر");
 
   return (
-    <div className={styles.orgCard}>
-      <img
-        src={imageSrc}
-        alt=""
-        className={styles.cardImage}
-        onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
-      />
-      <div className={styles.cardBody}>
-        <h3 className={styles.orgName}>{productName}</h3>
-        <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '8px' }}>
-          {orgName}
-        </p>
-        
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>الكمية:</span>
-          <span className={styles.detailValue}>{need.quantity} {mapUnit(need.unit)}</span>
-        </div>
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>التصنيف:</span>
-          <span className={styles.detailValue}>{mapCategory(need.category)}</span>
-        </div>
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>الأولوية:</span>
-          <span className={styles.detailValue}>{mapPriority(need.priority)}</span>
-        </div>
-        <div className={styles.orgDetail}>
-          <span className={styles.detailLabel}>الموقع:</span>
-          <span className={styles.detailValue}>{need.governorate || "غير محدد"} - {need.city || "غير محدد"}</span>
-        </div>
+    <div className={styles.card}>
+      <div className={styles.cardImageWrapper}>
+        <img src={imageSrc} alt={productName} onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)} />
+        <div className={styles.statusBadge}>{mapCategory(need.category)}</div>
       </div>
 
-      <div className={styles.cardFooter}>
-        <button className={styles.btnReject} onClick={() => onReject(id)}>رفض</button>
-        <button className={styles.btnApprove} onClick={() => onApprove(id)}>قبول</button>
+      <div className={styles.cardBody}>
+        <h3 className={styles.cardTitle}>{productName}</h3>
+        <p className={styles.cardCategory}>{orgName}</p>
+
+        <div className={styles.cardDetails}>
+          <span className={styles[`priority${need.priority}`]}>
+            الأولوية: {mapPriority(need.priority)}
+          </span>
+          <span>الكمية: {need.quantity.toLocaleString("ar-EG")} {mapUnit(need.unit)}</span>
+          <span>الموقع: {location}</span>
+
+          {/* Contact info directly in card */}
+          <span>البريد: {need.email || "غير متوفر"}</span>
+          <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{need.phone || "غير متوفر"}</span></span>
+          {need.whatsapp && (
+            <span>واتساب: <span style={{ direction: 'ltr', display: 'inline-block' }}>{need.whatsapp}</span></span>
+          )}
+        </div>
+
+        {need.description && (
+          <p className={styles.cardDesc} style={{ marginBottom: '4px', webkitLineClamp: 'unset', display: 'block' }}>
+            <strong>وصف الاحتياج:</strong> {need.description}
+          </p>
+        )}
+
+        {need.charityDescription && (
+          <p className={styles.cardDesc} style={{ webkitLineClamp: 'unset', display: 'block' }}>
+            <strong>عن الجمعية:</strong> {need.charityDescription}
+          </p>
+        )}
+
+        <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '10px' }}>
+          <button
+            className={styles.publishBtn}
+            style={{ background: '#27ae60', flex: 1, margin: 0 }}
+            onClick={() => onApprove(id)}
+          >
+            قبول
+          </button>
+          <button
+            className={styles.publishBtn}
+            style={{ background: '#c0392b', flex: 1, margin: 0 }}
+            onClick={() => onReject(id)}
+          >
+            رفض
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -133,23 +154,23 @@ export default function NeedsPage() {
   }
 
   return (
-    <div className={styles.page}>
-      <div className={styles.pageHeader}>
+    <div className={pendingStyles.page}>
+      <div className={pendingStyles.pageHeader}>
         <h1>احتياجات الجمعيات المعلقة</h1>
         <p>إدارة جميع احتياجات الجمعيات المعلقة وقبولها أو رفضها</p>
       </div>
 
-      <div className={styles.actionBar}>
-        <div className={styles.actionBarLeft}>
+      <div className={pendingStyles.actionBar}>
+        <div className={pendingStyles.actionBarLeft}>
         </div>
-        <div className={styles.actionBarRight}>
-          <div className={styles.searchWrapper}>
-            <span className={styles.searchIcon}>
+        <div className={pendingStyles.actionBarRight}>
+          <div className={pendingStyles.searchWrapper}>
+            <span className={pendingStyles.searchIcon}>
               <i className="fa-solid fa-magnifying-glass"></i>
             </span>
             <input
               type="text"
-              className={styles.searchInput}
+              className={pendingStyles.searchInput}
               placeholder="ابحث هنا..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -164,18 +185,18 @@ export default function NeedsPage() {
         <div style={{ textAlign: "center", color: "red", padding: "20px" }}>
           {errorMsg}
           <br />
-          <button onClick={fetchData} className={styles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
+          <button onClick={fetchData} className={pendingStyles.btnOutline} style={{ marginTop: "10px" }}>إعادة المحاولة</button>
         </div>
       ) : filtered.length === 0 ? (
-        <p className={styles.emptyState}>لا توجد احتياجات معلقة</p>
+        <p className={pendingStyles.emptyState}>لا توجد احتياجات معلقة</p>
       ) : (
-        <div className={styles.cardGrid}>
+        <div className={pendingStyles.cardGrid}>
           {filtered.map((need) => (
-            <NeedCard 
-              key={need.charityNeedId || need.id} 
-              need={need} 
-              onApprove={handleApprove} 
-              onReject={handleReject} 
+            <NeedCard
+              key={need.charityNeedId || need.id}
+              need={need}
+              onApprove={handleApprove}
+              onReject={handleReject}
             />
           ))}
         </div>

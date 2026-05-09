@@ -5,10 +5,12 @@ import styles from "@/styles/dashboard/posts.module.css";
 import requestStyles from "@/styles/dashboard/requests.module.css"; // Reuse filter styles
 import RequestListCard from "@/components/cards/RequestListCard";
 import { useAuth } from "@/context/AuthContext";
+import { useAlert } from "@/context/AlertContext";
 import applicationsService from "@/services/applicationsService";
 
 export default function SentRequestsPage() {
   const { role } = useAuth();
+  const { showConfirm, showToast, showAlert } = useAlert();
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -60,6 +62,26 @@ export default function SentRequestsPage() {
     return status === parseInt(filter);
   });
 
+  const handleCancel = async (id) => {
+    showConfirm(
+      "إلغاء الطلب",
+      "هل أنت متأكد من رغبتك في إلغاء هذا الطلب؟",
+      async () => {
+        try {
+          if (role === "Charity") {
+            await applicationsService.cancelOfferApplication(id);
+          } else if (role === "DonorOrganization") {
+            await applicationsService.cancelNeedApplication(id);
+          }
+          setRequests((prev) => prev.filter((req) => (req.id || req.offerApplicationId || req.needApplicationId) !== id));
+          showToast("تم إلغاء الطلب بنجاح", "success");
+        } catch (err) {
+          showAlert("فشل الإلغاء", err.appMessage || "تعذر إلغاء الطلب.", "error");
+        }
+      }
+    );
+  };
+
   return (
     <div className={styles.postsPage}>
       {/* Header / Filter */}
@@ -99,6 +121,7 @@ export default function SentRequestsPage() {
               request={request} 
               role={role}
               isSent={true}
+              onCancel={handleCancel}
             />
           ))
         )}

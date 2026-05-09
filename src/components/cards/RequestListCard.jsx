@@ -5,7 +5,7 @@ import { mapApplicationStatus, mapUnit } from "@/utils/enumMapper";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
 
-export default function RequestListCard({ request, onAccept, onReject, role, isSent = false }) {
+export default function RequestListCard({ request, onAccept, onReject, onCancel, role, isSent = false }) {
   const id = request.id || request.needApplicationId || request.offerApplicationId;
   const orgName = isSent
     ? (request.organizationName || request.charityName || request.donorOrganizationName)
@@ -49,11 +49,11 @@ export default function RequestListCard({ request, onAccept, onReject, role, isS
 
         <div className={styles.cardDetails}>
           {request.quantity !== undefined && (
-            <span>الكمية: {request.quantity} {mapUnit(request.unit)}</span>
+            <span>الكمية: {Number(request.quantity).toLocaleString("ar-EG")} {mapUnit(request.unit)}</span>
           )}
           <span>الموقع: {location}</span>
-          <span>البريد: {email}</span>
-          <span>رقم التواصل: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone}</span></span>
+          <span>البريد: {email ? <a href={`mailto:${email}`} style={{ color: '#6F2DBD', textDecoration: 'none' }}>{email}</a> : "غير متوفر"}</span>
+          <span>رقم التواصل: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone ? <a href={`tel:${phone}`} style={{ color: '#6F2DBD', textDecoration: 'none' }}>{phone}</a> : "غير متوفر"}</span></span>
           {whatsapp && (
             <span>
               <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', marginLeft: '4px' }}></i>
@@ -102,6 +102,18 @@ export default function RequestListCard({ request, onAccept, onReject, role, isS
               style={{ background: '#c0392b', flex: 1, margin: 0 }}
             >
               رفض
+            </button>
+          </div>
+        )}
+
+        {isSent && isPending && (role === 'Charity' || role === 'DonorOrganization') && (
+          <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+            <button
+              className={styles.publishBtn}
+              onClick={() => onCancel(id)}
+              style={{ background: '#c0392b', width: '100%', margin: 0 }}
+            >
+              إلغاء الطلب
             </button>
           </div>
         )}

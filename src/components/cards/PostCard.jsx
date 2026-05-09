@@ -92,7 +92,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
         <p className={styles.cardCategory}>{categoryStr}</p>
         
         <div className={styles.cardDetails}>
-          <span>الكمية: {post.quantity} {mapUnit(post.unit)}</span>
+          <span>الكمية: {post.quantity.toLocaleString("ar-EG")} {mapUnit(post.unit)}</span>
           {!isOffer && post.priority !== undefined && (
             <span className={styles[`priority${post.priority}`]}>
               الأولوية: {mapPriority(post.priority)}
