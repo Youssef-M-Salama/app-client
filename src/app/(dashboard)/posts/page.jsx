@@ -11,14 +11,31 @@ import offersService from "@/services/offersService";
 import { mapCategory } from "@/utils/enumMapper";
 import { useAlert } from "@/context/AlertContext";
 
-const CATEGORIES = ["جميع المنشورات", "طعام", "ملابس", "طبي", "تعليمي", "أخرى"];
+const CATEGORIES = ["جميع الفئات", "طعام", "ملابس", "طبي", "تعليمي", "أخرى"];
+
+const STATUS_FILTERS_CHARITY = [
+  { label: "جميع الحالات", value: "all" },
+  { label: "قيد المراجعة", value: "0" },
+  { label: "مقبول", value: "1" },
+  { label: "مرفوض", value: "2" },
+  { label: "مكتمل", value: "3" },
+];
+
+const STATUS_FILTERS_DONOR = [
+  { label: "جميع الحالات", value: "all" },
+  { label: "قيد المراجعة", value: "0" },
+  { label: "مقبول", value: "1" },
+  { label: "مرفوض", value: "2" },
+  { label: "مكتمل", value: "3" },
+  { label: "منتهي الصلاحية", value: "4" },
+];
 
 export default function PostsPage() {
   const { role, user } = useAuth();
   const { showAlert, showToast } = useAlert();
-  
+
   const [posts, setPosts] = useState([]);
-  const [filter, setFilter] = useState("جميع المنشورات");
+  const [categoryFilter, setCategoryFilter] = useState("جميع الفئات");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,7 +63,7 @@ export default function PostsPage() {
         const response = await offersService.getMyOffers({ Page: 1, PageSize: 50 });
         data = response?.data || response;
       }
-      
+
       // Assume paginated envelope returns array in `data.items` or `data` itself is array if not paginated locally
       if (data?.items) {
         setPosts(data.items);
@@ -65,9 +82,9 @@ export default function PostsPage() {
   };
 
   // ── Derived ──
-  const filteredPosts = filter === "جميع المنشورات"
-    ? posts
-    : posts.filter((p) => mapCategory(p.category) === filter);
+  const filteredPosts = categoryFilter === "جميع الفئات" 
+    ? posts 
+    : posts.filter((p) => mapCategory(p.category) === categoryFilter);
 
   // ── Handlers ──
   async function handleAddSubmit(form) {
@@ -93,7 +110,7 @@ export default function PostsPage() {
         fd.append("ExpiryDate", form.expiryDate ? new Date(form.expiryDate).toISOString() : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString());
         await offersService.createOffer(fd);
       }
-      
+
       setAddModalOpen(false);
       fetchPosts(); // Refresh list
     } catch (err) {
@@ -168,13 +185,13 @@ export default function PostsPage() {
         <p className={styles.pageSubTitle}>عرض المنشورات</p>
 
         <div className={styles.rightControls}>
-          {/* Filter */}
+          {/* Category Filter */}
           <div className={styles.filterSelectWrapper}>
             <select
-              id="posts-filter-select"
+              id="category-filter"
               className={styles.filterSelect}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
             >
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>

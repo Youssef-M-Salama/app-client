@@ -25,7 +25,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
   const title = post.productName;
   const categoryStr = mapCategory(post.category);
   const statusStr = mapStatus(post.status, isOffer);
-  
+
   // Status mapping
   // 0: Pending, 1: Approved, 2: Rejected, 3: Fulfilled/Expired, 4: Fulfilled(offer)
   const isPending = post.status === 0;
@@ -33,12 +33,25 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
 
   const imageUrl = post.productImage || FALLBACK_IMAGE;
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 0: return 'var(--color-status-pending)';
+      case 1: return 'var(--color-status-approved)';
+      case 2: return 'var(--color-status-rejected)';
+      case 3: return 'var(--color-status-fulfilled)';
+      case 4: return 'var(--color-status-expired)';
+      default: return '#333';
+    }
+  };
+
   return (
     <div className={styles.card}>
       {/* Image + Menu */}
       <div className={styles.cardImageWrapper}>
         <img src={imageUrl} alt={title} />
-        <div className={styles.statusBadge}>{statusStr}</div>
+        <div className={styles.statusBadge} style={{ backgroundColor: getStatusColor(post.status) }}>
+          {statusStr}
+        </div>
 
         {(isPending || isApproved) && (
           <div className={styles.menuWrapper} ref={menuRef}>
@@ -90,7 +103,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
       <div className={styles.cardBody}>
         <h3 className={styles.cardTitle}>{title}</h3>
         <p className={styles.cardCategory}>{categoryStr}</p>
-        
+
         <div className={styles.cardDetails}>
           <span>الكمية: {post.quantity.toLocaleString("ar-EG")} {mapUnit(post.unit)}</span>
           {!isOffer && post.priority !== undefined && (
@@ -104,7 +117,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
         </div>
 
         <p className={styles.cardDesc}>{post.description}</p>
-        
+
         <p className={styles.timestamp}>
           {post.createdAt ? `تم النشر في ${new Date(post.createdAt).toLocaleDateString("ar-EG")}` : ""}
         </p>

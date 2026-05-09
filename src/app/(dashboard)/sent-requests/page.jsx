@@ -14,7 +14,6 @@ export default function SentRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     fetchSentRequests();
@@ -56,12 +55,6 @@ export default function SentRequestsPage() {
     }
   };
 
-  const filteredRequests = requests.filter(req => {
-    if (filter === "all") return true;
-    const status = req.status ?? req.Status;
-    return status === parseInt(filter);
-  });
-
   const handleCancel = async (id) => {
     showConfirm(
       "إلغاء الطلب",
@@ -84,41 +77,21 @@ export default function SentRequestsPage() {
 
   return (
     <div className={styles.postsPage}>
-      {/* Header / Filter */}
-      <div className={requestStyles.pageActions}>
-        <div className={requestStyles.filterGroup}>
-          <span className={requestStyles.filterLabel}>فلترة حسب الحالة :</span>
-          <div className={requestStyles.filterSelectWrapper}>
-            <select
-              className={requestStyles.filterSelect}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="all">جميع الحالات</option>
-              <option value="0">قيد الانتظار</option>
-              <option value="1">مقبول</option>
-              <option value="2">مرفوض</option>
-            </select>
-            <i className={`fa-solid fa-chevron-down ${requestStyles.filterChevron}`}></i>
-          </div>
-        </div>
-      </div>
-
       {error && <div className={styles.errorMessage}>{error}</div>}
 
       <div className={styles.postsGrid}>
         {isLoading ? (
           <div className={styles.emptyState}>جاري تحميل الطلبات...</div>
-        ) : filteredRequests.length === 0 ? (
+        ) : requests.length === 0 ? (
           <div className={styles.emptyState}>
-             <div style={{ fontSize: '48px', marginBottom: '16px' }}><i className="fa-solid fa-envelope-open-text" style={{ color: "#171123" }}></i></div>
-             لا توجد طلبات مرسلة حالياً تطابق الفلتر.
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}><i className="fa-solid fa-envelope-open-text" style={{ color: "#171123" }}></i></div>
+            لا توجد طلبات مرسلة حالياً.
           </div>
         ) : (
-          filteredRequests.map((request, idx) => (
-            <RequestListCard 
-              key={request.id || idx} 
-              request={request} 
+          requests.map((request, idx) => (
+            <RequestListCard
+              key={request.id || idx}
+              request={request}
               role={role}
               isSent={true}
               onCancel={handleCancel}

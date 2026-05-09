@@ -13,7 +13,7 @@ import { useAlert } from "@/context/AlertContext";
 export default function BrowsePage() {
   const { role, user } = useAuth();
   const { showAlert, showToast } = useAlert();
-  
+
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -56,16 +56,19 @@ export default function BrowsePage() {
         const response = await offersService.getPublicOffers(params);
         data = response?.data || response;
       }
-      
+
+      let fetchedItems = [];
       if (data?.items) {
-        setItems(data.items);
+        fetchedItems = data.items;
       } else if (Array.isArray(data)) {
-        setItems(data);
+        fetchedItems = data;
       } else if (data?.data?.items) {
-        setItems(data.data.items);
-      } else {
-        setItems([]);
+        fetchedItems = data.data.items;
+      } else if (data?.data && Array.isArray(data.data)) {
+        fetchedItems = data.data;
       }
+      
+      setItems(fetchedItems);
     } catch (err) {
       setError(err.appMessage || "حدث خطأ أثناء تحميل البيانات.");
     } finally {
@@ -127,8 +130,8 @@ export default function BrowsePage() {
         </div>
         <div className={styles.filterGroup}>
           <span className={styles.filterLabel}>بحث :</span>
-          <input 
-            type="text" 
+          <input
+            type="text"
             className={styles.filterSelect}
             placeholder="ابحث هنا..."
             value={search}
@@ -147,16 +150,16 @@ export default function BrowsePage() {
           <div className={styles.emptyState}>لا توجد طلبات متاحة تطابق الفلتر.</div>
         ) : (
           items.map((item, idx) => (
-            <BrowseCard 
-              key={item.id || item.charityNeedId || item.offerId || idx} 
-              item={item} 
-              onApply={handleApplyClick} 
+            <BrowseCard
+              key={item.id || item.charityNeedId || item.offerId || idx}
+              item={item}
+              onApply={handleApplyClick}
             />
           ))
         )}
       </div>
 
-      <ApplyModal 
+      <ApplyModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onApply={handleConfirmApply}

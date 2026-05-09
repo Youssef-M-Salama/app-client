@@ -29,15 +29,36 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
     typeLabel = role === "Charity" ? "طلب على احتياجك:" : "طلب على عرضك:";
   }
 
-  const statusStr = request.status !== undefined ? mapApplicationStatus(request.status) : "";
-  const isPending = request.status === 0;
+  const currentStatus = request.status !== undefined ? request.status : request.Status;
+  const parentStatus = request.needStatus !== undefined ? request.needStatus : request.offerStatus;
+  
+  // If parent is fulfilled, we show "Fulfilled" regardless of application status (which stays 'Accepted')
+  const isFulfilled = parentStatus === 3;
+  
+  const statusStr = isFulfilled 
+    ? "مكتمل" 
+    : (currentStatus !== undefined ? mapApplicationStatus(currentStatus) : "");
+    
+  const isPending = currentStatus === 0;
+
+  const getStatusColor = (status, fulfilled = false) => {
+    if (fulfilled) return 'var(--color-status-fulfilled)';
+    switch (status) {
+      case 0: return 'var(--color-status-pending)';
+      case 1: return 'var(--color-status-approved)';
+      case 2: return 'var(--color-status-rejected)';
+      case 3: return 'var(--color-status-fulfilled)';
+      case 4: return 'var(--color-status-expired)';
+      default: return '#333';
+    }
+  };
 
   return (
     <div className={styles.card}>
       <div className={styles.cardImageWrapper}>
         <img src={logo} alt={orgName} />
         {statusStr && (
-          <div className={styles.statusBadge} style={{ backgroundColor: isPending ? '#e67e22' : (request.status === 1 ? '#27ae60' : '#c0392b') }}>
+          <div className={styles.statusBadge} style={{ backgroundColor: getStatusColor(currentStatus, isFulfilled) }}>
             {statusStr}
           </div>
         )}

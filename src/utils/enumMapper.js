@@ -15,8 +15,8 @@ export const mapStatus = (statusInt, isOffer = false) => {
       0: "قيد المراجعة",
       1: "مقبول",
       2: "مرفوض",
-      3: "منتهي الصلاحية",
-      4: "مكتمل"
+      3: "مكتمل",
+      4: "منتهي الصلاحية"
     };
     return map[statusInt] || "غير معروف";
   } else {

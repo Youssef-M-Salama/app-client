@@ -10,14 +10,13 @@ import globalPostsStyles from "@/styles/dashboard/posts.module.css";
 
 export default function RequestsPage() {
   const { role } = useAuth();
-  
+
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("all");
   const [successMessage, setSuccessMessage] = useState("");
-  
+
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -26,7 +25,7 @@ export default function RequestsPage() {
 
   useEffect(() => {
     fetchRequests();
-  }, [role, filter]);
+  }, [role]);
 
   // Clear success message after 3 seconds
   useEffect(() => {
@@ -45,7 +44,6 @@ export default function RequestsPage() {
       const params = {
         Page: 1,
         PageSize: 50,
-        Status: filter !== "all" ? parseInt(filter) : undefined
       };
 
       if (role === "Charity") {
@@ -100,10 +98,10 @@ export default function RequestsPage() {
         if (type === "accept") await applicationsService.acceptOfferApplication(id);
         else if (type === "reject") await applicationsService.rejectOfferApplication(id);
       }
-      
+
       setSuccessMessage(type === "accept" ? "تم قبول الطلب بنجاح" : "تم رفض الطلب");
       setModalOpen(false);
-      fetchRequests(); 
+      fetchRequests();
     } catch (err) {
       // 400: parent offer/need already fulfilled — backend returns Arabic message directly
       // 422: application not in Pending status
@@ -118,43 +116,17 @@ export default function RequestsPage() {
     }
   };
 
-  const filteredRequests = requests.filter(req => {
-    if (filter === "all") return true;
-    const status = req.status ?? req.Status;
-    return status === parseInt(filter);
-  });
-
   return (
     <div className={styles.requestsPage}>
-      
-      {/* Header / Filter */}
-      <div className={styles.pageActions}>
-        <div className={styles.filterGroup}>
-          <span className={styles.filterLabel}>فلترة حسب الحالة :</span>
-          <div className={styles.filterSelectWrapper}>
-            <select
-              className={styles.filterSelect}
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-            >
-              <option value="all">جميع الحالات</option>
-              <option value="0">قيد الانتظار</option>
-              <option value="1">مقبول</option>
-              <option value="2">مرفوض</option>
-            </select>
-            <i className={`fa-solid fa-chevron-down ${styles.filterChevron}`}></i>
-          </div>
-        </div>
-      </div>
 
       {error && <div className={globalPostsStyles.errorMessage}>{error}</div>}
       {successMessage && (
-        <div style={{ 
-          backgroundColor: '#e8f5e9', 
-          color: '#2e7d32', 
-          padding: '12px', 
-          borderRadius: '8px', 
-          marginBottom: '20px', 
+        <div style={{
+          backgroundColor: '#e8f5e9',
+          color: '#2e7d32',
+          padding: '12px',
+          borderRadius: '8px',
+          marginBottom: '20px',
           textAlign: 'center',
           fontWeight: 'bold',
           border: '1px solid #c8e6c9'
@@ -167,16 +139,16 @@ export default function RequestsPage() {
       <div className={globalPostsStyles.postsGrid}>
         {isLoading ? (
           <div className={globalPostsStyles.emptyState}>جاري تحميل الطلبات...</div>
-        ) : filteredRequests.length === 0 ? (
+        ) : requests.length === 0 ? (
           <div className={globalPostsStyles.emptyState}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}><i className="fa-solid fa-envelope-open-text" style={{ color: "#171123" }}></i></div>
-            لا توجد طلبات واردة حالياً تطابق الفلتر.
+            لا توجد طلبات واردة حالياً.
           </div>
         ) : (
-          filteredRequests.map((req, idx) => (
-            <RequestListCard 
-              key={req.id || req.needApplicationId || req.offerApplicationId || idx} 
-              request={req} 
+          requests.map((req, idx) => (
+            <RequestListCard
+              key={req.id || req.needApplicationId || req.offerApplicationId || idx}
+              request={req}
               onAccept={handleOpenAccept}
               onReject={handleOpenReject}
               role={role}
@@ -186,7 +158,7 @@ export default function RequestsPage() {
       </div>
 
       {/* Action Modal */}
-      <RequestActionModal 
+      <RequestActionModal
         isOpen={modalOpen}
         onClose={() => !isSubmitting && setModalOpen(false)}
         onConfirm={handleConfirmAction}
