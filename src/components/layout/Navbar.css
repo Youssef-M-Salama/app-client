@@ -72,12 +72,12 @@
     border-color var(--transition-fast);
   white-space: nowrap;
 }
- 
+
 .loginBtn:hover {
   background-color: rgba(255, 255, 255, 0.15);
   border-color: rgba(255, 255, 255, 0.15);
 }
- 
+
 /* register btn */
 .registerBtn {
   padding: var(--space-2) var(--space-5);
@@ -94,28 +94,72 @@
     border-color var(--transition-fast);
   white-space: nowrap;
 }
- 
+
 .registerBtn:hover {
   background-color:rgba(255, 255, 255, 0.15);
   border-color: transparent;
 }
- 
+
 /* ══════════════════════════════
-   RESPONSIVE
+    RESPONSIVE
    ══════════════════════════════ */
 @media (max-width: 640px) {
   .tagline,
   .brandDivider {
     display: none;
   }
- 
+
   .navbar {
     padding: 0 var(--space-4);
   }
- 
+
   .loginBtn,
   .registerBtn {
     padding: var(--space-2) var(--space-4);
     font-size: var(--font-size-xs);
   }
+}
+
+/* other view */
+.nav-other{
+  width: 678.26px;
+  height: 51px;
+  position: absolute;
+  top: 10px;
+  left: 381px;
+  border-radius: 16px;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.glass {
+  background:rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  color: white;
+  /* border: 1px solid rgba(255, 255, 255, 0.35); */
+}
+.other-wafer{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.divider{
+  width: 1px;
+  height: 33px;
+  background-color:rgba(22, 22, 22, 1);
+  margin: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.other-tagline{
+  font-family: var(--font-family);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary-dark);
+  width: 125px;
+  height: 13px;
+  white-space: nowrap;
+  letter-spacing: 0;
 }

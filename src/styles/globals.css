@@ -10,10 +10,10 @@
   /* ── Colors ── */
 
   /* Primary — Purple (buttons, active nav, badges) */
-  --color-primary:          #6F2DBD;
-  --color-primary-dark:     #171123;
+  --color-primary:          rgb(111, 45, 189, 1);
+  --color-primary-dark:     rgb(23, 17, 35, 1);
   --color-primary-light:    #A663CC;
-  --color-primary-subtle:   #FBFBFB;
+  --color-primary-subtle:   rgba(255, 255, 255, 1);
 
   /* Status Colors */
   --color-success:          #2E7D32;
@@ -33,13 +33,13 @@
 
   /* Text */
   --color-text-primary:     #1A1A1A;
-  --color-text-secondary:   #555555;
-  --color-text-muted:       #9E9E9E;
+  --color-text-secondary:   rgb(85, 85, 85);
+  --color-text-muted:       rgb(158, 158, 158);
   --color-text-on-primary:  #FBFBFB;
 
   /* Borders */
   --color-border:           #E0E0E0;
-  --color-border-input:     #BDBDBD;
+  --color-border-input:     rgb(189, 189, 189);
   --color-border-focus:     #6F2DBD;
 
   /* Auth page gradient background */
@@ -50,8 +50,8 @@
   /* Sidebar active item */
   --color-sidebar-active-bg:   #6F2DBD;
   --color-sidebar-active-text: #FFFFFF;
-  --color-sidebar-text:        #555555;
-  --color-sidebar-icon:        #9E9E9E;
+  --color-sidebar-text:        rgb(85, 85, 85);
+  --color-sidebar-icon:        rgb(158, 158, 158);
 
   /* Badge / Priority */
   --color-badge-urgent-bg:   #FFEBEE;
@@ -62,7 +62,7 @@
   --color-badge-normal-text: #2E7D32;
 
   /* Post card timestamp */
-  --color-timestamp:         #9E9E9E;
+  --color-timestamp:         rgb(158, 158, 158);
 
   /* Logout link */
   --color-logout:            #C62828;
@@ -220,5 +220,5 @@ ol {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-light);
+  background: var(--color-primary-dark);
 }
