@@ -72,23 +72,6 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
           {request.quantity !== undefined && (
             <span>الكمية: {Number(request.quantity).toLocaleString("ar-EG")} {mapUnit(request.unit)}</span>
           )}
-          <span>الموقع: {location}</span>
-          <span>البريد: {email ? <a href={`mailto:${email}`} style={{ color: '#6F2DBD', textDecoration: 'none' }}>{email}</a> : "غير متوفر"}</span>
-          <span>رقم التواصل: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone ? <a href={`tel:${phone}`} style={{ color: '#6F2DBD', textDecoration: 'none' }}>{phone}</a> : "غير متوفر"}</span></span>
-          {whatsapp && (
-            <span>
-              <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', marginLeft: '4px' }}></i>
-              واتساب:{" "}
-              <a
-                href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ direction: 'ltr', display: 'inline-block', color: '#25D366', fontWeight: '600', textDecoration: 'none' }}
-              >
-                {whatsapp}
-              </a>
-            </span>
-          )}
         </div>
 
         {/* Applicant message/description */}
