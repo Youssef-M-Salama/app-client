@@ -43,7 +43,7 @@ function OfferDetailModal({ offer, onClose, onApprove, onReject }) {
             <img 
               src={imageSrc} 
               alt={productName} 
-              style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '12px' }} 
+              style={{ width: '150px', height: '150px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '12px' }} 
               onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
             />
             <div>
@@ -138,22 +138,9 @@ function OfferCard({ offer, onApprove, onReject, onView }) {
 
         <div className={styles.cardDetails}>
           <span>الكمية: {offer.quantity.toLocaleString("ar-EG")} {mapUnit(offer.unit)}</span>
-          <span>الموقع: {location}</span>
-          <span style={{ color: '#d32f2f', fontWeight: 'bold' }}>تاريخ الانتهاء: {expiryDate}</span>
-
-          {/* Contact info directly in card - with links */}
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            البريد: <a href={`mailto:${offer.email}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{offer.email || "غير متوفر"}</a>
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            هاتف: <a href={`tel:${offer.phone}`} style={{ direction: 'ltr', color: 'var(--color-primary)', textDecoration: 'none' }}>{offer.phone || "غير متوفر"}</a>
-          </span>
-          {offer.whatsapp && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              واتساب: <a href={`https://wa.me/${offer.whatsapp.replace('+', '')}`} target="_blank" rel="noopener noreferrer" style={{ direction: 'ltr', color: '#25D366', textDecoration: 'none' }}>{offer.whatsapp}</a>
-            </span>
-          )}
         </div>
+
+        <p className={styles.cardDesc}>{offer.description || ""}</p>
 
         <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '10px' }}>
           <button

@@ -42,7 +42,7 @@ function NeedDetailModal({ need, onClose, onApprove, onReject }) {
             <img 
               src={imageSrc} 
               alt={productName} 
-              style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '12px' }} 
+              style={{ width: '150px', height: '150px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '12px' }} 
               onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
             />
             <div>
@@ -137,25 +137,10 @@ function NeedCard({ need, onApprove, onReject, onView }) {
         <p className={styles.cardCategory}>{orgName}</p>
 
         <div className={styles.cardDetails}>
-          <span className={styles[`priority${need.priority}`]}>
-            الأولوية: {mapPriority(need.priority)}
-          </span>
           <span>الكمية: {need.quantity.toLocaleString("ar-EG")} {mapUnit(need.unit)}</span>
-          <span>الموقع: {location}</span>
-
-          {/* Contact info directly in card - with links */}
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            البريد: <a href={`mailto:${need.email}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{need.email || "غير متوفر"}</a>
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-            هاتف: <a href={`tel:${need.phone}`} style={{ direction: 'ltr', color: 'var(--color-primary)', textDecoration: 'none' }}>{need.phone || "غير متوفر"}</a>
-          </span>
-          {need.whatsapp && (
-            <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              واتساب: <a href={`https://wa.me/${need.whatsapp.replace('+', '')}`} target="_blank" rel="noopener noreferrer" style={{ direction: 'ltr', color: '#25D366', textDecoration: 'none' }}>{need.whatsapp}</a>
-            </span>
-          )}
         </div>
+
+        <p className={styles.cardDesc}>{need.description || ""}</p>
 
         <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '10px' }}>
           <button
