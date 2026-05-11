@@ -1,14 +1,11 @@
+import Home from '@/components/layout/Home';
+import Navbar from '@/components/layout/Navbar';
+
 export default function PublicPage() {
   return (
-    <div 
-      style={{
-        backgroundImage: "url('/bg-img.jpg')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minHeight: '100vh'
-      }}
-    >
-    
-    </div>
+    <>
+      <Navbar />
+      <Home />
+    </>
   );
 }
