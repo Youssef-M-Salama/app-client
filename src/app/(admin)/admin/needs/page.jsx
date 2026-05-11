@@ -18,8 +18,106 @@ const getImageUrl = (path) => {
   return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 };
 
+// ── Row Action Detail Modal ─────────────────────────────────────
+function NeedDetailModal({ need, onClose, onApprove, onReject }) {
+  if (!need) return null;
+
+  const rawImg = need.productImage || need.imageUrl || need.image;
+  const imageSrc = getImageUrl(rawImg) || FALLBACK_IMAGE;
+  const orgName = need.charityName || need.organizationName || "جمعية غير معروفة";
+  const productName = need.productName || "منتج غير مسمى";
+  const id = need.charityNeedId || need.id;
+  const location = need.city && need.governorate ? `${need.governorate} - ${need.city}` : (need.city || need.governorate || "غير متوفر");
+
+  return (
+    <div className={pendingStyles.modalOverlay} onClick={onClose}>
+      <div className={pendingStyles.modalContent} onClick={(e) => e.stopPropagation()} style={{ maxWidth: '600px' }}>
+        <div className={pendingStyles.modalHeader}>
+          <h3>تفاصيل الاحتياج</h3>
+          <button className={pendingStyles.closeBtn} onClick={onClose}>×</button>
+        </div>
+
+        <div className={pendingStyles.modalBody}>
+          <div style={{ display: 'flex', gap: '20px', marginBottom: '24px' }}>
+            <img 
+              src={imageSrc} 
+              alt={productName} 
+              style={{ width: '150px', height: '150px', objectFit: 'cover', borderRadius: '12px' }} 
+              onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
+            />
+            <div>
+              <h4 style={{ fontSize: '1.2rem', marginBottom: '8px', color: 'var(--color-text-primary)' }}>{productName}</h4>
+              <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', marginBottom: '12px' }}>{orgName}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+                <span className={styles[`priority${need.priority}`]} style={{ width: 'fit-content' }}>
+                  <strong>الأولوية:</strong> {mapPriority(need.priority)}
+                </span>
+                <span><strong>التصنيف:</strong> {mapCategory(need.category)}</span>
+                <span><strong>الكمية:</strong> {need.quantity.toLocaleString("ar-EG")} {mapUnit(need.unit)}</span>
+                <span><strong>الموقع:</strong> {location}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: '20px' }}>
+            <h5 style={{ marginBottom: '8px', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>وصف الاحتياج</h5>
+            <div style={{ background: '#f9fafb', padding: '12px', borderRadius: '8px', fontSize: '0.95rem', lineHeight: '1.6' }}>
+              {need.description || "لا يوجد وصف متوفر"}
+            </div>
+          </div>
+
+          <div>
+            <h5 style={{ marginBottom: '8px', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>معلومات التواصل</h5>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginTop: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fa-solid fa-envelope" style={{ color: '#6366f1' }}></i>
+                <a href={`mailto:${need.email}`} className={pendingStyles.link} style={{ fontSize: '0.9rem' }}>{need.email || "غير متوفر"}</a>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <i className="fa-solid fa-phone" style={{ color: '#10b981' }}></i>
+                <a href={`tel:${need.phone}`} className={pendingStyles.link} style={{ fontSize: '0.9rem', direction: 'ltr' }}>{need.phone || "غير متوفر"}</a>
+              </div>
+              {need.whatsapp && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <i className="fa-brands fa-whatsapp" style={{ color: '#25D366' }}></i>
+                  <a 
+                    href={`https://wa.me/${need.whatsapp.replace('+', '')}`} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className={pendingStyles.link} 
+                    style={{ fontSize: '0.9rem', direction: 'ltr' }}
+                  >
+                    {need.whatsapp}
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className={pendingStyles.modalFooter} style={{ gap: '12px' }}>
+          <button 
+            className={pendingStyles.btnReject} 
+            style={{ padding: '10px 24px', flex: 'none' }}
+            onClick={() => { onReject(id); onClose(); }}
+          >
+            رفض الاحتياج
+          </button>
+          <button 
+            className={pendingStyles.btnApprove} 
+            style={{ padding: '10px 24px', flex: 'none' }}
+            onClick={() => { onApprove(id); onClose(); }}
+          >
+            الموافقة على الاحتياج
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Need Card (Dashboard Style) ────────────────────────────────
-function NeedCard({ need, onApprove, onReject }) {
+function NeedCard({ need, onApprove, onReject, onView }) {
   const rawImg = need.productImage || need.imageUrl || need.image;
   const imageSrc = getImageUrl(rawImg) || FALLBACK_IMAGE;
   const orgName = need.charityName || need.organizationName || "جمعية غير معروفة";
@@ -45,40 +143,27 @@ function NeedCard({ need, onApprove, onReject }) {
           <span>الكمية: {need.quantity.toLocaleString("ar-EG")} {mapUnit(need.unit)}</span>
           <span>الموقع: {location}</span>
 
-          {/* Contact info directly in card */}
-          <span>البريد: {need.email || "غير متوفر"}</span>
-          <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{need.phone || "غير متوفر"}</span></span>
+          {/* Contact info directly in card - with links */}
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            البريد: <a href={`mailto:${need.email}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{need.email || "غير متوفر"}</a>
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            هاتف: <a href={`tel:${need.phone}`} style={{ direction: 'ltr', color: 'var(--color-primary)', textDecoration: 'none' }}>{need.phone || "غير متوفر"}</a>
+          </span>
           {need.whatsapp && (
-            <span>واتساب: <span style={{ direction: 'ltr', display: 'inline-block' }}>{need.whatsapp}</span></span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              واتساب: <a href={`https://wa.me/${need.whatsapp.replace('+', '')}`} target="_blank" rel="noopener noreferrer" style={{ direction: 'ltr', color: '#25D366', textDecoration: 'none' }}>{need.whatsapp}</a>
+            </span>
           )}
         </div>
-
-        {need.description && (
-          <p className={styles.cardDesc} style={{ marginBottom: '4px', webkitLineClamp: 'unset', display: 'block' }}>
-            <strong>وصف الاحتياج:</strong> {need.description}
-          </p>
-        )}
-
-        {need.charityDescription && (
-          <p className={styles.cardDesc} style={{ webkitLineClamp: 'unset', display: 'block' }}>
-            <strong>عن الجمعية:</strong> {need.charityDescription}
-          </p>
-        )}
 
         <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '10px' }}>
           <button
             className={styles.publishBtn}
-            style={{ background: '#27ae60', flex: 1, margin: 0 }}
-            onClick={() => onApprove(id)}
+            style={{ background: 'var(--color-primary)', flex: 1, margin: 0 }}
+            onClick={() => onView(need)}
           >
-            قبول
-          </button>
-          <button
-            className={styles.publishBtn}
-            style={{ background: '#c0392b', flex: 1, margin: 0 }}
-            onClick={() => onReject(id)}
-          >
-            رفض
+            عرض التفاصيل
           </button>
         </div>
       </div>
@@ -92,6 +177,7 @@ export default function NeedsPage() {
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
+  const [viewingNeed, setViewingNeed] = useState(null);
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -197,9 +283,19 @@ export default function NeedsPage() {
               need={need}
               onApprove={handleApprove}
               onReject={handleReject}
+              onView={setViewingNeed}
             />
           ))}
         </div>
+      )}
+
+      {viewingNeed && (
+        <NeedDetailModal
+          need={viewingNeed}
+          onClose={() => setViewingNeed(null)}
+          onApprove={handleApprove}
+          onReject={handleReject}
+        />
       )}
     </div>
   );
