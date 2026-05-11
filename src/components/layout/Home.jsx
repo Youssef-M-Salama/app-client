@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import "@/styles/home.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
@@ -19,11 +19,61 @@ const getImageUrl = (path) => {
   return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 };
 
+function AnimatedNumber({ value, duration = 2000 }) {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  const elementRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    if (elementRef.current) observer.observe(elementRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible || value === 0) return;
+    let startTimestamp = null;
+    const end = parseInt(value, 10);
+
+    const step = (timestamp) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCount(Math.floor(easeProgress * end));
+      
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        setCount(end);
+      }
+    };
+    window.requestAnimationFrame(step);
+  }, [value, isVisible, duration]);
+
+  return <span ref={elementRef} style={{ display: 'inline-block' }}>{count}</span>;
+}
+
 export default function Home() {
   const { isAuthenticated, role } = useAuth();
 
   const [offers, setOffers] = useState([]);
   const [needs, setNeeds] = useState([]);
+
+  const [stats, setStats] = useState({
+    totalCharities: 0,
+    totalDonors: 0,
+    activeCharityNeeds: 0,
+    activeOffers: 0,
+    totalDoneDonation: 0
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +85,17 @@ export default function Home() {
         const needsRes = await charityNeedsService.getPublicCharityNeeds({ Page: 1, PageSize: 4 });
         const needsPayload = needsRes.data || needsRes.Data || [];
         setNeeds(Array.isArray(needsPayload) ? needsPayload : (needsPayload.items || needsPayload.Items || []));
+        
+        try {
+          const statsRes = await apiClient.get('/api/v1/public/statistics');
+          if (statsRes.data?.data) {
+            setStats(statsRes.data.data);
+          } else if (statsRes.data) {
+             setStats(statsRes.data);
+          }
+        } catch (e) {
+          console.error("Error fetching stats:", e);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -120,23 +181,20 @@ export default function Home() {
 
           <div className='l-2 glass-card'>
             <Image alt='icon' src='/Vector-3.png' width={19.39} height={19.38}></Image>
-            <span className='l-2-txt'>تم تسجيل أكتر من 200 جمعية خيرية
-              و 310 مؤسسة إنتاجية وتم نشر حوالى 530 منشور
+            <span className='l-2-txt'>تم تسجيل <AnimatedNumber value={stats.totalCharities} /> جمعية خيرية
+              و <AnimatedNumber value={stats.totalDonors} /> مؤسسة إنتاجية وتم نشر حوالى <AnimatedNumber value={stats.activeCharityNeeds + stats.activeOffers} /> منشور
               مكونين من متطلبات الجمعية الخيرية و عروض
               المؤسسات الإنتاجية</span>
             <span className='l-2-txt-2'>ليس هذا فقط !</span>
-            <span className='l-2-txt-3'>تم إنقاذ مئات الأشخاص و توفير مساكن و وجبات
-              للعديد من الأسر و إجراء عمليات جراحية خطيرة لحالات
-              بنجاح و غيرها من الأعمال العظيمة.</span>
+            <span className='l-2-txt-3'>تم إنجاز <AnimatedNumber value={stats.totalDoneDonation} /> طلب تبرع وتوفير مساكن ووجبات للعديد من الأسر وغيرها من الأعمال العظيمة.</span>
           </div>
 
           <div className='l-3 glass-card'>
             <div className='l-3-header'><Image alt='icon' src='/Clip-path-group-9.png' width={24} height={24}></Image>
               <span>تم من خلال هذا الموقع : </span></div>
-            <span className='l-3-txt'>تجميع ما يقارب من 750 ألف جنيه                   من أموال التبرعات و إستخدامها فى الضرورات اللازمة لها
-              إعداد حوالى 1200 وجبة للعائلات                      تجميع المواد الغذائية و توزيعها على الأسر المحتاجة إليها
-              بناء ما يقارب من 14 منزل و تجهيزهم          إستخدام مواد البناء و المعدات المتبرع بها لبناء مأوى للأسر
-              إجراء 47 عملية بنجاح                                               حالات متعددة منها عمليات قلب و حروق شديدة و غيرها</span>
+            <span className='l-3-txt'>إنجاز أكثر من <AnimatedNumber value={stats.totalDoneDonation} /> عملية تبرع كاملة بنجاح وتوصيل المساعدات لمستحقيها
+              <br/><br/>تلبية مئات الاحتياجات الأساسية للعائلات من خلال التنسيق بين الجمعيات والمؤسسات
+              <br/><br/>تقديم دعم مستمر لتعزيز التكافل الاجتماعي وتحقيق التنمية المستدامة</span>
             <span className='l-3-txt-2'>و غيرها من الأعمال الخيرية التى تقام بإستمرار و بمساعدة المؤسسات الإنتاجية المتعددة.</span>
           </div>
         </div>
@@ -146,8 +204,8 @@ export default function Home() {
       <div className='sec-page'>
         <div className='sec-txt'>
           <span className='txt1'>أكـــــثـــــر مـــن:  </span>
-          <span className='txt2'>350+ جـــمـــعـــيـــة خـــيـــريـــة</span>
-          <span className='txt3'>+720 مــــؤســســة إنـــتـــاجـــيـــة</span>
+          <span className='txt2'><AnimatedNumber value={stats.totalCharities} />+ جـــمـــعـــيـــة خـــيـــريـــة</span>
+          <span className='txt3'><AnimatedNumber value={stats.totalDonors} />+ مــــؤســســة إنـــتـــاجـــيـــة</span>
           <span className='txt4'>كـــلــهم مجتمعين فى مكان واحد</span>
         </div>
         <Image alt='icon' className='frame-235' src='/download-5.png' width={150.29} height={150.29}></Image>
