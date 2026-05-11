@@ -6,9 +6,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 import offersService from '@/services/offersService';
 import charityNeedsService from '@/services/charityNeedsService';
 import apiClient from '@/services/apiClient';
+import { mapUnit } from '@/utils/enumMapper';
 
 const getImageUrl = (path) => {
   if (!path) return null;
@@ -18,6 +20,13 @@ const getImageUrl = (path) => {
 };
 
 export default function Home() {
+  const { isAuthenticated, role } = useAuth();
+  
+  let dashboardUrl = '/';
+  if (role === 'Admin') dashboardUrl = '/admin/dashboard';
+  else if (role === 'DonorOrganization') dashboardUrl = '/donor-organization/dashboard';
+  else if (role === 'Charity') dashboardUrl = '/charity/dashboard';
+
   const [offers, setOffers] = useState([]);
   const [needs, setNeeds] = useState([]);
 
@@ -168,7 +177,7 @@ export default function Home() {
             const imageSrc = getImageUrl(rawImg) || '/card-1.png';
             const charityName = need.charityName || need.organizationName || 'جمعية خيرية';
             const date = need.createdAt ? new Date(need.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد';
-            
+
             return (
               <div className='card' key={need.id || index}>
                 <img alt='icon' className='card-1-img' src={imageSrc} style={{ width: 517, height: 524, objectFit: 'contain', backgroundColor: 'transparent' }} />
@@ -179,9 +188,15 @@ export default function Home() {
                     <br /> <br />
                     {need.productName}
                     <br /> <br />
-                    الكمية المطلوبة: {need.quantity}
+                    الكمية المطلوبة: {need.quantity} {mapUnit(need.unit)}
                     <br /> <br />
-                    رقـــم التـــواصـــل {need.phone || need.whatsapp || 'غير متوفر'} <span className='tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
+                    رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{need.phone || need.whatsapp || 'غير متوفر'}</span>
+                    <br />
+                    {!isAuthenticated ? (
+                      <Link href="/register" className='tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
+                    ) : (
+                      <Link href={dashboardUrl} className='tafasel'>......اذهب اللي dashboard للمزيد </Link>
+                    )}
                   </span>
                   <span className='card-date'>{date}</span>
                 </div>
@@ -196,22 +211,28 @@ export default function Home() {
         <div className='posts-cont'>
           {offers.length > 0 && (
             <div className='main-post'>
-              <img 
-                alt='icon' 
-                className='main-p-img' 
-                src={getImageUrl(offers[0].productImage || offers[0].imageUrl || offers[0].image) || '/main-post.png'} 
+              <img
+                alt='icon'
+                className='main-p-img'
+                src={getImageUrl(offers[0].productImage || offers[0].imageUrl || offers[0].image) || '/main-post.png'}
                 style={{ width: 550.54, height: 481.99, objectFit: 'contain', backgroundColor: 'transparent' }}
               />
               <div className='main-post-txt'>
-                <span className='main-header'>{offers[0].donorName || offers[0].organizationName || 'مؤسسة إنتاجية'}</span>
+                <span className='main-header'>{offers[0].donorOrganizationName || offers[0].organizationName || 'مؤسسة إنتاجية'}</span>
                 <span className='main-txt'>
-                  مـــتوفر كمية فائضة من {offers[0].productName} ({offers[0].quantity})
+                  مـــتوفر كمية فائضة من {offers[0].productName} ({offers[0].quantity} {mapUnit(offers[0].unit)})
                   <br />
                   صلاحيــة هذه الكمية : صـــالحة حتي {offers[0].expiryDate ? new Date(offers[0].expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
                   <br />
                   مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
                   <br />
-                  رقـــم التـــواصـــل {offers[0].phone || offers[0].whatsapp || 'غير متوفر'} <span className='tafasel-posts'>......عرض المزيد من التفـــاصـــيـــل </span>
+                  رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{offers[0].phone || offers[0].whatsapp || 'غير متوفر'}</span>
+                  <br />
+                  {!isAuthenticated ? (
+                    <Link href="/register" className='tafasel-posts'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
+                  ) : (
+                    <Link href={dashboardUrl} className='tafasel-posts'>......اذهب اللي dashboard للمزيد </Link>
+                  )}
                 </span>
                 <span className='main-date'>
                   {offers[0].createdAt ? new Date(offers[0].createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
@@ -223,22 +244,28 @@ export default function Home() {
           <div className='more-posts'>
             {offers.slice(1).map((offer, index) => (
               <div className='post' key={offer.id || index}>
-                <img 
-                  alt='icon' 
-                  className='p-img' 
-                  src={getImageUrl(offer.productImage || offer.imageUrl || offer.image) || '/post-3.png'} 
+                <img
+                  alt='icon'
+                  className='p-img'
+                  src={getImageUrl(offer.productImage || offer.imageUrl || offer.image) || '/post-3.png'}
                   style={{ width: 432.7, height: 243.39, objectFit: 'contain', backgroundColor: 'transparent' }}
                 />
                 <div className='post-text'>
-                  <span className='post-header'>{offer.donorName || offer.organizationName || 'مؤسسة إنتاجية'}</span>
+                  <span className='post-header'>{offer.donorOrganizationName || offer.organizationName || 'مؤسسة إنتاجية'}</span>
                   <span className='post-txt'>
-                    مـــتوفر كمية فائضة من {offer.productName} ({offer.quantity})
+                    مـــتوفر كمية فائضة من {offer.productName} ({offer.quantity} {mapUnit(offer.unit)})
                     <br /><br />
                     صلاحيــة هذه الكمية : صـــالحة حتي {offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
                     <br /><br />
                     مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
                     <br /><br />
-                    رقـــم التـــواصـــل {offer.phone || offer.whatsapp || 'غير متوفر'} <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
+                    رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{offer.phone || offer.whatsapp || 'غير متوفر'}</span>
+                    <br />
+                    {!isAuthenticated ? (
+                      <Link href="/register" className='post-tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
+                    ) : (
+                      <Link href={dashboardUrl} className='post-tafasel'>......اذهب اللي dashboard للمزيد </Link>
+                    )}
                   </span>
                   <span className='post-date'>
                     {offer.createdAt ? new Date(offer.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
