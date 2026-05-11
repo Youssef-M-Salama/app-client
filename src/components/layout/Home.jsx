@@ -8,13 +8,13 @@ import Link from 'next/link';
 export default function Home() {
   return (
     <div className='home'>
-         {/* hero */}
+      {/* hero */}
       <div className='hero'>
-        <span className='hero-txt'>ابــــــــدأ 
-            رحلــــــــــــتــك </span>
+        <span className='hero-txt'>ابــــــــدأ
+          رحلــــــــــــتــك </span>
 
         {/* other view => comment (hero-btn & btn up) */}
-            {/* <span className='hero-txt'>ابــــــــدأ 
+        {/* <span className='hero-txt'>ابــــــــدأ 
                   رحلــــــــــــتــك
                   الأن </span> */}
 
@@ -23,11 +23,11 @@ export default function Home() {
           <div className='hero-arrow'>
             <Image src='/arrow-right.png' alt='arrow' width={24} height={24}></Image>
             <Image className='ellipse' src='/Ellipse 12.png' alt='ellipse shadow' width={21} height={21}></Image>
-          </div> 
+          </div>
         </button>
       </div>
       <div className='cover-layout'>
-        <Image alt='cover-layout'src='/bg-img2.png' width={611.15} height={781.11} className='cover-layout-img'></Image>
+        <Image alt='cover-layout' src='/bg-img2.png' width={611.15} height={781.11} className='cover-layout-img'></Image>
       </div>
 
       <div className="infos">
@@ -37,7 +37,7 @@ export default function Home() {
             <Image alt='icon' src='/Vector.png' width={22} height={14}></Image>
             <div className='r-1-txt'>يمكنك التـــسجيــل الأن كـ جمعية خيرية أو مؤسسة إنتاجية</div>
           </div>
-          
+
           <div className='r-2 glass-card'>
             <div className='r-2-header'>
               <Image alt='icon' src='/Clip-path-group.png' width={22} height={22}></Image>
@@ -47,10 +47,10 @@ export default function Home() {
             <div className='r-2-des'>
               <span className='des-title'>جمعية مصر الخير.</span>
               <span className='des-txt'>
-                موقع جيد و يعتمد عليه في نشر المقالات و المنشورات 
-                و البحث عن المساعدات و التبرعات و تعاون أيضاً 
-                المؤسسات الإنتاجية و توفيرها كل ما تستطيع تقديمه و 
-                التواصل فى أسرع وقت و توصيل التبرعات و الخدمات فى أقرب 
+                موقع جيد و يعتمد عليه في نشر المقالات و المنشورات
+                و البحث عن المساعدات و التبرعات و تعاون أيضاً
+                المؤسسات الإنتاجية و توفيرها كل ما تستطيع تقديمه و
+                التواصل فى أسرع وقت و توصيل التبرعات و الخدمات فى أقرب
                 مكان يتم الإتفاق عليه.</span>
             </div>
             <div className='r-2-imgs'>
@@ -69,10 +69,10 @@ export default function Home() {
 
           <div className='r-4 glass-card'>
             <Image alt='icon' src='/Clip-path-group-5.png' width={24} height={24}></Image>
-            <div className='r-4-txt'>الأن دورك أنت لتصنع تأثيراً فى المجتمع 
-                و ترتقي به !</div>
+            <div className='r-4-txt'>الأن دورك أنت لتصنع تأثيراً فى المجتمع
+              و ترتقي به !</div>
           </div>
-          
+
         </div>
         <div className="l-infos">
           <div className='l-1 glass-card'>
@@ -85,24 +85,24 @@ export default function Home() {
 
           <div className='l-2 glass-card'>
             <Image alt='icon' src='/Vector-3.png' width={19.39} height={19.38}></Image>
-            <span className='l-2-txt'>تم تسجيل أكتر من 200 جمعية خيرية 
-              و 310 مؤسسة إنتاجية وتم نشر حوالى 530 منشور 
-              مكونين من متطلبات الجمعية الخيرية و عروض 
+            <span className='l-2-txt'>تم تسجيل أكتر من 200 جمعية خيرية
+              و 310 مؤسسة إنتاجية وتم نشر حوالى 530 منشور
+              مكونين من متطلبات الجمعية الخيرية و عروض
               المؤسسات الإنتاجية</span>
-              <span className='l-2-txt-2'>ليس هذا فقط !</span>
-              <span className='l-2-txt-3'>تم إنقاذ مئات الأشخاص و توفير مساكن و وجبات 
-                  للعديد من الأسر و إجراء عمليات جراحية خطيرة لحالات 
-                  بنجاح و غيرها من الأعمال العظيمة.</span>
+            <span className='l-2-txt-2'>ليس هذا فقط !</span>
+            <span className='l-2-txt-3'>تم إنقاذ مئات الأشخاص و توفير مساكن و وجبات
+              للعديد من الأسر و إجراء عمليات جراحية خطيرة لحالات
+              بنجاح و غيرها من الأعمال العظيمة.</span>
           </div>
 
           <div className='l-3 glass-card'>
             <div className='l-3-header'><Image alt='icon' src='/Clip-path-group-9.png' width={24} height={24}></Image>
-            <span>تم من خلال هذا الموقع : </span></div>
+              <span>تم من خلال هذا الموقع : </span></div>
             <span className='l-3-txt'>تجميع ما يقارب من 750 ألف جنيه                   من أموال التبرعات و إستخدامها فى الضرورات اللازمة لها
               إعداد حوالى 1200 وجبة للعائلات                      تجميع المواد الغذائية و توزيعها على الأسر المحتاجة إليها
               بناء ما يقارب من 14 منزل و تجهيزهم          إستخدام مواد البناء و المعدات المتبرع بها لبناء مأوى للأسر
               إجراء 47 عملية بنجاح                                               حالات متعددة منها عمليات قلب و حروق شديدة و غيرها</span>
-              <span className='l-3-txt-2'>و غيرها من الأعمال الخيرية التى تقام بإستمرار و بمساعدة المؤسسات الإنتاجية المتعددة.</span>
+            <span className='l-3-txt-2'>و غيرها من الأعمال الخيرية التى تقام بإستمرار و بمساعدة المؤسسات الإنتاجية المتعددة.</span>
           </div>
         </div>
       </div>
@@ -137,13 +137,13 @@ export default function Home() {
             <div className='card-txt-cont'>
               <span className='card-header'>مؤسســــة مصـــر الــخـــيـــر</span>
               <span className='card-txt'>
-                تبحث المؤسسة عن أغراض للشتاء 
+                تبحث المؤسسة عن أغراض للشتاء
                 <br /> <br />
-                أغطية _ بطاطين _ جواكيت و غيرهم  
+                أغطية _ بطاطين _ جواكيت و غيرهم
                 <br /> <br />
-                نحتاج إلى كمية (20-50 مستلزمات الشتاء)عاجلاً نظراً إلى العديد من 
+                نحتاج إلى كمية (20-50 مستلزمات الشتاء)عاجلاً نظراً إلى العديد من
                 <br /> <br />
-                الأزمات الحالية و شدة برودة الشتاء  
+                الأزمات الحالية و شدة برودة الشتاء
                 <br /> <br />
                 رقـــم التـــواصـــل 326 647 965+ <span className='tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
               </span>
@@ -158,13 +158,13 @@ export default function Home() {
             <div className='card-txt-cont'>
               <span className='card-header'>مؤسســــة ميـــجـــا خـــيـــر</span>
               <span className='card-txt'>
-                تبحث المؤسسة عن أدوات صحية 
+                تبحث المؤسسة عن أدوات صحية
                 <br /> <br />
-                مواد تعقيم و ضمادات و أدوية لعلاج نزلات البرد  و غيرهم  
+                مواد تعقيم و ضمادات و أدوية لعلاج نزلات البرد  و غيرهم
                 <br /> <br />
-                نحتاج إليهم فى غضون أسبوع لوجود حالات 
+                نحتاج إليهم فى غضون أسبوع لوجود حالات
                 <br /> <br />
-                فى حاجة شديدة لهذه الأدوات 
+                فى حاجة شديدة لهذه الأدوات
                 <br /> <br />
                 رقـــم التـــواصـــل 485 223 965+ ......عرض المزيد من التفـــاصـــيـــل
               </span>
@@ -181,9 +181,9 @@ export default function Home() {
               <span className='card-txt'>
                 يبحث بنك الطعام عن مواد غذائية
                 <br /> <br />
-                مواد غذائية تصلح للإستخدام (لحوم_ أرز_ خبز_ و غيرهم)  
+                مواد غذائية تصلح للإستخدام (لحوم_ أرز_ خبز_ و غيرهم)
                 <br /> <br />
-                لتجهيز حقائب و كراتين رمضان و توزيعها للأشخاص المستحقين فى خلال 
+                لتجهيز حقائب و كراتين رمضان و توزيعها للأشخاص المستحقين فى خلال
                 <br /> <br />
                 شهر رمضان المبارك
                 <br /> <br />
@@ -206,13 +206,13 @@ export default function Home() {
             <div className='main-post-txt'>
               <span className='main-header'>مـــصـــنـــع المـــغــربي للأحــــذيـــة</span>
               <span className='main-txt'>
-                مـــتوفر كمية من الأحذية فائضة (75 حـــذاء  ) 
+                مـــتوفر كمية من الأحذية فائضة (75 حـــذاء  )
                 <br />
                 صلاحيــة هذه الكمية : صـــالحة حتي 5 / 5 / 2026
                 <br />
-                مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض 
+                مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
                 <br />
-                رقـــم التـــواصـــل 365 447 965+ <span className='tafasel-posts'>......عرض المزيد من التفـــاصـــيـــل </span> 
+                رقـــم التـــواصـــل 365 447 965+ <span className='tafasel-posts'>......عرض المزيد من التفـــاصـــيـــل </span>
               </span>
               <span className='main-date'>10 مـــــارس, 2026</span>
             </div>
@@ -221,54 +221,54 @@ export default function Home() {
           <div className='more-posts'>
 
             <div className='post'>
-            <Image alt='icon' className='p-img' src='/post-3.png' width={432.7} height={243.39}></Image>
-            <div className='post-text'>
-              <span className='post-header'>مـــصـــنـــع أرز الـــدلـــتـــا </span>
-              <span className='post-txt'>
-                مـــتوفر كمية من الأرز فائضة (30 كـــيلو جرام) 
-                <br /><br />
-                صلاحيــة هذه الكمية : صـــالحة حتي 5 / 4 / 2026
-                <br /><br />
-                مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض 
-                <br /><br />
-                رقـــم التـــواصـــل225 974 965+ <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span> 
-              </span>
-              <span className='post-date'>30 ديـــســـمـــبر, 2026</span>
-            </div>
-            </div>
-
-            <div className='post'>
-            <Image alt='icon' className='p-img' src='/post-2.png' width={432.7} height={243.39}></Image>
-            <div className='post-text'>
-              <span className='post-header'>مــــصــــنـــع حــــديـــــد عـــــــــــز</span>
-              <span className='post-txt'>
-                مـــتوفر مبالغ مالية للتبرعات للمؤسسات الخيرية (ما يقارب 70 ألف جنيه) 
-                <br /><br />
-                صلاحيــة هذه الأموال : صـــالحة حتي 20 / 4 / 2026
-                <br /><br />
-                مدة العرض : الأموال متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض  
-                <br /><br />
-                رقـــم التـــواصـــل 885 364 965+ <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span> 
-              </span>
-              <span className='post-date'>5 فـــبــراير, 2026</span>
-            </div>
+              <Image alt='icon' className='p-img' src='/post-3.png' width={432.7} height={243.39}></Image>
+              <div className='post-text'>
+                <span className='post-header'>مـــصـــنـــع أرز الـــدلـــتـــا </span>
+                <span className='post-txt'>
+                  مـــتوفر كمية من الأرز فائضة (30 كـــيلو جرام)
+                  <br /><br />
+                  صلاحيــة هذه الكمية : صـــالحة حتي 5 / 4 / 2026
+                  <br /><br />
+                  مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
+                  <br /><br />
+                  رقـــم التـــواصـــل225 974 965+ <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
+                </span>
+                <span className='post-date'>30 ديـــســـمـــبر, 2026</span>
+              </div>
             </div>
 
             <div className='post'>
-            <Image alt='icon' className='p-img' src='/post-1.png' width={432.7} height={243.39}></Image>
-            <div className='post-text'>
-              <span className='post-header'> شـــركـــة جـــلوبـــال فــــروتــــس</span>
-              <span className='post-txt'>
-                مـــتوفر كمية من الخضراوات (جميع الأنواع) (حوالي 60 كـــيلو جرام)
-                <br /><br />
-                صلاحيــة هذه الكمية : صـــالحة حتي 15 / 4 / 2026
-                <br /><br />
-                مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض 
-                <br /><br />
-                رقـــم التـــواصـــل 885 364 965+<span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span> 
-              </span>
-              <span className='post-date'>20 فـــبــراير, 2026</span>
+              <Image alt='icon' className='p-img' src='/post-2.png' width={432.7} height={243.39}></Image>
+              <div className='post-text'>
+                <span className='post-header'>مــــصــــنـــع حــــديـــــد عـــــــــــز</span>
+                <span className='post-txt'>
+                  مـــتوفر مبالغ مالية للتبرعات للمؤسسات الخيرية (ما يقارب 70 ألف جنيه)
+                  <br /><br />
+                  صلاحيــة هذه الأموال : صـــالحة حتي 20 / 4 / 2026
+                  <br /><br />
+                  مدة العرض : الأموال متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
+                  <br /><br />
+                  رقـــم التـــواصـــل 885 364 965+ <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
+                </span>
+                <span className='post-date'>5 فـــبــراير, 2026</span>
+              </div>
             </div>
+
+            <div className='post'>
+              <Image alt='icon' className='p-img' src='/post-1.png' width={432.7} height={243.39}></Image>
+              <div className='post-text'>
+                <span className='post-header'> شـــركـــة جـــلوبـــال فــــروتــــس</span>
+                <span className='post-txt'>
+                  مـــتوفر كمية من الخضراوات (جميع الأنواع) (حوالي 60 كـــيلو جرام)
+                  <br /><br />
+                  صلاحيــة هذه الكمية : صـــالحة حتي 15 / 4 / 2026
+                  <br /><br />
+                  مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
+                  <br /><br />
+                  رقـــم التـــواصـــل 885 364 965+<span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
+                </span>
+                <span className='post-date'>20 فـــبــراير, 2026</span>
+              </div>
             </div>
 
           </div>
