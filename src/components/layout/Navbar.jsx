@@ -1,31 +1,46 @@
+'use client';
+
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import "./Navbar.css";
 
 export default function Navbar() {
+  const router = useRouter();
+  const { isAuthenticated, role } = useAuth();
+
+  let dashboardUrl = '/';
+  if (role === 'Admin') dashboardUrl = '/admin/dashboard';
+  else if (role === 'DonorOrganization') dashboardUrl = '/donor-organization/dashboard';
+  else if (role === 'Charity') dashboardUrl = '/charity/dashboard';
+
   return (
     <nav className='navbar'>
-
-      {/* guest view */}
-      {/* <div className='logo'>
-        <Image src="/logo-white.png" alt="وافر" width={99.72} height={35} className='logoImg' priority />
-        <div className='brandDivider' />
-        <span className='tagline'>وفَّــــــرنـــــاهــــا عـــــلــــيــــكـ</span>
-      </div>
-      <div className='actions'>
-        <button className='loginBtn'>تـــســجيل الــدخــول</button>
-        <button className='registerBtn'>الإشـــــتــــــراك</button>
-      </div> */}
-
-      {/* other view */}
-      <div className='nav-other glass'>
-        <div className='other-wafer'>
-          <Image alt='icon' src='/logo-black.png' width={85} height={35}></Image>
-          <div className='divider' />
-          <span className='other-tagline'>وفَّــــــرنـــــاهــــا عـــــلــــيــــكـ</span>
+      {!isAuthenticated ? (
+        <>
+          <div className='logo'>
+            <Image src="/logo-white.png" alt="وافر" width={99.72} height={35} className='logoImg' priority />
+            <div className='brandDivider' />
+            <span className='tagline'>وفَّــــــرنـــــاهــــا عـــــلــــيــــكـ</span>
+          </div>
+          <div className='actions'>
+            <button className='loginBtn' onClick={() => router.push('/login')}>تـــســجيل الــدخــول</button>
+            <button className='registerBtn' onClick={() => router.push('/register')}>الإشـــــتــــــراك</button>
+          </div>
+        </>
+      ) : (
+        <div className='nav-other glass'>
+          <div className='other-wafer'>
+            <Image alt='icon' src='/logo-black.png' width={85} height={35}></Image>
+            <div className='divider' />
+            <span className='other-tagline'>وفَّــــــرنـــــاهــــا عـــــلــــيــــكـ</span>
+          </div>
+          <button type="button" onClick={() => router.push(dashboardUrl)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}>
+            <Image alt='icon' src='/frame.png' width={40.54} height={39.69}></Image>
+          </button>
         </div>
-        <button type="button"><Image alt='icon' src='/frame.png' width={40.54} height={39.69}></Image></button>
-      </div>
-
+      )}
     </nav>
   );
 }

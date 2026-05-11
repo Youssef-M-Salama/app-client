@@ -51,21 +51,20 @@ export default function Home() {
     <div className='home'>
       {/* hero */}
       <div className='hero'>
-        <span className='hero-txt'>ابــــــــدأ
-          رحلــــــــــــتــك </span>
-
-        {/* other view => comment (hero-btn & btn up) */}
-        {/* <span className='hero-txt'>ابــــــــدأ 
-                  رحلــــــــــــتــك
-                  الأن </span> */}
-
-        <button className='hero-btn' href='' >
-          <span>مــن هــنــــــا......</span>
-          <div className='hero-arrow'>
-            <Image src='/arrow-right.png' alt='arrow' width={24} height={24}></Image>
-            <Image className='ellipse' src='/Ellipse 12.png' alt='ellipse shadow' width={21} height={21}></Image>
-          </div>
-        </button>
+        {!isAuthenticated ? (
+          <>
+            <span className='hero-txt'>ابــــــــدأ<br />رحلــــــــــــتــك </span>
+            <button className='hero-btn' onClick={() => window.location.href = '/register'}>
+              <span>مــن هــنــــــا......</span>
+              <div className='hero-arrow'>
+                <Image src='/arrow-right.png' alt='arrow' width={24} height={24}></Image>
+                <Image className='ellipse' src='/Ellipse 12.png' alt='ellipse shadow' width={21} height={21}></Image>
+              </div>
+            </button>
+          </>
+        ) : (
+          <span className='hero-txt'>ابــــــــدأ<br />رحلــــــــــــتــك<br />الأن </span>
+        )}
       </div>
       <div className='cover-layout'>
         <Image alt='cover-layout' src='/bg-img2.png' width={611.15} height={781.11} className='cover-layout-img'></Image>
@@ -286,15 +285,17 @@ export default function Home() {
       </div>
 
       {/* page-6 */}
-      <div className='page-6'>
-        <span className='pg-6-header'>سارع الأن بالتســجـــيــــــــل !</span>
-        <span className='pg-6-head'>و كن جزءاً من مجتمع <span className='span-wafer'>وَافــــــر</span> الكبير </span>
-        <Link href={''} className='pg-6-brd'>اشـــتـــرك الأن</Link>
-        <Image alt='icon' className='p-6-img' src='/frame-275.png' width={731} height={731}></Image>
-      </div>
+      {!isAuthenticated && (
+        <div className='page-6'>
+          <span className='pg-6-header'>سارع الأن بالتســجـــيــــــــل !</span>
+          <span className='pg-6-head'>و كن جزءاً من مجتمع <span className='span-wafer'>وَافــــــر</span> الكبير </span>
+          <Link href={'/register'} className='pg-6-brd'>اشـــتـــرك الأن</Link>
+          <Image alt='icon' className='p-6-img' src='/frame-275.png' width={731} height={731}></Image>
+        </div>
+      )}
 
       {/* footer */}
-      <footer className='footer'>
+      <footer className='footer' style={{ top: isAuthenticated ? '6000.8px' : '6500.8px' }}>
         <div className='sub'>
           <span className='sub-head'>اشــتــرك الأن</span>
           <div className='sub-input'>
