@@ -49,34 +49,7 @@ export default function BrowseCard({ item, onApply }) {
         <p className={styles.cardCategory}>{orgName}</p>
 
         <div className={styles.cardDetails}>
-          {item.priority !== undefined && (
-            <span className={styles[`priority${item.priority}`]}>
-              الأولوية: {mapPriority(item.priority)}
-            </span>
-          )}
-          {item.expiryDate && (
-            <span style={{ color: '#d32f2f', fontWeight: 'bold' }}>
-              تاريخ الانتهاء: {new Date(item.expiryDate).toLocaleDateString("ar-EG")}
-            </span>
-          )}
           <span>الكمية: {(item.quantity || 1).toLocaleString("ar-EG")} {mapUnit(item.unit)}</span>
-          <span>الموقع: {location}</span>
-          <span>البريد: {email !== "غير متوفر" ? <a href={`mailto:${email}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{email}</a> : email}</span>
-          <span>هاتف: <span style={{ direction: 'ltr', display: 'inline-block' }}>{phone !== "غير متوفر" ? <a href={`tel:${phone}`} style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{phone}</a> : phone}</span></span>
-          {whatsapp && (
-            <span>
-              <i className="fa-brands fa-whatsapp" style={{ color: '#25D366', marginLeft: '4px' }}></i>
-              واتساب:{" "}
-              <a
-                href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ direction: 'ltr', display: 'inline-block', color: '#25D366', fontWeight: '600', textDecoration: 'none' }}
-              >
-                {whatsapp}
-              </a>
-            </span>
-          )}
         </div>
 
         <p className={styles.cardDesc}>{description}</p>

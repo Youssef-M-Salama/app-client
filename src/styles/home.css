@@ -540,6 +540,38 @@
   z-index: 1000;
 }
 
+@keyframes floatIcon {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(3deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.sec-page > img {
+  animation: floatIcon 3s ease-in-out infinite;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+}
+
+.sec-page > img:nth-child(2n) {
+  animation-duration: 2.5s;
+  animation-delay: 0.5s;
+}
+
+.sec-page > img:nth-child(3n) {
+  animation-duration: 3.5s;
+  animation-delay: 1s;
+}
+
+.sec-page > img:nth-child(5n) {
+  animation-duration: 2.2s;
+  animation-delay: 0.2s;
+}
+
+.sec-page > img:hover {
+  transform: scale(1.1) translateY(-10px) rotate(5deg) !important;
+  animation-play-state: paused;
+}
+
 /* 3-page */
 .page-3 {
   background-color: #fff;

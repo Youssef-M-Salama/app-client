@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import styles from "@/styles/dashboard/browse.module.css";
 import globalPostsStyles from "@/styles/dashboard/posts.module.css"; 
-import { mapPriority } from "@/utils/enumMapper";
+import { mapPriority, mapCategory, mapUnit } from "@/utils/enumMapper";
 
 export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, isSubmitting }) {
   useEffect(() => {
@@ -21,6 +21,10 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
   const phone = itemData.phone || itemData.contactPhone || "غير متوفر";
   const whatsapp = itemData.whatsapp;
   const email = itemData.email || itemData.contactEmail || "غير متوفر";
+  const categoryStr = itemData.category !== undefined ? mapCategory(itemData.category) : "";
+  const expiryDate = itemData.expiryDate ? new Date(itemData.expiryDate).toLocaleDateString("ar-EG") : null;
+  const quantity = itemData.quantity || 1;
+  const unitStr = mapUnit(itemData.unit);
 
   return (
     <div className={globalPostsStyles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -48,6 +52,22 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <span style={{ color: "#777", fontWeight: "500" }}>الأولوية:</span>
                 <span style={{ fontWeight: "600", color: "#333", fontSize: "15px" }}>{priorityText}</span>
+              </div>
+            )}
+            {categoryStr && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "#777", fontWeight: "500" }}>الفئة:</span>
+                <span style={{ fontWeight: "600", color: "#333", fontSize: "15px" }}>{categoryStr}</span>
+              </div>
+            )}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span style={{ color: "#777", fontWeight: "500" }}>الكمية:</span>
+              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px" }}>{quantity.toLocaleString("ar-EG")} {unitStr}</span>
+            </div>
+            {expiryDate && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "#777", fontWeight: "500" }}>تاريخ الانتهاء:</span>
+                <span style={{ fontWeight: "600", color: "#d32f2f", fontSize: "15px" }}>{expiryDate}</span>
               </div>
             )}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
