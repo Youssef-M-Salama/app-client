@@ -21,11 +21,6 @@ const getImageUrl = (path) => {
 
 export default function Home() {
   const { isAuthenticated, role } = useAuth();
-  
-  let dashboardUrl = '/';
-  if (role === 'Admin') dashboardUrl = '/admin/dashboard';
-  else if (role === 'DonorOrganization') dashboardUrl = '/donor-organization/dashboard';
-  else if (role === 'Charity') dashboardUrl = '/charity/dashboard';
 
   const [offers, setOffers] = useState([]);
   const [needs, setNeeds] = useState([]);
@@ -193,9 +188,9 @@ export default function Home() {
                     <br />
                     {!isAuthenticated ? (
                       <Link href="/register" className='tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
-                    ) : (
-                      <Link href={dashboardUrl} className='tafasel'>......اذهب اللي dashboard للمزيد </Link>
-                    )}
+                    ) : role !== 'Admin' ? (
+                      <Link href="/browse" className='tafasel'>......اذهب إلى التصفح للمزيد </Link>
+                    ) : null}
                   </span>
                   <span className='card-date'>{date}</span>
                 </div>
@@ -229,9 +224,9 @@ export default function Home() {
                   <br />
                   {!isAuthenticated ? (
                     <Link href="/register" className='tafasel-posts'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
-                  ) : (
-                    <Link href={dashboardUrl} className='tafasel-posts'>......اذهب اللي dashboard للمزيد </Link>
-                  )}
+                  ) : role !== 'Admin' ? (
+                    <Link href="/browse" className='tafasel-posts'>......اذهب إلى التصفح للمزيد </Link>
+                  ) : null}
                 </span>
                 <span className='main-date'>
                   {offers[0].createdAt ? new Date(offers[0].createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
@@ -262,9 +257,9 @@ export default function Home() {
                     <br />
                     {!isAuthenticated ? (
                       <Link href="/register" className='post-tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
-                    ) : (
-                      <Link href={dashboardUrl} className='post-tafasel'>......اذهب اللي dashboard للمزيد </Link>
-                    )}
+                    ) : role !== 'Admin' ? (
+                      <Link href="/browse" className='post-tafasel'>......اذهب إلى التصفح للمزيد </Link>
+                    ) : null}
                   </span>
                   <span className='post-date'>
                     {offer.createdAt ? new Date(offer.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}

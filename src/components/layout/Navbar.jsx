@@ -10,10 +10,8 @@ export default function Navbar() {
   const router = useRouter();
   const { isAuthenticated, role } = useAuth();
 
-  let dashboardUrl = '/';
-  if (role === 'Admin') dashboardUrl = '/admin/dashboard';
-  else if (role === 'DonorOrganization') dashboardUrl = '/donor-organization/dashboard';
-  else if (role === 'Charity') dashboardUrl = '/charity/dashboard';
+  let profileUrl = '/profile';
+  if (role === 'Admin') profileUrl = '/admin/users';
 
   return (
     <nav className='navbar'>
@@ -36,7 +34,7 @@ export default function Navbar() {
             <div className='divider' />
             <span className='other-tagline'>وفَّــــــرنـــــاهــــا عـــــلــــيــــكـ</span>
           </div>
-          <button type="button" onClick={() => router.push(dashboardUrl)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}>
+          <button type="button" onClick={() => router.push(profileUrl)} style={{ border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}>
             <Image alt='icon' src='/frame.png' width={40.54} height={39.69}></Image>
           </button>
         </div>
