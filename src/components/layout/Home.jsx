@@ -1,11 +1,43 @@
-import React from 'react'
+'use client';
+
+import React, { useState, useEffect } from 'react'
 import "@/styles/home.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeftLong } from '@fortawesome/free-solid-svg-icons';
 import Image from 'next/image';
 import Link from 'next/link';
+import offersService from '@/services/offersService';
+import charityNeedsService from '@/services/charityNeedsService';
+import apiClient from '@/services/apiClient';
+
+const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith("http")) return path;
+  const baseUrl = apiClient.defaults.baseURL;
+  return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+};
 
 export default function Home() {
+  const [offers, setOffers] = useState([]);
+  const [needs, setNeeds] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const offersRes = await offersService.getPublicOffers({ Page: 1, PageSize: 4 });
+        const offersPayload = offersRes.data || offersRes.Data || [];
+        setOffers(Array.isArray(offersPayload) ? offersPayload : (offersPayload.items || offersPayload.Items || []));
+
+        const needsRes = await charityNeedsService.getPublicCharityNeeds({ Page: 1, PageSize: 4 });
+        const needsPayload = needsRes.data || needsRes.Data || [];
+        setNeeds(Array.isArray(needsPayload) ? needsPayload : (needsPayload.items || needsPayload.Items || []));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, []);
+
   return (
     <div className='home'>
       {/* hero */}
@@ -131,146 +163,89 @@ export default function Home() {
       <div className='page-3'>
         <span className='pg-3-txt'>بعض منشــــورات الجـمعيات الخيرية : </span>
         <div className='cards-cont'>
-
-          <div className='card'>
-            <Image alt='icon' className='card-1-img' src='/card-1.png' width={517} height={524}></Image>
-            <div className='card-txt-cont'>
-              <span className='card-header'>مؤسســــة مصـــر الــخـــيـــر</span>
-              <span className='card-txt'>
-                تبحث المؤسسة عن أغراض للشتاء
-                <br /> <br />
-                أغطية _ بطاطين _ جواكيت و غيرهم
-                <br /> <br />
-                نحتاج إلى كمية (20-50 مستلزمات الشتاء)عاجلاً نظراً إلى العديد من
-                <br /> <br />
-                الأزمات الحالية و شدة برودة الشتاء
-                <br /> <br />
-                رقـــم التـــواصـــل 326 647 965+ <span className='tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
-              </span>
-              <span className='card-date'>
-                15 فـــبــراير, 2026
-              </span>
-            </div>
-          </div>
-
-          <div className='card'>
-            <Image alt='icon' className='card-1-img' src='/card-2.png' width={517} height={524}></Image>
-            <div className='card-txt-cont'>
-              <span className='card-header'>مؤسســــة ميـــجـــا خـــيـــر</span>
-              <span className='card-txt'>
-                تبحث المؤسسة عن أدوات صحية
-                <br /> <br />
-                مواد تعقيم و ضمادات و أدوية لعلاج نزلات البرد  و غيرهم
-                <br /> <br />
-                نحتاج إليهم فى غضون أسبوع لوجود حالات
-                <br /> <br />
-                فى حاجة شديدة لهذه الأدوات
-                <br /> <br />
-                رقـــم التـــواصـــل 485 223 965+ ......عرض المزيد من التفـــاصـــيـــل
-              </span>
-              <span className='card-date'>
-                10 مـــــارس, 2026
-              </span>
-            </div>
-          </div>
-
-          <div className='card'>
-            <Image alt='icon' className='card-1-img' src='/card-3.png' width={517} height={524}></Image>
-            <div className='card-txt-cont'>
-              <span className='card-header'>بــــنــــك الـــطـــعـــام الـــمـــصـــري</span>
-              <span className='card-txt'>
-                يبحث بنك الطعام عن مواد غذائية
-                <br /> <br />
-                مواد غذائية تصلح للإستخدام (لحوم_ أرز_ خبز_ و غيرهم)
-                <br /> <br />
-                لتجهيز حقائب و كراتين رمضان و توزيعها للأشخاص المستحقين فى خلال
-                <br /> <br />
-                شهر رمضان المبارك
-                <br /> <br />
-                رقـــم التـــواصـــل 885 364 965+ ......عرض المزيد من التفـــاصـــيـــل
-              </span>
-              <span className='card-date'>
-                20 فـــبــراير, 2026
-              </span>
-            </div>
-          </div>
-
+          {needs.map((need, index) => {
+            const rawImg = need.productImage || need.imageUrl || need.image;
+            const imageSrc = getImageUrl(rawImg) || '/card-1.png';
+            const charityName = need.charityName || need.organizationName || 'جمعية خيرية';
+            const date = need.createdAt ? new Date(need.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد';
+            
+            return (
+              <div className='card' key={need.id || index}>
+                <img alt='icon' className='card-1-img' src={imageSrc} style={{ width: 517, height: 524, objectFit: 'contain', backgroundColor: 'transparent' }} />
+                <div className='card-txt-cont'>
+                  <span className='card-header'>{charityName}</span>
+                  <span className='card-txt'>
+                    {need.description || 'يبحثون عن تبرعات'}
+                    <br /> <br />
+                    {need.productName}
+                    <br /> <br />
+                    الكمية المطلوبة: {need.quantity}
+                    <br /> <br />
+                    رقـــم التـــواصـــل {need.phone || need.whatsapp || 'غير متوفر'} <span className='tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
+                  </span>
+                  <span className='card-date'>{date}</span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
       {/* page 4 */}
       <div className='page-4'>
         <span className='pg-4-txt'>بعض منشــــورات المؤســـســـات الإنتــــاجــيــــة : </span>
         <div className='posts-cont'>
-          <div className='main-post'>
-            <Image alt='icon' className='main-p-img' src='/main-post.png' width={550.54} height={481.99}></Image>
-            <div className='main-post-txt'>
-              <span className='main-header'>مـــصـــنـــع المـــغــربي للأحــــذيـــة</span>
-              <span className='main-txt'>
-                مـــتوفر كمية من الأحذية فائضة (75 حـــذاء  )
-                <br />
-                صلاحيــة هذه الكمية : صـــالحة حتي 5 / 5 / 2026
-                <br />
-                مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
-                <br />
-                رقـــم التـــواصـــل 365 447 965+ <span className='tafasel-posts'>......عرض المزيد من التفـــاصـــيـــل </span>
-              </span>
-              <span className='main-date'>10 مـــــارس, 2026</span>
+          {offers.length > 0 && (
+            <div className='main-post'>
+              <img 
+                alt='icon' 
+                className='main-p-img' 
+                src={getImageUrl(offers[0].productImage || offers[0].imageUrl || offers[0].image) || '/main-post.png'} 
+                style={{ width: 550.54, height: 481.99, objectFit: 'contain', backgroundColor: 'transparent' }}
+              />
+              <div className='main-post-txt'>
+                <span className='main-header'>{offers[0].donorName || offers[0].organizationName || 'مؤسسة إنتاجية'}</span>
+                <span className='main-txt'>
+                  مـــتوفر كمية فائضة من {offers[0].productName} ({offers[0].quantity})
+                  <br />
+                  صلاحيــة هذه الكمية : صـــالحة حتي {offers[0].expiryDate ? new Date(offers[0].expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
+                  <br />
+                  مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
+                  <br />
+                  رقـــم التـــواصـــل {offers[0].phone || offers[0].whatsapp || 'غير متوفر'} <span className='tafasel-posts'>......عرض المزيد من التفـــاصـــيـــل </span>
+                </span>
+                <span className='main-date'>
+                  {offers[0].createdAt ? new Date(offers[0].createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className='more-posts'>
-
-            <div className='post'>
-              <Image alt='icon' className='p-img' src='/post-3.png' width={432.7} height={243.39}></Image>
-              <div className='post-text'>
-                <span className='post-header'>مـــصـــنـــع أرز الـــدلـــتـــا </span>
-                <span className='post-txt'>
-                  مـــتوفر كمية من الأرز فائضة (30 كـــيلو جرام)
-                  <br /><br />
-                  صلاحيــة هذه الكمية : صـــالحة حتي 5 / 4 / 2026
-                  <br /><br />
-                  مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
-                  <br /><br />
-                  رقـــم التـــواصـــل225 974 965+ <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
-                </span>
-                <span className='post-date'>30 ديـــســـمـــبر, 2026</span>
+            {offers.slice(1).map((offer, index) => (
+              <div className='post' key={offer.id || index}>
+                <img 
+                  alt='icon' 
+                  className='p-img' 
+                  src={getImageUrl(offer.productImage || offer.imageUrl || offer.image) || '/post-3.png'} 
+                  style={{ width: 432.7, height: 243.39, objectFit: 'contain', backgroundColor: 'transparent' }}
+                />
+                <div className='post-text'>
+                  <span className='post-header'>{offer.donorName || offer.organizationName || 'مؤسسة إنتاجية'}</span>
+                  <span className='post-txt'>
+                    مـــتوفر كمية فائضة من {offer.productName} ({offer.quantity})
+                    <br /><br />
+                    صلاحيــة هذه الكمية : صـــالحة حتي {offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
+                    <br /><br />
+                    مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
+                    <br /><br />
+                    رقـــم التـــواصـــل {offer.phone || offer.whatsapp || 'غير متوفر'} <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
+                  </span>
+                  <span className='post-date'>
+                    {offer.createdAt ? new Date(offer.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
+                  </span>
+                </div>
               </div>
-            </div>
-
-            <div className='post'>
-              <Image alt='icon' className='p-img' src='/post-2.png' width={432.7} height={243.39}></Image>
-              <div className='post-text'>
-                <span className='post-header'>مــــصــــنـــع حــــديـــــد عـــــــــــز</span>
-                <span className='post-txt'>
-                  مـــتوفر مبالغ مالية للتبرعات للمؤسسات الخيرية (ما يقارب 70 ألف جنيه)
-                  <br /><br />
-                  صلاحيــة هذه الأموال : صـــالحة حتي 20 / 4 / 2026
-                  <br /><br />
-                  مدة العرض : الأموال متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
-                  <br /><br />
-                  رقـــم التـــواصـــل 885 364 965+ <span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
-                </span>
-                <span className='post-date'>5 فـــبــراير, 2026</span>
-              </div>
-            </div>
-
-            <div className='post'>
-              <Image alt='icon' className='p-img' src='/post-1.png' width={432.7} height={243.39}></Image>
-              <div className='post-text'>
-                <span className='post-header'> شـــركـــة جـــلوبـــال فــــروتــــس</span>
-                <span className='post-txt'>
-                  مـــتوفر كمية من الخضراوات (جميع الأنواع) (حوالي 60 كـــيلو جرام)
-                  <br /><br />
-                  صلاحيــة هذه الكمية : صـــالحة حتي 15 / 4 / 2026
-                  <br /><br />
-                  مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
-                  <br /><br />
-                  رقـــم التـــواصـــل 885 364 965+<span className='post-tafasel'>......عرض المزيد من التفـــاصـــيـــل </span>
-                </span>
-                <span className='post-date'>20 فـــبــراير, 2026</span>
-              </div>
-            </div>
-
+            ))}
           </div>
         </div>
       </div>
