@@ -267,7 +267,7 @@ export default function Home() {
                 alt='icon'
                 className='main-p-img'
                 src={getImageUrl(offers[0].productImage || offers[0].imageUrl || offers[0].image) || '/main-post.png'}
-                style={{ width: 550.54, height: 481.99, objectFit: 'contain', backgroundColor: 'transparent' }}
+                style={{ width: 450, height: 380, objectFit: 'contain', backgroundColor: 'transparent' }}
               />
               <div className='main-post-txt'>
                 <span className='main-header'>{offers[0].donorOrganizationName || offers[0].organizationName || 'مؤسسة إنتاجية'}</span>

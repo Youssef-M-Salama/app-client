@@ -112,7 +112,7 @@
   padding: 16px 20px;
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
@@ -129,12 +129,10 @@
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.8),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.8),
+      transparent);
 }
 
 .glass-card::after,
@@ -145,12 +143,10 @@
   left: 0;
   width: 1px;
   height: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.8),
-    transparent,
-    rgba(255, 255, 255, 0.3)
-  );
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.8),
+      transparent,
+      rgba(255, 255, 255, 0.3));
 }
 
 .r-infos {
@@ -257,7 +253,7 @@
 .r-3 {
   display: flex;
   align-items: center;
-  justify-content: space-around;
+  justify-content: center;
   width: 300px;
   height: 40px;
   position: absolute;
@@ -265,15 +261,16 @@
   left: 935px;
   border-radius: 24px;
   padding: 8px 16px;
-  gap: 8px;
+  gap: 10px;
 }
 
 .r-3-txt {
   width: auto;
   white-space: nowrap;
-  height: 15px;
   font-size: 13px;
   font-weight: var(--font-weight-regular);
+  display: flex;
+  align-items: center;
 }
 
 
@@ -353,7 +350,7 @@
   border-radius: 24px 24px 0 24px;
   padding: 8px;
   border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
+  box-shadow:
     0 8px 32px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.5),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1),
@@ -375,7 +372,7 @@
   flex-direction: column;
   justify-content: space-between;
   width: 623px;
-  height: 216px;
+  height: 225px;
   position: absolute;
   top: 753px;
   left: 24px;
@@ -542,33 +539,41 @@
 }
 
 @keyframes floatIcon {
-  0% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(3deg); }
-  100% { transform: translateY(0px) rotate(0deg); }
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-15px) rotate(3deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
 }
 
-.sec-page > img {
+.sec-page>img {
   animation: floatIcon 3s ease-in-out infinite;
   transition: transform 0.3s ease;
   cursor: pointer;
 }
 
-.sec-page > img:nth-child(2n) {
+.sec-page>img:nth-child(2n) {
   animation-duration: 2.5s;
   animation-delay: 0.5s;
 }
 
-.sec-page > img:nth-child(3n) {
+.sec-page>img:nth-child(3n) {
   animation-duration: 3.5s;
   animation-delay: 1s;
 }
 
-.sec-page > img:nth-child(5n) {
+.sec-page>img:nth-child(5n) {
   animation-duration: 2.2s;
   animation-delay: 0.2s;
 }
 
-.sec-page > img:hover {
+.sec-page>img:hover {
   transform: scale(1.1) translateY(-10px) rotate(5deg) !important;
   animation-play-state: paused;
 }
@@ -700,7 +705,7 @@
 
 .main-post {
   width: 1360px;
-  height: 481.99px;
+  height: 380px;
   display: flex;
   /* justify-content: space-between; */
   gap: 40px;
@@ -709,39 +714,39 @@
 
 .main-post-txt {
   width: 808.97px;
-  height: 481.99px;
+  height: 380px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .main-header {
-  font-size: 42.99px;
+  font-size: 32px;
   font-weight: var(--font-weight-bold);
   width: 773.79px;
-  height: 66px;
+  height: auto;
 }
 
 .main-txt {
   width: 773.79px;
-  height: 196px;
-  font-size: 26.05px;
+  height: auto;
+  font-size: 20px;
   font-weight: var(--font-weight-regular);
   color: rgba(98, 95, 104, 1);
 }
 
 .tafasel-posts {
-  font-size: 27px;
+  font-size: 22px;
   font-weight: var(--font-weight-bold);
   text-decoration: underline;
 }
 
 .main-date {
   color: rgba(168, 166, 172, 1);
-  font-size: 23.45px;
+  font-size: 18px;
   font-weight: var(--font-weight-regular);
   width: 773.79px;
-  height: 74px;
+  height: auto;
 }
 
 .more-posts {
@@ -751,7 +756,7 @@
   flex-direction: row;
   justify-content: space-between;
   position: absolute;
-  top: 530px;
+  top: 420px;
 }
 
 .post {
