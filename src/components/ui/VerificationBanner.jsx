@@ -18,21 +18,21 @@ const VerificationBanner = () => {
           title: "حسابك قيد الانتظار",
           message: "شكراً لتسجيلك! حسابك الآن بانتظار المراجعة من قبل الإدارة. ستتمكن من استخدام كافة المميزات قريباً.",
           type: "pending",
-          icon: "fa-solid fa-clock"
+          icon: "fa-solid fa-hourglass-start"
         };
       case 1: // InReview
         return {
           title: "حسابك قيد المراجعة",
-          message: "يقوم فريق الإدارة حالياً بمراجعة مستنداتك. سنقوم بتفعيل حسابك في أقرب وقت ممكن.",
+          message: "يقوم فريق الإدارة حالياً بمراجعة مستنداتك وتوثيق حسابك. سنقوم بإبلاغك فور الانتهاء.",
           type: "review",
-          icon: "fa-solid fa-magnifying-glass"
+          icon: "fa-solid fa-magnifying-glass-chart"
         };
       case 3: // Rejected
         return {
-          title: "تم رفض طلب التوثيق",
-          message: "نأسف لإبلاغك بأنه تم رفض طلب توثيق حسابك. يرجى التواصل مع الدعم الفني لمعرفة الأسباب.",
+          title: "تم رفض التوثيق",
+          message: "نأسف، تم رفض طلب توثيق حسابك بسبب نقص في البيانات أو المستندات. يرجى مراجعة قسم التوثيق في ملفك الشخصي.",
           type: "rejected",
-          icon: "fa-solid fa-circle-xmark"
+          icon: "fa-solid fa-circle-exclamation"
         };
       default:
         return null;

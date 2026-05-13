@@ -3,11 +3,14 @@
 import React, { useState, useEffect } from 'react';
 import ProfileBanner from '@/components/cards/ProfileBanner';
 import ProfileForm from '@/components/forms/ProfileForm';
+import VerificationForm from '@/components/forms/VerificationForm';
 import profileService from '@/services/profileService';
+import { useAuth } from '@/context/AuthContext';
 import { useAlert } from '@/context/AlertContext';
 import styles from '@/styles/profile/ProfilePage.module.css';
 
 export default function ProfilePage() {
+  const { role } = useAuth();
   const { showToast, showAlert } = useAlert();
 
   // ── Profile state ──────────────────────────────────────────────
@@ -131,6 +134,13 @@ export default function ProfilePage() {
             onSave={handleProfileSave}
           />
         </div>
+
+        {/* ── Verification Section ── */}
+        {role !== 'Admin' && (
+          <div className={styles.content} style={{ borderTop: '1px solid #eee' }}>
+            <VerificationForm profile={profile} />
+          </div>
+        )}
 
       </div>
     </div>

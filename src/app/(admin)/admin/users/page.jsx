@@ -113,8 +113,83 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onReview, onReject }
   );
 }
 
+// ── Verification Info Helper ────────────────────────────────────
+function renderVerificationInfo(user) {
+  const isCharity = user.role === 0;
+  const isDonor = user.role === 1;
+  const data = isCharity ? (user.charityData || user.CharityData) : (user.donorData || user.DonorData);
+
+  if (!data) return null;
+
+  const InfoRow = ({ label, value }) => (
+    <div className={styles.infoItem}>
+      <span className={styles.infoLabel}>{label}</span>
+      <span className={styles.infoValue}>{value || "غير متوفر"}</span>
+    </div>
+  );
+
+  const DocLink = ({ label, url }) => (
+    <div className={styles.infoItem}>
+      <span className={styles.infoLabel}>{label}</span>
+      {url ? (
+        <a href={url} target="_blank" rel="noopener noreferrer" className={styles.pdfLink}>
+          <i className="fa-solid fa-file-pdf"></i> عرض المستند
+        </a>
+      ) : (
+        <span className={styles.infoValue} style={{ color: "var(--color-text-muted)", fontSize: "0.85rem" }}>
+          لم يتم إرفاق هذا الملف
+        </span>
+      )}
+    </div>
+  );
+
+  return (
+    <div className={styles.verificationSection}>
+      <h4 className={styles.sectionTitle}>
+        <i className="fa-solid fa-shield-halved"></i> بيانات التوثيق والمستندات
+      </h4>
+      
+      <div className={styles.infoGrid}>
+        {isCharity && (
+          <>
+            <InfoRow label="رقم التسجيل" value={data.registrationNumber || data.RegistrationNumber} />
+            <InfoRow label="تاريخ التسجيل" value={data.registrationDate ? new Date(data.registrationDate).toLocaleDateString("ar-EG") : (data.RegistrationDate ? new Date(data.RegistrationDate).toLocaleDateString("ar-EG") : null)} />
+            <InfoRow label="عنوان المقر" value={data.headquartersAddress || data.HeadquartersAddress} />
+            <InfoRow label="المفوض" value={data.authorizedPersonName || data.AuthorizedPersonName} />
+            <InfoRow label="منصب المفوض" value={data.authorizedPersonPosition || data.AuthorizedPersonPosition} />
+            
+            <DocLink label="شهادة التسجيل" url={data.registrationCertificateUrl || data.RegistrationCertificateUrl} />
+            <DocLink label="لائحة النظام" url={data.bylawsUrl || data.BylawsUrl} />
+            <DocLink label="قائمة المؤسسين" url={data.foundersListUrl || data.FoundersListUrl} />
+            <DocLink label="أعضاء مجلس الإدارة" url={data.boardMembersListUrl || data.BoardMembersListUrl} />
+            <DocLink label="إثبات المقر" url={data.headquartersProofUrl || data.HeadquartersProofUrl} />
+            <DocLink label="وثيقة التفويض" url={data.delegationDocumentUrl || data.DelegationDocumentUrl} />
+          </>
+        )}
+
+        {isDonor && (
+          <>
+            <InfoRow label="رقم السجل التجاري" value={data.commercialRegistrationNumber || data.CommercialRegistrationNumber} />
+            <InfoRow label="تاريخ السجل" value={data.commercialRegistrationDate ? new Date(data.commercialRegistrationDate).toLocaleDateString("ar-EG") : (data.CommercialRegistrationDate ? new Date(data.CommercialRegistrationDate).toLocaleDateString("ar-EG") : null)} />
+            <InfoRow label="الرقم الضريبي" value={data.taxNumber || data.TaxNumber} />
+            <InfoRow label="رقم الرخصة" value={data.businessLicenseNumber || data.BusinessLicenseNumber} />
+            <InfoRow label="عنوان المقر" value={data.headquartersAddress || data.HeadquartersAddress} />
+
+            <DocLink label="السجل التجاري" url={data.commercialRegisterUrl || data.CommercialRegisterUrl} />
+            <DocLink label="البطاقة الضريبية" url={data.taxCardUrl || data.TaxCardUrl} />
+            <DocLink label="رخصة العمل" url={data.businessLicenseUrl || data.BusinessLicenseUrl} />
+            <DocLink label="الحماية المدنية" url={data.civilProtectionApprovalUrl || data.CivilProtectionApprovalUrl} />
+            <DocLink label="الموافقة البيئية" url={data.environmentalApprovalUrl || data.EnvironmentalApprovalUrl} />
+            <DocLink label="عقد الملكية" url={data.ownershipContractUrl || data.OwnershipContractUrl} />
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── User Detail Modal ──────────────────────────────────────────
-function UserDetailModal({ user, onClose }) {
+function UserDetailModal({ user, onClose, onVerify, onReview, onReject, onToggle }) {
   if (!user) return null;
 
   const rawImg = user.imageUrl || user.ImageUrl || user.profileImage || user.ProfileImage || user.profilePicture || user.avatar || user.image || user.Image;
@@ -122,6 +197,8 @@ function UserDetailModal({ user, onClose }) {
   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : "غير معروف";
   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "غير متوفر";
   const status = getVerificationStatus(user.verificationState ?? 0);
+  const state = user.verificationState ?? 0;
+  const userId = user.userId || user.id;
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -204,10 +281,39 @@ function UserDetailModal({ user, onClose }) {
               </div>
             )}
           </div>
+
+          {/* ── Verification Data Section ── */}
+          {renderVerificationInfo(user)}
         </div>
 
         <div className={styles.modalFooter}>
-          <button className={styles.btnPrimary} onClick={onClose}>إغلاق</button>
+          <div className={styles.modalActions}>
+            {(state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
+              <>
+                <button 
+                  className={`${styles.btnAction} ${styles.btnVerify}`} 
+                  onClick={() => { onVerify(userId); onClose(); }}
+                >
+                  <i className="fa-solid fa-check"></i> توثيق
+                </button>
+                <button 
+                  className={`${styles.btnAction} ${styles.btnReject}`} 
+                  onClick={() => { onReject(userId); onClose(); }}
+                >
+                  <i className="fa-solid fa-xmark"></i> رفض
+                </button>
+              </>
+            )}
+            {state === VERIFICATION_STATES.PENDING && (
+              <button 
+                className={`${styles.btnAction} ${styles.btnReview}`} 
+                onClick={() => { onReview(userId); onClose(); }}
+              >
+                <i className="fa-solid fa-magnifying-glass"></i> مراجعة
+              </button>
+            )}
+          </div>
+          <button className={styles.btnSecondary} onClick={onClose}>إغلاق</button>
         </div>
       </div>
     </div>
@@ -595,6 +701,10 @@ export default function UsersPage() {
       <UserDetailModal
         user={viewingUser}
         onClose={() => setViewingUser(null)}
+        onVerify={handleVerify}
+        onReview={handleReview}
+        onReject={handleReject}
+        onToggle={handleToggle}
       />
 
     </div>
