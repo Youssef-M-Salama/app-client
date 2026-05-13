@@ -82,8 +82,8 @@ export default function PostsPage() {
   };
 
   // ── Derived ──
-  const filteredPosts = categoryFilter === "جميع الفئات" 
-    ? posts 
+  const filteredPosts = categoryFilter === "جميع الفئات"
+    ? posts
     : posts.filter((p) => mapCategory(p.category) === categoryFilter);
 
   // ── Handlers ──
@@ -205,7 +205,7 @@ export default function PostsPage() {
             id="add-post-btn"
             className={styles.addPostBtn}
             onClick={() => {
-              if (user?.isVerified === false) {
+              if (user?.verificationState !== 2) {
                 showAlert("غير مسموح", "يجب تفعيل حسابك من قبل الإدارة لتتمكن من النشر.", "warning");
                 return;
               }

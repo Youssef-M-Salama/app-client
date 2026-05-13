@@ -5,12 +5,12 @@ import Cookies from 'js-cookie';
 import authService from '@/services/authService';
 
 const AuthContext = createContext({
-  user: null, 
+  user: null,
   isAuthenticated: false,
-  role: null, 
+  role: null,
   isLoading: true,
-  login: async () => {},
-  logout: () => {},
+  login: async () => { },
+  logout: () => { },
 });
 
 export const UserRoleEnum = {
@@ -40,10 +40,10 @@ export const AuthProvider = ({ children }) => {
       try {
         const cachedUser = localStorage.getItem('user');
         const cachedRole = localStorage.getItem('role');
-        
+
         if (cachedUser) setUser(JSON.parse(cachedUser));
         if (cachedRole) setRole(cachedRole); // Already mapped to string when saved
-        
+
         setIsAuthenticated(true);
       } catch (e) {
         console.error("Error reading cached auth data");
@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       // Store the full payload (minus sensitive token fields) as the user object.
-      // This includes: userId, userName, email, role, isVerified, tokenExpiration, etc.
+      // This includes: userId, userName, email, role, verificationState, tokenExpiration, etc.
       const { token: _t, refreshToken: _rt, ...safeUserData } = payload;
       localStorage.setItem('user', JSON.stringify(safeUserData));
       setUser(safeUserData);

@@ -67,7 +67,7 @@ export default function BrowsePage() {
       } else if (data?.data && Array.isArray(data.data)) {
         fetchedItems = data.data;
       }
-      
+
       setItems(fetchedItems);
     } catch (err) {
       setError(err.appMessage || "حدث خطأ أثناء تحميل البيانات.");
@@ -79,7 +79,7 @@ export default function BrowsePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleApplyClick = (item) => {
-    if (user?.isVerified === false) {
+    if (user?.verificationState !== 2) {
       showAlert("حساب غير موثق", "مرحباً! حسابك قيد المراجعة من قبل الإدارة. ستتمكن من تقديم الطلبات بعد الموافقة.", "warning");
       return;
     }

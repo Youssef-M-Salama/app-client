@@ -16,14 +16,37 @@ const getImageUrl = (path) => {
   return `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
 };
 
+const VERIFICATION_STATES = {
+  PENDING: 0,
+  IN_REVIEW: 1,
+  VERIFIED: 2,
+  REJECTED: 3
+};
+
+const getVerificationStatus = (state) => {
+  switch (state) {
+    case VERIFICATION_STATES.PENDING:
+      return { label: "بانتظار المراجعة", className: styles.unverified, color: "#FFC107" };
+    case VERIFICATION_STATES.IN_REVIEW:
+      return { label: "قيد المراجعة", className: styles.inReview, color: "#2196F3" };
+    case VERIFICATION_STATES.VERIFIED:
+      return { label: "موثق", className: styles.verified, color: "#4CAF50" };
+    case VERIFICATION_STATES.REJECTED:
+      return { label: "مرفوض", className: styles.rejected, color: "#F44336" };
+    default:
+      return { label: "غير معروف", className: styles.unverified, color: "#9E9E9E" };
+  }
+};
+
 // ── Row Action Dropdown ──────────────────────────────────────────
-function ActionDropdown({ user, onView, onToggle, onVerify }) {
+function ActionDropdown({ user, onView, onToggle, onVerify, onReview, onReject }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
   const userId = user.userId || user.id;
   const isActive = user.isActive;
-  const isVerified = user.isVerified !== false;
+  const state = user.verificationState ?? 0;
+  const isVerified = state === VERIFICATION_STATES.VERIFIED;
 
   // Check if we have extra information to show
   const hasExtraInfo = !!(user.phone || user.governorate || user.city || user.description || user.address);
@@ -53,12 +76,29 @@ function ActionDropdown({ user, onView, onToggle, onVerify }) {
           >
             <i className="fa-solid fa-file-lines" style={{ marginLeft: '8px' }}></i> عرض التفاصيل
           </button>
-          {!isVerified && (
+          {state === VERIFICATION_STATES.PENDING && (
+            <button
+              className={styles.dropdownItem}
+              onClick={() => { onReview(userId); setOpen(false); }}
+            >
+              <i className="fa-solid fa-magnifying-glass" style={{ marginLeft: '8px' }}></i> نقل للمراجعة
+            </button>
+          )}
+          {(state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
             <button
               className={styles.dropdownItem}
               onClick={() => { onVerify(userId); setOpen(false); }}
             >
               <i className="fa-solid fa-check" style={{ marginLeft: '8px' }}></i> توثيق الحساب
+            </button>
+          )}
+          {(state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
+            <button
+              className={styles.dropdownItem}
+              onClick={() => { onReject(userId); setOpen(false); }}
+              style={{ color: 'var(--color-error)' }}
+            >
+              <i className="fa-solid fa-xmark" style={{ marginLeft: '8px' }}></i> رفض الحساب
             </button>
           )}
           <button
@@ -81,7 +121,7 @@ function UserDetailModal({ user, onClose }) {
   const avatar = getImageUrl(rawImg) || FALLBACK_IMAGE;
   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : "غير معروف";
   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "غير متوفر";
-  const isVerified = user.isVerified !== false;
+  const status = getVerificationStatus(user.verificationState ?? 0);
 
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
@@ -101,8 +141,8 @@ function UserDetailModal({ user, onClose }) {
               <h4>{user.name}</h4>
               <div className={styles.profileBadges}>
                 <span className={styles.profileRoleBadge}>{roleStr}</span>
-                <span className={`${styles.verificationBadge} ${isVerified ? styles.verified : styles.unverified}`}>
-                  {isVerified ? "موثق" : "بانتظار التوثيق"}
+                <span className={`${styles.verificationBadge} ${status.className}`}>
+                  {status.label}
                 </span>
               </div>
             </div>
@@ -326,16 +366,46 @@ export default function UsersPage() {
   async function handleVerify(id) {
     showConfirm(
       "توثيق الحساب",
-      "هل أنت متأكد من توثيق هذا الحساب؟",
+      "هل أنت متأكد من توثيق هذا الحساب؟ بمجرد التوثيق لا يمكن التراجع.",
       async () => {
         try {
           await adminUsersService.verifyUser(id);
           setUsers((prev) =>
-            prev.map((u) => ((u.userId || u.id) === id ? { ...u, isVerified: true } : u))
+            prev.map((u) => ((u.userId || u.id) === id ? { ...u, verificationState: VERIFICATION_STATES.VERIFIED } : u))
           );
           showToast("تم توثيق الحساب بنجاح", "success");
         } catch (error) {
           showAlert("فشل الإجراء", error.appMessage || "تعذر توثيق المستخدم", "error");
+        }
+      }
+    );
+  }
+
+  async function handleReview(id) {
+    try {
+      await adminUsersService.markUserInReview(id);
+      setUsers((prev) =>
+        prev.map((u) => ((u.userId || u.id) === id ? { ...u, verificationState: VERIFICATION_STATES.IN_REVIEW } : u))
+      );
+      showToast("تم نقل الحساب للمراجعة", "success");
+    } catch (error) {
+      showAlert("فشل الإجراء", error.appMessage || "تعذر تحديث حالة المستخدم", "error");
+    }
+  }
+
+  async function handleReject(id) {
+    showConfirm(
+      "رفض الحساب",
+      "هل أنت متأكد من رفض هذا الطلب؟",
+      async () => {
+        try {
+          await adminUsersService.rejectUser(id);
+          setUsers((prev) =>
+            prev.map((u) => ((u.userId || u.id) === id ? { ...u, verificationState: VERIFICATION_STATES.REJECTED } : u))
+          );
+          showToast("تم رفض الحساب بنجاح", "success");
+        } catch (error) {
+          showAlert("فشل الإجراء", error.appMessage || "تعذر رفض المستخدم", "error");
         }
       }
     );
@@ -467,7 +537,7 @@ export default function UsersPage() {
                   const avatar = getImageUrl(rawImg) || FALLBACK_IMAGE;
                   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : (user.role || "غير معروف");
                   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "";
-                  const isVerified = user.isVerified !== false; // handle nullish
+                  const status = getVerificationStatus(user.verificationState ?? 0);
 
                   return (
                     <tr key={userId}>
@@ -490,15 +560,15 @@ export default function UsersPage() {
                       </td>
                       <td>{roleStr}</td>
                       <td>
-                        <span className={`${styles.badge} ${user.isActive ? styles.badgeActive : styles.badgeInactive}`}>
+                        <span className={`${styles.badge} ${user.isActive ? styles.active : styles.inactive}`}>
                           <span className={styles.badgeDot} />
                           {user.isActive ? "نشط" : "غير نشط"}
                         </span>
                       </td>
                       <td>
-                        <span className={`${styles.badge} ${isVerified ? styles.badgeVerified : styles.badgeUnverified}`}>
+                        <span className={`${styles.badge} ${status.className}`}>
                           <span className={styles.badgeDot} />
-                          {isVerified ? "موثق" : "غير موثق"}
+                          {status.label}
                         </span>
                       </td>
                       <td>{createdAt}</td>
@@ -508,6 +578,8 @@ export default function UsersPage() {
                           onView={handleView}
                           onToggle={handleToggle}
                           onVerify={handleVerify}
+                          onReview={handleReview}
+                          onReject={handleReject}
                         />
                       </td>
                     </tr>

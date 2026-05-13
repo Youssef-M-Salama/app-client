@@ -4,6 +4,7 @@ import { useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import AuthGuard from "@/components/layout/AuthGuard";
+import VerificationBanner from "@/components/ui/VerificationBanner";
 import dashboardStyle from "@/styles/dashboard/dashboard.module.css";
 
 export default function Layout({ children }) {
@@ -35,6 +36,7 @@ export default function Layout({ children }) {
         {/* Main content */}
         <main className={dashboardStyle.mainContent}>
           <Header onMenuToggle={openSidebar} />
+          <VerificationBanner />
           {children}
         </main>
 

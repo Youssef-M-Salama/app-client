@@ -16,6 +16,11 @@ export const adminUsersService = {
     return response.data;
   },
 
+  markUserInReview: async (userId) => {
+    const response = await apiClient.patch('/api/v1/admin/verifications/in-review', { userId });
+    return response.data;
+  },
+
   rejectUser: async (userId) => {
     const response = await apiClient.patch('/api/v1/admin/verifications/reject', { userId });
     return response.data;
