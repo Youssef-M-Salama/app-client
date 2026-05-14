@@ -31,6 +31,27 @@ export default function ProfilePage() {
         const res  = await profileService.getProfile();
         const data = res?.data || res;
         setProfile(data);
+
+        // Keep local storage user object synced for the global VerificationBanner
+        if (data) {
+          try {
+            const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+            let updated = false;
+            
+            if (typeof data.verifyMyAccount === 'boolean') {
+              cachedUser.verifyMyAccount = data.verifyMyAccount;
+              updated = true;
+            }
+            if (data.verificationState !== undefined) {
+              cachedUser.verificationState = data.verificationState;
+              updated = true;
+            }
+            
+            if (updated) {
+              localStorage.setItem('user', JSON.stringify(cachedUser));
+            }
+          } catch (e) { console.error(e); }
+        }
       } catch (err) {
         setFetchError(err.appMessage || 'فشل تحميل الملف الشخصي.');
       } finally {

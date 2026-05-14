@@ -6,7 +6,7 @@ import styles from "@/styles/ui/verification-banner.module.css";
 
 const VerificationBanner = () => {
   const { user } = useAuth();
-  const state = user?.verificationState;
+  const state = user?.verificationState != null ? Number(user.verificationState) : undefined;
 
   // Only show banner if NOT verified (2)
   if (state === 2 || state === undefined) return null;
@@ -14,12 +14,21 @@ const VerificationBanner = () => {
   const getBannerContent = () => {
     switch (state) {
       case 0: // Pending
-        return {
-          title: "حسابك قيد الانتظار",
-          message: "شكراً لتسجيلك! حسابك الآن بانتظار المراجعة من قبل الإدارة. ستتمكن من استخدام كافة المميزات قريباً.",
-          type: "pending",
-          icon: "fa-solid fa-hourglass-start"
-        };
+        if (user?.verifyMyAccount) {
+          return {
+            title: "حسابك قيد الانتظار",
+            message: "لقد قمت بإرسال طلب التوثيق! حسابك الآن بانتظار المراجعة من قبل الإدارة. ستتمكن من استخدام كافة المميزات قريباً.",
+            type: "pending",
+            icon: "fa-solid fa-hourglass-start"
+          };
+        } else {
+          return {
+            title: "يرجى استكمال بيانات التوثيق",
+            message: "يرجى الذهاب إلى ملفك الشخصي لإكمال بيانات التوثيق وحفظها، ثم الضغط على إرسال طلب التوثيق لتمكين كافة مميزات المنصة.",
+            type: "pending",
+            icon: "fa-solid fa-circle-info"
+          };
+        }
       case 1: // InReview
         return {
           title: "حسابك قيد المراجعة",

@@ -48,7 +48,7 @@ function AnimatedNumber({ value, duration = 2000 }) {
       const progress = Math.min((timestamp - startTimestamp) / duration, 1);
       const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
       setCount(Math.floor(easeProgress * end));
-      
+
       if (progress < 1) {
         window.requestAnimationFrame(step);
       } else {
@@ -85,13 +85,13 @@ export default function Home() {
         const needsRes = await charityNeedsService.getPublicCharityNeeds({ Page: 1, PageSize: 4 });
         const needsPayload = needsRes.data || needsRes.Data || [];
         setNeeds(Array.isArray(needsPayload) ? needsPayload : (needsPayload.items || needsPayload.Items || []));
-        
+
         try {
           const statsRes = await apiClient.get('/api/v1/public/statistics');
           if (statsRes.data?.data) {
             setStats(statsRes.data.data);
           } else if (statsRes.data) {
-             setStats(statsRes.data);
+            setStats(statsRes.data);
           }
         } catch (e) {
           console.error("Error fetching stats:", e);
@@ -193,8 +193,8 @@ export default function Home() {
             <div className='l-3-header'><Image alt='icon' src='/Clip-path-group-9.png' width={24} height={24}></Image>
               <span>تم من خلال هذا الموقع : </span></div>
             <span className='l-3-txt'>إنجاز أكثر من <AnimatedNumber value={stats.totalDoneDonation} /> عملية تبرع كاملة بنجاح وتوصيل المساعدات لمستحقيها
-              <br/><br/>تلبية مئات الاحتياجات الأساسية للعائلات من خلال التنسيق بين الجمعيات والمؤسسات
-              <br/><br/>تقديم دعم مستمر لتعزيز التكافل الاجتماعي وتحقيق التنمية المستدامة</span>
+              <br /><br />تلبية مئات الاحتياجات الأساسية للعائلات من خلال التنسيق بين الجمعيات والمؤسسات
+              <br /><br />تقديم دعم مستمر لتعزيز التكافل الاجتماعي وتحقيق التنمية المستدامة</span>
             <span className='l-3-txt-2'>و غيرها من الأعمال الخيرية التى تقام بإستمرار و بمساعدة المؤسسات الإنتاجية المتعددة.</span>
           </div>
         </div>
@@ -262,7 +262,7 @@ export default function Home() {
 
       {/* page 4 - Donor Offers */}
       {offers.length > 0 && (
-        <div className='page-4' style={{ 
+        <div className='page-4' style={{
           top: needs.length === 0 ? '2048px' : (needs.length <= 1 ? '3000px' : '4100px'),
           height: offers.length <= 1 ? '700px' : '1400px'
         }}>
@@ -340,13 +340,13 @@ export default function Home() {
       )}
 
       {/* page-5 */}
-      <div className='page-5' style={{ 
+      <div className='page-5' style={{
         top: needs.length === 0 && offers.length === 0 ? '2048px' :
-             needs.length === 0 ? (offers.length <= 1 ? '2748px' : '3448px') :
-             offers.length === 0 ? (needs.length <= 1 ? '3048px' : '4100px') :
-             (needs.length <= 1 && offers.length <= 1 ? '3748px' : 
-              needs.length <= 1 ? '4448px' : 
-              offers.length <= 1 ? '4848px' : '5500.8px')
+          needs.length === 0 ? (offers.length <= 1 ? '2748px' : '3448px') :
+            offers.length === 0 ? (needs.length <= 1 ? '3048px' : '4100px') :
+              (needs.length <= 1 && offers.length <= 1 ? '3748px' :
+                needs.length <= 1 ? '4448px' :
+                  offers.length <= 1 ? '4848px' : '5500.8px')
       }}>
         <span className='pg-5-header'>مـــجـــتــمــع كـــامــــل يـــخـــدم كـــــافـــة الأطراف </span>
         <span className='pg-5-head'>جميعهم مــتــواجــدون فــى مــكان واحـــد</span>
@@ -356,13 +356,13 @@ export default function Home() {
 
       {/* page-6 */}
       {!isAuthenticated && (
-        <div className='page-6' style={{ 
-          top: (needs.length === 0 && offers.length === 0) ? '2548px' : 
-               (needs.length === 0) ? (offers.length <= 1 ? '3248px' : '3948px') :
-               (offers.length === 0) ? (needs.length <= 1 ? '3548px' : '4600px') :
-               (needs.length <= 1 && offers.length <= 1 ? '4248px' : 
-                needs.length <= 1 ? '4948px' : 
-                offers.length <= 1 ? '5348px' : '6000.8px')
+        <div className='page-6' style={{
+          top: (needs.length === 0 && offers.length === 0) ? '2548px' :
+            (needs.length === 0) ? (offers.length <= 1 ? '3248px' : '3948px') :
+              (offers.length === 0) ? (needs.length <= 1 ? '3548px' : '4600px') :
+                (needs.length <= 1 && offers.length <= 1 ? '4248px' :
+                  needs.length <= 1 ? '4948px' :
+                    offers.length <= 1 ? '5348px' : '6000.8px')
         }}>
           <span className='pg-6-header'>سارع الأن بالتســجـــيــــــــل !</span>
           <span className='pg-6-head'>و كن جزءاً من مجتمع <span className='span-wafer'>وَافــــــر</span> الكبير </span>
@@ -372,20 +372,20 @@ export default function Home() {
       )}
 
       {/* footer */}
-      <footer className='footer' style={{ 
-        top: !isAuthenticated 
-          ? ((needs.length === 0 && offers.length === 0) ? '3048px' : 
-             (needs.length === 0) ? (offers.length <= 1 ? '3748px' : '4448px') :
-             (offers.length === 0) ? (needs.length <= 1 ? '4048px' : '5100px') :
-             (needs.length <= 1 && offers.length <= 1 ? '4748px' : 
-              needs.length <= 1 ? '5448px' : 
-              offers.length <= 1 ? '5848px' : '6500.8px'))
-          : ((needs.length === 0 && offers.length === 0) ? '2548px' : 
-             (needs.length === 0) ? (offers.length <= 1 ? '3248px' : '3948px') :
-             (offers.length === 0) ? (needs.length <= 1 ? '3548px' : '4600px') :
-             (needs.length <= 1 && offers.length <= 1 ? '4248px' : 
-              needs.length <= 1 ? '4948px' : 
-              offers.length <= 1 ? '5348px' : '6000.8px'))
+      <footer className='footer' style={{
+        top: !isAuthenticated
+          ? ((needs.length === 0 && offers.length === 0) ? '3048px' :
+            (needs.length === 0) ? (offers.length <= 1 ? '3748px' : '4448px') :
+              (offers.length === 0) ? (needs.length <= 1 ? '4048px' : '5100px') :
+                (needs.length <= 1 && offers.length <= 1 ? '4748px' :
+                  needs.length <= 1 ? '5448px' :
+                    offers.length <= 1 ? '5848px' : '6500.8px'))
+          : ((needs.length === 0 && offers.length === 0) ? '2548px' :
+            (needs.length === 0) ? (offers.length <= 1 ? '3248px' : '3948px') :
+              (offers.length === 0) ? (needs.length <= 1 ? '3548px' : '4600px') :
+                (needs.length <= 1 && offers.length <= 1 ? '4248px' :
+                  needs.length <= 1 ? '4948px' :
+                    offers.length <= 1 ? '5348px' : '6000.8px'))
       }}>
         <div className='sub'>
           <span className='sub-head'>اشــتــرك الأن</span>

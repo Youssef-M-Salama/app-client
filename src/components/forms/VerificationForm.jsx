@@ -8,12 +8,15 @@ import styles from "@/styles/profile/VerificationForm.module.css";
 const VerificationForm = ({ profile }) => {
   const { user, role } = useAuth();
   const isCharity = role === "Charity" || user?.accountType === UserRoleEnum.CHARITY;
-  const verificationState = user?.verificationState ?? 0;
+  const rawState = profile?.verificationState ?? user?.verificationState;
+  const verificationState = rawState != null ? Number(rawState) : 0;
 
+  const verifyMyAccount = profile?.verifyMyAccount ?? user?.verifyMyAccount ?? false;
   // 0: Pending, 1: InReview, 2: Verified, 3: Rejected
-  const isLocked = verificationState !== 0;
+  const isLocked = verificationState !== 0 || verifyMyAccount;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isRequestLoading, setIsRequestLoading] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
   
   const [formData, setFormData] = useState({});
@@ -103,11 +106,55 @@ const VerificationForm = ({ profile }) => {
     } catch (error) {
       console.error("Verification submission error:", error);
       setMessage({ 
-        text: error.response?.data?.message || "حدث خطأ أثناء تقديم البيانات. يرجى المحاولة مرة أخرى.", 
+        text: error.response?.data?.message || "حدث خطأ أثناء حفظ البيانات. يرجى المحاولة مرة أخرى.", 
         type: "error" 
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRequestSubmit = async () => {
+    setIsRequestLoading(true);
+    setMessage({ text: "", type: "" });
+    try {
+      await verificationService.submitVerificationRequest();
+      
+      // Update local storage user cache so the global banner reflects the new state on reload
+      try {
+        const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        cachedUser.verifyMyAccount = true;
+        localStorage.setItem('user', JSON.stringify(cachedUser));
+      } catch (e) { console.error(e); }
+
+      setMessage({ text: "تم إرسال طلب التوثيق للإدارة بنجاح.", type: "success" });
+      setTimeout(() => window.location.reload(), 2000);
+    } catch (error) {
+      setMessage({ text: error.response?.data?.message || "حدث خطأ أثناء إرسال الطلب.", type: "error" });
+    } finally {
+      setIsRequestLoading(false);
+    }
+  };
+
+  const handleRequestCancel = async () => {
+    setIsRequestLoading(true);
+    setMessage({ text: "", type: "" });
+    try {
+      await verificationService.cancelVerificationRequest();
+
+      // Update local storage user cache
+      try {
+        const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
+        cachedUser.verifyMyAccount = false;
+        localStorage.setItem('user', JSON.stringify(cachedUser));
+      } catch (e) { console.error(e); }
+
+      setMessage({ text: "تم سحب طلب التوثيق بنجاح. يمكنك الآن تعديل بياناتك.", type: "success" });
+      setTimeout(() => window.location.reload(), 2000);
+    } catch (error) {
+      setMessage({ text: error.response?.data?.message || "حدث خطأ أثناء سحب الطلب.", type: "error" });
+    } finally {
+      setIsRequestLoading(false);
     }
   };
 
@@ -135,12 +182,21 @@ const VerificationForm = ({ profile }) => {
           </div>
         );
       default:
-        return (
-          <div className={`${styles.statusBadge} ${styles.pending}`}>
-            <i className="fa-solid fa-circle-info"></i>
-            <span>يرجى إكمال بيانات التوثيق لتمكين كافة مميزات المنصة.</span>
-          </div>
-        );
+        if (verifyMyAccount) {
+          return (
+            <div className={`${styles.statusBadge} ${styles.inReview}`}>
+              <i className="fa-solid fa-clock-rotate-left"></i>
+              <span>لقد قمت بإرسال طلب التوثيق وهو بانتظار نظر الإدارة.</span>
+            </div>
+          );
+        } else {
+          return (
+            <div className={`${styles.statusBadge} ${styles.pending}`}>
+              <i className="fa-solid fa-circle-info"></i>
+              <span>يرجى إكمال بيانات التوثيق وحفظها، ثم اضغط على "إرسال طلب التوثيق" للإدارة.</span>
+            </div>
+          );
+        }
     }
   };
 
@@ -318,19 +374,53 @@ const VerificationForm = ({ profile }) => {
         {isCharity ? renderCharityFields() : renderDonorFields()}
 
         {!isLocked && (
-          <button type="submit" className={styles.submitBtn} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <i className="fa-solid fa-circle-notch fa-spin"></i>
-                جاري الإرسال...
-              </>
-            ) : (
-              <>
-                <i className="fa-solid fa-paper-plane"></i>
-                تحديث بيانات التوثيق
-              </>
-            )}
-          </button>
+          <div style={{ display: 'flex', gap: '15px', marginTop: '1.5rem' }}>
+            <button type="submit" className={styles.submitBtn} disabled={isLoading || isRequestLoading} style={{ flex: 1, backgroundColor: 'var(--color-primary-light)', color: '#fff' }}>
+              {isLoading ? (
+                <>
+                  <i className="fa-solid fa-circle-notch fa-spin"></i>
+                  جاري الحفظ...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-save"></i>
+                  حفظ البيانات والمرفقات
+                </>
+              )}
+            </button>
+
+            <button type="button" onClick={handleRequestSubmit} className={styles.submitBtn} disabled={isLoading || isRequestLoading} style={{ flex: 1, backgroundColor: '#198754' }}>
+              {isRequestLoading ? (
+                <>
+                  <i className="fa-solid fa-circle-notch fa-spin"></i>
+                  جاري الإرسال...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-paper-plane"></i>
+                  إرسال طلب التوثيق للإدارة
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {isLocked && verifyMyAccount && verificationState === 0 && (
+          <div style={{ display: 'flex', gap: '15px', marginTop: '1.5rem', position: 'relative', zIndex: 10 }}>
+            <button type="button" onClick={handleRequestCancel} className={styles.submitBtn} disabled={isRequestLoading} style={{ flex: 1, backgroundColor: '#dc3545', color: '#fff' }}>
+              {isRequestLoading ? (
+                <>
+                  <i className="fa-solid fa-circle-notch fa-spin"></i>
+                  جاري الإلغاء...
+                </>
+              ) : (
+                <>
+                  <i className="fa-solid fa-clock-rotate-left"></i>
+                  إلغاء طلب التوثيق للتعديل
+                </>
+              )}
+            </button>
+          </div>
         )}
       </form>
     </div>

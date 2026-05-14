@@ -17,6 +17,16 @@ export const verificationService = {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
     return response.data;
+  },
+
+  submitVerificationRequest: async () => {
+    const response = await apiClient.post('/api/v1/profile/submit-verification');
+    return response.data;
+  },
+
+  cancelVerificationRequest: async () => {
+    const response = await apiClient.post('/api/v1/profile/cancel-verification');
+    return response.data;
   }
 };
 

@@ -23,7 +23,10 @@ const VERIFICATION_STATES = {
   REJECTED: 3
 };
 
-const getVerificationStatus = (state) => {
+const getVerificationStatus = (state, verifyMyAccount) => {
+  if (verifyMyAccount === false && state === VERIFICATION_STATES.PENDING) {
+    return { label: "لم يُقدّم", className: styles.unverified, color: "#9E9E9E" };
+  }
   switch (state) {
     case VERIFICATION_STATES.PENDING:
       return { label: "بانتظار المراجعة", className: styles.unverified, color: "#FFC107" };
@@ -45,8 +48,10 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onReview, onReject }
 
   const userId = user.userId || user.id;
   const isActive = user.isActive;
-  const state = user.verificationState ?? 0;
+  const state = user.verificationState != null ? Number(user.verificationState) : 0;
   const isVerified = state === VERIFICATION_STATES.VERIFIED;
+
+  const verifyMyAccount = user.verifyMyAccount ?? true;
 
   // Check if we have extra information to show
   const hasExtraInfo = !!(user.phone || user.governorate || user.city || user.description || user.address);
@@ -76,7 +81,7 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onReview, onReject }
           >
             <i className="fa-solid fa-file-lines" style={{ marginLeft: '8px' }}></i> عرض التفاصيل
           </button>
-          {state === VERIFICATION_STATES.PENDING && (
+          {verifyMyAccount && state === VERIFICATION_STATES.PENDING && (
             <button
               className={styles.dropdownItem}
               onClick={() => { onReview(userId); setOpen(false); }}
@@ -84,7 +89,7 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onReview, onReject }
               <i className="fa-solid fa-magnifying-glass" style={{ marginLeft: '8px' }}></i> نقل للمراجعة
             </button>
           )}
-          {(state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
+          {verifyMyAccount && (state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
             <button
               className={styles.dropdownItem}
               onClick={() => { onVerify(userId); setOpen(false); }}
@@ -92,7 +97,7 @@ function ActionDropdown({ user, onView, onToggle, onVerify, onReview, onReject }
               <i className="fa-solid fa-check" style={{ marginLeft: '8px' }}></i> توثيق الحساب
             </button>
           )}
-          {(state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
+          {verifyMyAccount && (state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
             <button
               className={styles.dropdownItem}
               onClick={() => { onReject(userId); setOpen(false); }}
@@ -196,8 +201,9 @@ function UserDetailModal({ user, onClose, onVerify, onReview, onReject, onToggle
   const avatar = getImageUrl(rawImg) || FALLBACK_IMAGE;
   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : "غير معروف";
   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "غير متوفر";
-  const status = getVerificationStatus(user.verificationState ?? 0);
-  const state = user.verificationState ?? 0;
+  const verifyMyAccount = user.verifyMyAccount ?? true;
+  const state = user.verificationState != null ? Number(user.verificationState) : 0;
+  const status = getVerificationStatus(state, verifyMyAccount);
   const userId = user.userId || user.id;
 
   return (
@@ -288,7 +294,7 @@ function UserDetailModal({ user, onClose, onVerify, onReview, onReject, onToggle
 
         <div className={styles.modalFooter}>
           <div className={styles.modalActions}>
-            {(state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
+            {verifyMyAccount && (state === VERIFICATION_STATES.PENDING || state === VERIFICATION_STATES.IN_REVIEW) && (
               <>
                 <button 
                   className={`${styles.btnAction} ${styles.btnVerify}`} 
@@ -304,7 +310,7 @@ function UserDetailModal({ user, onClose, onVerify, onReview, onReject, onToggle
                 </button>
               </>
             )}
-            {state === VERIFICATION_STATES.PENDING && (
+            {verifyMyAccount && state === VERIFICATION_STATES.PENDING && (
               <button 
                 className={`${styles.btnAction} ${styles.btnReview}`} 
                 onClick={() => { onReview(userId); onClose(); }}
@@ -643,7 +649,9 @@ export default function UsersPage() {
                   const avatar = getImageUrl(rawImg) || FALLBACK_IMAGE;
                   const roleStr = user.role === 0 ? "جمعية خيرية" : user.role === 1 ? "جهة مانحة" : user.role === 2 ? "أدمن" : (user.role || "غير معروف");
                   const createdAt = user.createdAt ? new Date(user.createdAt).toLocaleDateString("ar-EG") : "";
-                  const status = getVerificationStatus(user.verificationState ?? 0);
+                  const verifyMyAccount = user.verifyMyAccount ?? true;
+                  const state = user.verificationState != null ? Number(user.verificationState) : 0;
+                  const status = getVerificationStatus(state, verifyMyAccount);
 
                   return (
                     <tr key={userId}>
