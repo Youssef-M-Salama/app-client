@@ -6,7 +6,7 @@ import { mapCategory, mapStatus, mapPriority, mapUnit } from "@/utils/enumMapper
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
 
-export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
+export default function PostCard({ post, role, onEdit, onDelete, onFulfill, onViewDetails }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -100,7 +100,7 @@ export default function PostCard({ post, role, onEdit, onDelete, onFulfill }) {
       </div>
 
       {/* Card Body */}
-      <div className={styles.cardBody}>
+      <div className={styles.cardBody} onClick={() => onViewDetails && onViewDetails(post)} style={{cursor: 'pointer'}}>
         <h3 className={styles.cardTitle}>{title}</h3>
         <p className={styles.cardCategory}>{categoryStr}</p>
 

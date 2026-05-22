@@ -44,9 +44,9 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
 
         <div style={{ background: "#f9f9f9", padding: "20px", borderRadius: "12px", marginBottom: "24px", border: "1px solid #eee" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#777", fontWeight: "500" }}>الطلب:</span>
-              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px" }}>{productName}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+              <span style={{ color: "#777", fontWeight: "500", flexShrink: 0 }}>الطلب:</span>
+              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", wordWrap: "break-word", whiteSpace: "normal", overflowWrap: "break-word", wordBreak: "break-word", textAlign: "left", flex: 1, minWidth: 0 }}>{productName}</span>
             </div>
             {itemData.priority !== undefined && (
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -70,13 +70,13 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
                 <span style={{ fontWeight: "600", color: "#d32f2f", fontSize: "15px" }}>{expiryDate}</span>
               </div>
             )}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#777", fontWeight: "500" }}>الموقع:</span>
-              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px" }}>{location}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+              <span style={{ color: "#777", fontWeight: "500", flexShrink: 0 }}>الموقع:</span>
+              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", flex: 1, minWidth: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "left" }}>{location}</span>
             </div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#777", fontWeight: "500" }}>رقم التواصل:</span>
-              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", direction: "ltr" }}>{phone}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+              <span style={{ color: "#777", fontWeight: "500", flexShrink: 0 }}>رقم التواصل:</span>
+              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", direction: "ltr", flex: 1, minWidth: 0, wordBreak: "break-all", overflowWrap: "break-word", textAlign: "left" }}>{phone}</span>
             </div>
             {whatsapp && (
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -94,15 +94,15 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
                 </a>
               </div>
             )}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#777", fontWeight: "500" }}>البريد الإلكتروني:</span>
-              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px" }}>{email}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+              <span style={{ color: "#777", fontWeight: "500", flexShrink: 0 }}>البريد الإلكتروني:</span>
+              <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", flex: 1, minWidth: 0, wordBreak: "break-all", overflowWrap: "break-word", textAlign: "left" }}>{email}</span>
             </div>
           </div>
           {itemData.description && (
             <div style={{ marginTop: "16px", paddingTop: "16px", borderTop: "1px solid #eee" }}>
               <span style={{ color: "#777", fontWeight: "500", display: "block", marginBottom: "8px" }}>التفاصيل:</span>
-              <p style={{ color: "#555", fontSize: "14px", lineHeight: "1.7", margin: 0 }}>
+              <p style={{ color: "#555", fontSize: "14px", lineHeight: "1.7", margin: 0, wordWrap: "break-word", whiteSpace: "normal", overflowWrap: "break-word", wordBreak: "break-word" }}>
                 {itemData.description}
               </p>
             </div>

@@ -77,16 +77,16 @@ export default function RequestActionModal({ isOpen, onClose, onConfirm, itemDat
                 </a>
               </div>
             )}
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: "#777", fontWeight: "500", fontSize: "14px" }}>البريد:</span>
-              <span style={{ fontWeight: "600", color: "#333", fontSize: "14px" }}>{email || "غير متوفر"}</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
+              <span style={{ color: "#777", fontWeight: "500", fontSize: "14px", flexShrink: 0 }}>البريد:</span>
+              <span style={{ fontWeight: "600", color: "#333", fontSize: "14px", wordWrap: "break-word", whiteSpace: "normal", overflowWrap: "break-word", wordBreak: "break-all", textAlign: "left", flex: 1, minWidth: 0 }}>{email || "غير متوفر"}</span>
             </div>
           </div>
           
           {(itemData.description || itemData.message) && (
             <div style={{ marginTop: "12px", paddingTop: "12px", borderTop: "1px solid #eee" }}>
               <span style={{ color: "#777", fontWeight: "500", display: "block", marginBottom: "4px", fontSize: "14px" }}>رسالة مقدم الطلب:</span>
-              <p style={{ color: "#555", fontSize: "13px", lineHeight: "1.6", margin: 0 }}>
+              <p style={{ color: "#555", fontSize: "13px", lineHeight: "1.6", margin: 0, wordWrap: "break-word", whiteSpace: "normal", overflowWrap: "break-word", wordBreak: "break-word" }}>
                 {itemData.description || itemData.message}
               </p>
             </div>

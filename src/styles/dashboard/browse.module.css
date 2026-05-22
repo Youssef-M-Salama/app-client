@@ -137,6 +137,11 @@
   color: var(--color-text-primary);
   margin-bottom: 8px;
   text-align: center;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  min-width: 0;
 }
 
 .cardDesc {
@@ -149,6 +154,10 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
 }
 
 .cardContact {
@@ -221,6 +230,11 @@
   position: relative;
   box-shadow: 0 20px 60px rgba(0,0,0,0.2);
   animation: slideUp 0.2s ease;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  overflow-x: hidden;
 }
 
 .modalTitle {
@@ -229,6 +243,11 @@
   text-align: center;
   margin-bottom: 32px;
   color: var(--color-text-primary);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
+  min-width: 0;
 }
 
 .closeBtn {

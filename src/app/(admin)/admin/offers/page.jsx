@@ -39,17 +39,17 @@ function OfferDetailModal({ offer, onClose, onApprove, onReject }) {
         </div>
 
         <div className={pendingStyles.modalBody}>
-          <div style={{ display: 'flex', gap: '20px', marginBottom: '24px' }}>
+          <div style={{ display: 'flex', gap: '20px', marginBottom: '24px', minWidth: 0 }}>
             <img 
               src={imageSrc} 
               alt={productName} 
-              style={{ width: '150px', height: '150px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '12px' }} 
+              style={{ width: '120px', height: '120px', objectFit: 'contain', backgroundColor: '#fff', borderRadius: '12px', flexShrink: 0 }} 
               onError={(e) => (e.currentTarget.src = FALLBACK_IMAGE)}
             />
-            <div>
-              <h4 style={{ fontSize: '1.2rem', marginBottom: '8px', color: 'var(--color-text-primary)' }}>{productName}</h4>
-              <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', marginBottom: '12px' }}>{orgName}</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+            <div style={{ minWidth: 0, flex: 1 }}>
+              <h4 style={{ fontSize: '1.1rem', marginBottom: '8px', color: 'var(--color-text-primary)', wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal' }}>{productName}</h4>
+              <p style={{ color: 'var(--color-primary)', fontWeight: 'bold', marginBottom: '12px', wordBreak: 'break-word', overflowWrap: 'break-word' }}>{orgName}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.9rem', color: 'var(--color-text-secondary)', wordBreak: 'break-word', overflowWrap: 'break-word' }}>
                 <span><strong>التصنيف:</strong> {mapCategory(offer.category)}</span>
                 <span><strong>الكمية:</strong> {offer.quantity.toLocaleString("ar-EG")} {mapUnit(offer.unit)}</span>
                 <span><strong>الموقع:</strong> {location}</span>
@@ -60,7 +60,7 @@ function OfferDetailModal({ offer, onClose, onApprove, onReject }) {
 
           <div style={{ marginBottom: '20px' }}>
             <h5 style={{ marginBottom: '8px', borderBottom: '1px solid #eee', paddingBottom: '4px' }}>وصف المنتج</h5>
-            <div style={{ background: '#f9fafb', padding: '12px', borderRadius: '8px', fontSize: '0.95rem', lineHeight: '1.6' }}>
+            <div style={{ background: '#f9fafb', padding: '12px', borderRadius: '8px', fontSize: '0.95rem', lineHeight: '1.6', wordBreak: 'break-word', overflowWrap: 'break-word', whiteSpace: 'normal' }}>
               {offer.description || "لا يوجد وصف متوفر"}
             </div>
           </div>

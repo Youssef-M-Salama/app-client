@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import PostCard from "@/components/cards/PostCard";
 import PostFormModal from "@/components/ui/PostFormModal";
 import DeleteConfirmModal from "@/components/ui/DeleteConfirmModal";
+import PostDetailsModal from "@/components/ui/PostDetailsModal";
 import styles from "@/styles/dashboard/posts.module.css";
 import { useAuth } from "@/context/AuthContext";
 import charityNeedsService from "@/services/charityNeedsService";
@@ -43,6 +44,7 @@ export default function PostsPage() {
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editPost, setEditPost] = useState(null);
   const [deletePost, setDeletePost] = useState(null);
+  const [detailsPost, setDetailsPost] = useState(null);
   const [actionError, setActionError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
 
@@ -237,6 +239,7 @@ export default function PostsPage() {
                 onEdit={(p) => setEditPost(p)}
                 onDelete={(p) => setDeletePost(p)}
                 onFulfill={(id) => handleFulfill(id)}
+                onViewDetails={(p) => setDetailsPost(p)}
               />
             ))
           )}
@@ -286,6 +289,14 @@ export default function PostsPage() {
           postTitle={deletePost?.productName || deletePost?.title || ""}
         />
       )}
+
+      {/* ── Details Modal ── */}
+      <PostDetailsModal
+        isOpen={Boolean(detailsPost)}
+        onClose={() => setDetailsPost(null)}
+        post={detailsPost}
+        role={role}
+      />
     </div>
   );
 }

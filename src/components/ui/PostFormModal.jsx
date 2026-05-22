@@ -30,6 +30,9 @@ const PRIORITY_OPTIONS = [
   { value: 3, label: "منخفض" }
 ];
 
+// Units that must be whole numbers (no decimals)
+const INTEGER_UNITS = [5, 6, 7, 8]; // عبوة، صندوق، علبة، قطعة
+
 export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, role, fieldErrors = {}, generalError }) {
   const isEdit = Boolean(initialData);
   const isCharity = role === "Charity";
@@ -45,6 +48,8 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
     image: null,
     imagePreview: null,
   });
+
+  const [clientErrors, setClientErrors] = useState({});
 
   // Populate form when editing
   useEffect(() => {
@@ -103,6 +108,32 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
 
   function handleSubmit(e) {
     e.preventDefault();
+    const errors = {};
+
+    if (!form.title.trim()) {
+      errors.title = "عنوان المنشور مطلوب";
+    }
+    if (!form.description.trim()) {
+      errors.description = "وصف المنشور مطلوب";
+    }
+
+    // Validate quantity: whole number required for certain units
+    if (INTEGER_UNITS.includes(Number(form.unit))) {
+      const qty = Number(form.quantity);
+      if (!Number.isInteger(qty) || qty <= 0) {
+        errors.quantity = `الوحدة المختارة (${UNIT_OPTIONS.find(u => u.value === Number(form.unit))?.label}) تتطلب عدداً صحيحاً بدون كسور عشرية`;
+      }
+    } else {
+      if (Number(form.quantity) <= 0) {
+        errors.quantity = "يجب أن تكون الكمية أكبر من صفر";
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setClientErrors(errors);
+      return;
+    }
+    setClientErrors({});
     onSubmit(form);
   }
 
@@ -128,7 +159,7 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           {/* Image Upload */}
           <div
             className={styles.imageUploadArea}
@@ -169,8 +200,8 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
                 maxLength={200}
                 required
               />
-              {fieldErrors.ProductName && (
-                <p className={styles.inputError}>{fieldErrors.ProductName[0]}</p>
+              {(clientErrors.title || fieldErrors.ProductName) && (
+                <p className={styles.inputError}>{clientErrors.title || fieldErrors.ProductName[0]}</p>
               )}
             </div>
             <div className={styles.formGroup} style={{ marginBottom: 0 }}>
@@ -200,15 +231,15 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
                 id="post-quantity"
                 className={styles.formInput}
                 type="number"
-                step="0.01"
-                min="0.01"
+                step={INTEGER_UNITS.includes(Number(form.unit)) ? "1" : "0.01"}
+                min={INTEGER_UNITS.includes(Number(form.unit)) ? "1" : "0.01"}
                 name="quantity"
                 value={form.quantity}
                 onChange={handleChange}
                 required
               />
-              {fieldErrors.Quantity && (
-                <p className={styles.inputError}>{fieldErrors.Quantity[0]}</p>
+              {(clientErrors.quantity || fieldErrors.Quantity) && (
+                <p className={styles.inputError}>{clientErrors.quantity || fieldErrors.Quantity[0]}</p>
               )}
             </div>
 
@@ -285,8 +316,8 @@ export default function PostFormModal({ isOpen, onClose, onSubmit, initialData, 
               maxLength={1000}
               required
             />
-            {fieldErrors.Description && (
-              <p className={styles.inputError}>{fieldErrors.Description[0]}</p>
+            {(clientErrors.description || fieldErrors.Description) && (
+              <p className={styles.inputError}>{clientErrors.description || fieldErrors.Description[0]}</p>
             )}
           </div>
 
