@@ -50,6 +50,11 @@ export default function BrowseCard({ item, onApply }) {
 
         <div className={styles.cardDetails}>
           <span>الكمية: {(item.quantity || 1).toLocaleString("ar-EG")} {mapUnit(item.unit)}</span>
+          {!isOffer && item.priority !== undefined && (
+            <span className={styles[`priority${item.priority}`]}>
+              الأولوية: {mapPriority(item.priority)}
+            </span>
+          )}
         </div>
 
         <p className={styles.cardDesc}>{description}</p>

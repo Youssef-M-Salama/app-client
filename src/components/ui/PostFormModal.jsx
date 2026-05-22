@@ -24,10 +24,10 @@ const UNIT_OPTIONS = [
 ];
 
 const PRIORITY_OPTIONS = [
-  { value: 0, label: "عاجل" },
-  { value: 1, label: "عالي" },
-  { value: 2, label: "عادي" },
-  { value: 3, label: "منخفض" }
+  { value: 0, label: "قصوى" },
+  { value: 1, label: "مرتفعة" },
+  { value: 2, label: "متوسطة" },
+  { value: 3, label: "منخفضة" }
 ];
 
 // Units that must be whole numbers (no decimals)

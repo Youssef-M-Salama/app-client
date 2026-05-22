@@ -32,10 +32,10 @@ export const mapStatus = (statusInt, isOffer = false) => {
 
 export const mapPriority = (priorityInt) => {
   const map = {
-    0: "عاجل",
-    1: "عالي",
-    2: "عادي",
-    3: "منخفض"
+    0: "قصوى",
+    1: "مرتفعة",
+    2: "متوسطة",
+    3: "منخفضة"
   };
   return map[priorityInt] || "غير معروف";
 };

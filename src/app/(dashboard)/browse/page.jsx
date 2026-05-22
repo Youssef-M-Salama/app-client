@@ -23,6 +23,7 @@ export default function BrowsePage() {
 
   // Filters
   const [categoryFilter, setCategoryFilter] = useState("all");
+  const [priorityFilter, setPriorityFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -34,7 +35,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     fetchItems();
-  }, [role, categoryFilter, debouncedSearch]);
+  }, [role, categoryFilter, priorityFilter, debouncedSearch]);
 
   const fetchItems = async () => {
     if (!role) return;
@@ -48,6 +49,10 @@ export default function BrowsePage() {
         Search: debouncedSearch || undefined,
         Category: categoryFilter !== "all" ? parseInt(categoryFilter) : undefined
       };
+
+      if (role === "DonorOrganization" && priorityFilter !== "all") {
+        params.Priority = parseInt(priorityFilter);
+      }
 
       if (role === "DonorOrganization") {
         const response = await charityNeedsService.getPublicCharityNeeds(params);
@@ -66,6 +71,10 @@ export default function BrowsePage() {
         fetchedItems = data.data.items;
       } else if (data?.data && Array.isArray(data.data)) {
         fetchedItems = data.data;
+      }
+
+      if (role === "DonorOrganization" && priorityFilter !== "all") {
+        fetchedItems = fetchedItems.filter(item => item.priority === parseInt(priorityFilter));
       }
 
       setItems(fetchedItems);
@@ -128,6 +137,25 @@ export default function BrowsePage() {
             <i className={`fa-solid fa-chevron-down ${styles.filterChevron}`}></i>
           </div>
         </div>
+        {role === "DonorOrganization" && (
+          <div className={styles.filterGroup}>
+            <span className={styles.filterLabel}>الأولوية :</span>
+            <div className={styles.filterSelectWrapper}>
+              <select
+                className={styles.filterSelect}
+                value={priorityFilter}
+                onChange={(e) => setPriorityFilter(e.target.value)}
+              >
+                <option value="all">الجميع</option>
+                <option value="0">قصوى</option>
+                <option value="1">مرتفعة</option>
+                <option value="2">متوسطة</option>
+                <option value="3">منخفضة</option>
+              </select>
+              <i className={`fa-solid fa-chevron-down ${styles.filterChevron}`}></i>
+            </div>
+          </div>
+        )}
         <div className={styles.filterGroup}>
           <span className={styles.filterLabel}>بحث :</span>
           <input
