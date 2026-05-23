@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/dashboard/posts.module.css";
 import requestStyles from "@/styles/dashboard/requests.module.css"; // Reuse filter styles
 import RequestListCard from "@/components/cards/RequestListCard";
+import RequestDetailsModal from "@/components/ui/RequestDetailsModal";
 import { useAuth } from "@/context/AuthContext";
 import { useAlert } from "@/context/AlertContext";
 import applicationsService from "@/services/applicationsService";
@@ -14,6 +15,7 @@ export default function SentRequestsPage() {
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [detailsRequest, setDetailsRequest] = useState(null);
 
   useEffect(() => {
     fetchSentRequests();
@@ -95,10 +97,19 @@ export default function SentRequestsPage() {
               role={role}
               isSent={true}
               onCancel={handleCancel}
+              onViewDetails={(req) => setDetailsRequest(req)}
             />
           ))
         )}
       </div>
+
+      <RequestDetailsModal
+        isOpen={Boolean(detailsRequest)}
+        onClose={() => setDetailsRequest(null)}
+        request={detailsRequest}
+        role={role}
+        isSent={true}
+      />
     </div>
   );
 }

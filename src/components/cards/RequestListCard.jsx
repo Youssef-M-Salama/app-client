@@ -5,7 +5,7 @@ import { mapApplicationStatus, mapUnit } from "@/utils/enumMapper";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
 
-export default function RequestListCard({ request, onAccept, onReject, onCancel, role, isSent = false }) {
+export default function RequestListCard({ request, onAccept, onReject, onCancel, onViewDetails, role, isSent = false }) {
   const id = request.id || request.needApplicationId || request.offerApplicationId;
   const orgName = isSent
     ? (request.organizationName || request.charityName || request.donorOrganizationName)
@@ -64,7 +64,7 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
         )}
       </div>
 
-      <div className={styles.cardBody}>
+      <div className={styles.cardBody} onClick={() => onViewDetails && onViewDetails(request)} style={onViewDetails ? {cursor: 'pointer'} : {}}>
         <h3 className={styles.cardTitle}>{productName}</h3>
         <p className={styles.cardCategory}>{typeLabel} {orgName}</p>
 
@@ -95,14 +95,14 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
           <div style={{ marginTop: 'auto', paddingTop: '16px', display: 'flex', gap: '10px' }}>
             <button
               className={styles.publishBtn}
-              onClick={() => onAccept(request)}
+              onClick={(e) => { e.stopPropagation(); onAccept(request); }}
               style={{ background: '#27ae60', flex: 1, margin: 0 }}
             >
               قبول
             </button>
             <button
               className={styles.publishBtn}
-              onClick={() => onReject(request)}
+              onClick={(e) => { e.stopPropagation(); onReject(request); }}
               style={{ background: '#c0392b', flex: 1, margin: 0 }}
             >
               رفض
@@ -114,7 +114,7 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
           <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
             <button
               className={styles.publishBtn}
-              onClick={() => onCancel(id)}
+              onClick={(e) => { e.stopPropagation(); onCancel(id); }}
               style={{ background: '#c0392b', width: '100%', margin: 0 }}
             >
               إلغاء الطلب

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import styles from "@/styles/dashboard/requests.module.css";
 import RequestListCard from "@/components/cards/RequestListCard";
 import RequestActionModal from "@/components/ui/RequestActionModal";
+import RequestDetailsModal from "@/components/ui/RequestDetailsModal";
 import { useAuth } from "@/context/AuthContext";
 import applicationsService from "@/services/applicationsService";
 import globalPostsStyles from "@/styles/dashboard/posts.module.css";
@@ -22,6 +23,7 @@ export default function RequestsPage() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [actionType, setActionType] = useState(null); // 'accept' or 'reject'
   const [actionError, setActionError] = useState(null);
+  const [detailsRequest, setDetailsRequest] = useState(null);
 
   useEffect(() => {
     fetchRequests();
@@ -152,6 +154,7 @@ export default function RequestsPage() {
               onAccept={handleOpenAccept}
               onReject={handleOpenReject}
               role={role}
+              onViewDetails={(r) => setDetailsRequest(r)}
             />
           ))
         )}
@@ -166,6 +169,14 @@ export default function RequestsPage() {
         actionType={actionType}
         error={actionError}
         isSubmitting={isSubmitting}
+      />
+
+      <RequestDetailsModal
+        isOpen={Boolean(detailsRequest)}
+        onClose={() => setDetailsRequest(null)}
+        request={detailsRequest}
+        role={role}
+        isSent={false}
       />
 
     </div>
