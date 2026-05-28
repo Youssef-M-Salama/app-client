@@ -58,13 +58,13 @@
     align-items: center;
     width: 175px;
     margin: 0 auto;
-    margin-bottom: 70px;
+    margin-bottom: 40px; /* Balanced space under logo */
 }
 
 .logo::after {
     content: "";
     position: absolute;
-    bottom: -15px;
+    bottom: -8px;
     width: 193px;
     height: 1px;
     background-color: black;
@@ -75,26 +75,18 @@
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 8px; /* Increased gap to distribute items better */
     font-weight: 500;
     cursor: pointer;
     transition: 0.2s;
     font-family: Almarai;
     line-height: 100%;
-    font-size: 20px;
+    font-size: 20px; /* Restored original size since space is distributed */
 }
 
 .navLinksTop {
     position: relative;
-}
-
-.navLinksTop::after {
-    content: "";
-    position: absolute;
-    bottom: -40px;
-    width: 202px;
-    height: 1px;
-    background-color: black;
+    /* No pseudo-element line here anymore */
 }
 
 .navLinks li {
@@ -102,8 +94,8 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    margin-bottom: 10px;
-    padding: 12px 16px;
+    margin-bottom: 12px; /* Increased margin to distribute items in valid space */
+    padding: 12px 16px; /* Comfortable original padding */
     border-radius: 12px;
     transition: all 0.3s ease;
 }
@@ -153,8 +145,23 @@
 }
 
 .navLinksTail {
+    margin-top: auto; /* Automatically pushes help and logout to the bottom */
+    position: relative;
+    padding-top: 20px; /* Space for the separator line */
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.navLinksTail::before {
+    content: "";
     position: absolute;
-    bottom: 20px;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%); /* Center the line horizontally in the middle of sidebar */
+    width: 202px;
+    height: 1px;
+    background-color: black;
 }
 
 @media (max-width: 640px) {
@@ -176,7 +183,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: auto; /* Push to the left in RTL */
+    margin-right: auto;
+    /* Push to the left in RTL */
     box-shadow: 0 2px 4px rgba(255, 0, 0, 0.2);
 }
 

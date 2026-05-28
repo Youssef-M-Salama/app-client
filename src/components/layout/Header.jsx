@@ -15,6 +15,7 @@ export default function Header({ onMenuToggle }) {
     "/browse":                role === "DonorOrganization" ? "احتياجات الجمعيات" : "العروض المتاحة",
     "/requests":              "الطلبات الواردة",
     "/sent-requests":         "طلباتي المرسلة",
+    "/transactions":          "سجل المعاملات",
     "/notifications":         "الإشعارات",
   };
 

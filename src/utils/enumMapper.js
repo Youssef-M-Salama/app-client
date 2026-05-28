@@ -44,7 +44,8 @@ export const mapApplicationStatus = (statusInt) => {
   const map = {
     0: "قيد الانتظار",
     1: "مقبول",
-    2: "مرفوض"
+    2: "مرفوض",
+    3: "مكتمل"
   };
   return map[statusInt] || "غير معروف";
 };

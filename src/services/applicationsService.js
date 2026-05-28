@@ -66,6 +66,32 @@ export const applicationsService = {
   cancelNeedApplication: async (needApplicationId) => {
     const response = await apiClient.delete(`/api/v1/donor-organization/need-applications/${needApplicationId}`);
     return response.data;
+  },
+
+  // --- CHARITY FULFILL (Confirms goods received) ---
+  fulfillNeedApplication: async (needApplicationId) => {
+    // PATCH /api/v1/charity/applications/{needApplicationId}/fulfill
+    const response = await apiClient.patch(`/api/v1/charity/applications/${needApplicationId}/fulfill`);
+    return response.data;
+  },
+
+  fulfillOfferApplication: async (offerApplicationId) => {
+    // PATCH /api/v1/charity/applications/offer/{offerApplicationId}/fulfill
+    const response = await apiClient.patch(`/api/v1/charity/applications/offer/${offerApplicationId}/fulfill`);
+    return response.data;
+  },
+
+  // --- COMPLETED TRANSACTIONS ---
+  getCharityCompletedTransactions: async (params) => {
+    // GET /api/v1/charity/transactions/completed  ?page=1&pageSize=10
+    const response = await apiClient.get('/api/v1/charity/transactions/completed', { params });
+    return response.data;
+  },
+
+  getDonorCompletedTransactions: async (params) => {
+    // GET /api/v1/donor-organization/transactions/completed  ?page=1&pageSize=10
+    const response = await apiClient.get('/api/v1/donor-organization/transactions/completed', { params });
+    return response.data;
   }
 };
 

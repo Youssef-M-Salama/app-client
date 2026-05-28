@@ -13,6 +13,70 @@
   flex: 1;
 }
 
+/* ── Info Block (name, username, email, description) ── */
+.infoBlock {
+  background: #fff;
+  border: 1.5px solid #ede8fa;
+  border-radius: 16px;
+  overflow: hidden;
+  direction: rtl;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #f3f0fb;
+  transition: background 0.15s;
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoRow:hover {
+  background: #faf8ff;
+}
+
+.infoIcon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 10px;
+  background: #f0ebff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6F2DBD;
+  font-size: 15px;
+}
+
+.infoText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.infoLabel {
+  font-size: 11px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.infoValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+
 
 .inputWrapper {
   position: relative;
@@ -23,14 +87,19 @@
   transition: 0.2s;
 }
 
-/* Input */
-.inputWrapper input {
+/* Input & Select */
+.inputWrapper input,
+.inputWrapper select {
   width: 100%;
   border: none;
   outline: none;
   background: transparent;
   font-size: 18px;
   direction: rtl;
+}
+
+.inputWrapper select {
+  cursor: pointer;
 }
 
 /* Label (floating style) */
@@ -48,7 +117,9 @@
 }
 
 .inputWrapper input:focus + label,
-.inputWrapper input:not(:placeholder-shown) + label {
+.inputWrapper input:not(:placeholder-shown) + label,
+.inputWrapper select:focus + label,
+.inputWrapper.hasValue label {
   top: -5px;
   font-size: 12px;
 }

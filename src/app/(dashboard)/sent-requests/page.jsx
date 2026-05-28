@@ -71,7 +71,28 @@ export default function SentRequestsPage() {
           setRequests((prev) => prev.filter((req) => (req.id || req.offerApplicationId || req.needApplicationId) !== id));
           showToast("تم إلغاء الطلب بنجاح", "success");
         } catch (err) {
-          showAlert("فشل الإلغاء", err.appMessage || "تعذر إلغاء الطلب.", "error");
+          showAlert("فشل الإلغاء", err.appMessage || "تعذّر إلغاء الطلب.", "error");
+        }
+      }
+    );
+  };
+
+  const handleFulfill = (request) => {
+    showConfirm(
+      "تأكيد استلام البضاعة",
+      "هل تؤكد أنك استلمت هذه التبرعات بشكل كامل؟ لن يمكن التراجع عن هذا الإجراء.",
+      async () => {
+        try {
+          const id = request.id || request.offerApplicationId || request.needApplicationId;
+          await applicationsService.fulfillOfferApplication(id);
+          showToast("تم تأكيد استلام البضاعة بنجاح ✨", "success");
+          fetchSentRequests();
+        } catch (err) {
+          showAlert(
+            "فشل العملية",
+            err.response?.data?.message || err.appMessage || "تعذّر تأكيد الاستلام.",
+            "error"
+          );
         }
       }
     );
@@ -97,6 +118,7 @@ export default function SentRequestsPage() {
               role={role}
               isSent={true}
               onCancel={handleCancel}
+              onFulfill={role === 'Charity' ? handleFulfill : undefined}
               onViewDetails={(req) => setDetailsRequest(req)}
             />
           ))

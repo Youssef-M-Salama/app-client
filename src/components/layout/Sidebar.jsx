@@ -102,6 +102,13 @@ export default function Sidebar({ onClose }) {
           </Link>
         </li>
 
+        <li className={pathname === "/transactions" ? sidebarStyle.active : ""}>
+          <Link href="/transactions" onClick={onClose}>
+            <i className="fa-solid fa-handshake" style={{ fontSize: '18px', width: '18px', textAlign: 'center' }}></i>
+            <span>سجل المعاملات</span>
+          </Link>
+        </li>
+
       </ul>
 
       <div className={`${sidebarStyle.navLinksTail} ${sidebarStyle.navLinks}`}>

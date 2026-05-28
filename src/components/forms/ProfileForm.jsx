@@ -5,6 +5,36 @@ import profileService from '@/services/profileService';
 import { useAlert } from '@/context/AlertContext';
 import styles from '@/styles/profile/ProfileForm.module.css';
 
+const EGYPT_DATA = {
+  "القاهرة": ["القاهرة", "حلوان", "مدينة نصر", "المعادي", "الشروق", "القاهرة الجديدة", "بدر", "15 مايو"],
+  "الجيزة": ["الجيزة", "6 أكتوبر", "الشيخ زايد", "الحوامدية", "البدرشين", "العياط", "أوسيم", "كرداسة"],
+  "الإسكندرية": ["الإسكندرية", "برج العرب", "العامرية"],
+  "الدقهلية": ["المنصورة", "ميت غمر", "طلخا", "دكرنس", "السنبلاوين", "المنزلة", "بلقاس"],
+  "البحر الأحمر": ["الغردقة", "مرسى علم", "القصير", "سفاجا", "رأس غارب"],
+  "البحيرة": ["دمنهور", "كفر الدوار", "رشيد", "إيتاي البارود", "أبو المطامير", "حوش عيسى"],
+  "الفيوم": ["الفيوم", "سنورس", "إطسا", "أبشواي"],
+  "الغربية": ["طنطا", "المحلة الكبرى", "كفر الزيات", "زفتى", "السنطة", "بسيون"],
+  "الإسماعيلية": ["الإسماعيلية", "فايد", "القنطرة شرق", "القنطرة غرب"],
+  "المنوفية": ["شبين الكوم", "السادات", "منوف", "أشمون", "الباجور", "قويسنا"],
+  "المنيا": ["المنيا", "ملوي", "بني مزار", "سمالوط", "دير مواس"],
+  "القليوبية": ["بنها", "شبرا الخيمة", "القناطر الخيرية", "طوخ", "قليوب", "الخانكة"],
+  "الوادي الجديد": ["الخارجة", "الداخلة", "الفرافرة", "باريس"],
+  "السويس": ["السويس", "عتاقة"],
+  "أسوان": ["أسوان", "كوم أمبو", "إدفو", "دراو", "أبو سمبل"],
+  "أسيوط": ["أسيوط", "ديروط", "القوصية", "أبنوب"],
+  "بني سويف": ["بني سويف", "الواسطى", "ناصر", "سمسطا"],
+  "بورسعيد": ["بورسعيد", "بورفؤاد"],
+  "دمياط": ["دمياط", "دمياط الجديدة", "رأس البر", "فارسكور", "الزرقا", "كفر سعد", "كفر البطيخ", "الروضه", "السرو", "ميت ابو غالب"],
+  "الشرقية": ["الزقازيق", "العاشر من رمضان", "بلبيس", "فاقوس", "أبو حماد", "منيا القمح", "ههيا", "كفر صقر"],
+  "جنوب سيناء": ["شرم الشيخ", "الطور", "دهب", "نويبع", "سانت كاترين"],
+  "كفر الشيخ": ["كفر الشيخ", "دسوق", "فوه", "مطوبس", "بيلا", "سيدي سالم"],
+  "مطروح": ["مرسى مطروح", "الحمام", "الضبعة", "سيدي براني", "العلمين"],
+  "الأقصر": ["الأقصر", "إسنا", "أرمنت"],
+  "قنا": ["قنا", "نجع حمادي", "قفط", "دشنا"],
+  "شمال سيناء": ["العريش", "الشيخ زويد", "رفح", "بئر العبد"],
+  "سوهاج": ["سوهاج", "جرجا", "طهطا", "البلينا"]
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 // Resolve org name + description based on role from the profile API response:
 // role 0 = Charity  → charityDetails.charityName / charityDetails.charityDescription
@@ -21,7 +51,11 @@ function getOrgInfo(profile) {
   if (profile.role === 1 && profile.donorDetails) {
     return {
       name: profile.donorDetails.donorOrganizationName || '',
-      description: profile.donorDetails.donorDescription || '',
+      // check both common field names the API might return
+      description:
+        profile.donorDetails.donorOrganizationDescription ||
+        profile.donorDetails.donorDescription ||
+        '',
     };
   }
   // fallback – use whatever top-level name field exists
@@ -231,6 +265,16 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
     setGeneralError('');
   };
 
+  const handleGovernorateChange = (govVal) => {
+    setForm(prev => ({
+      ...prev,
+      governorate: govVal,
+      city: '' // Clear city when governorate changes
+    }));
+    setFieldErrors(prev => ({ ...prev, governorate: null, city: null }));
+    setGeneralError('');
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setFieldErrors({});
@@ -273,50 +317,62 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
           </p>
         )}
 
-        {/* ── Row 1: Org Name (read-only) + Username (read-only) ── */}
-        <div className={styles.formRow}>
-          <div className={styles.formField}>
-            <div className={styles.inputWrapper}>
-              <input type="text" placeholder=" " value={orgName} readOnly />
-              <label>
+        {/* ── Info Block: Name / Username / Email / Description ── */}
+        <div className={styles.infoBlock}>
+
+          {/* Org Name */}
+          <div className={styles.infoRow}>
+            <div className={styles.infoIcon}>
+              <i className="fa-solid fa-building" />
+            </div>
+            <div className={styles.infoText}>
+              <span className={styles.infoLabel}>
                 {profile?.role === 0 ? 'اسم الجمعية' : 'اسم المنظمة'}
-              </label>
+              </span>
+              <span className={styles.infoValue}>{orgName || '—'}</span>
             </div>
           </div>
 
-          <div className={styles.formField}>
-            <div className={styles.inputWrapper}>
-              <input type="text" placeholder=" " value={profile?.userName || ''} readOnly />
-              <label>اسم المستخدم</label>
+          {/* Username */}
+          <div className={styles.infoRow}>
+            <div className={styles.infoIcon}>
+              <i className="fa-solid fa-user" />
+            </div>
+            <div className={styles.infoText}>
+              <span className={styles.infoLabel}>اسم المستخدم</span>
+              <span className={styles.infoValue}>{profile?.userName || '—'}</span>
             </div>
           </div>
+
+          {/* Email */}
+          <div className={styles.infoRow}>
+            <div className={styles.infoIcon}>
+              <i className="fa-solid fa-envelope" />
+            </div>
+            <div className={styles.infoText}>
+              <span className={styles.infoLabel}>البريد الإلكتروني</span>
+              <span className={styles.infoValue}>
+                {profile?.email || '—'}
+              </span>
+            </div>
+          </div>
+
+          {/* Description — only when present */}
+          {orgDescription ? (
+            <div className={styles.infoRow}>
+              <div className={styles.infoIcon}>
+                <i className="fa-solid fa-circle-info" />
+              </div>
+              <div className={styles.infoText}>
+                <span className={styles.infoLabel}>
+                  {profile?.role === 0 ? 'عن الجمعية' : 'عن المنظمة'}
+                </span>
+                <span className={styles.infoValue}>{orgDescription}</span>
+              </div>
+            </div>
+          ) : null}
+
         </div>
-
-        {/* ── Row 2: Email (read-only) ── */}
-        <div className={styles.formField}>
-          <div className={styles.inputWrapper}>
-            <input
-              type="email"
-              placeholder=" "
-              value={profile?.email || ''}
-              readOnly
-              style={{ direction: 'ltr', textAlign: 'right' }}
-            />
-            <label>البريد الإلكتروني</label>
-          </div>
-        </div>
-
-        {/* ── Description (read-only) — shown when available ── */}
-        {orgDescription ? (
-          <div className={styles.formField}>
-            <div className={styles.inputWrapper}>
-              <input type="text" placeholder=" " value={orgDescription} readOnly />
-              <label>
-                {profile?.role === 0 ? 'عن الجمعية' : 'عن المنظمة'}
-              </label>
-            </div>
-          </div>
-        ) : null}
 
         {/* ── Row 3: Phone (editable) + Whatsapp (editable) ── */}
         <div className={styles.formRow}>
@@ -363,40 +419,55 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
           </div>
         </div>
 
-        {/* ── Row 4: City (editable) + Governorate (editable) ── */}
+        {/* ── Row 4: Governorate (dropdown) + City (dropdown) ── */}
         <div className={styles.formRow}>
           <div className={styles.formField}>
-            <div className={styles.inputWrapper} style={EDITABLE_WRAPPER_STYLE}>
+            <div className={`${styles.inputWrapper} ${form.governorate ? styles.hasValue : ''}`} style={EDITABLE_WRAPPER_STYLE}>
               <img src="/icons/editIcon.png" alt="" style={EDIT_ICON_STYLE} />
-              <input
-                type="text"
-                placeholder=" "
-                value={form.city}
-                onChange={e => handleChange('city', e.target.value)}
-              />
-              <label>المدينة</label>
-            </div>
-            {(fieldErrors?.City || fieldErrors?.city) && (
-              <p style={{ color: '#C62828', fontSize: '0.8rem', marginTop: '4px' }}>
-                {fieldErrors?.City?.[0] || fieldErrors?.city?.[0]}
-              </p>
-            )}
-          </div>
-
-          <div className={styles.formField}>
-            <div className={styles.inputWrapper} style={EDITABLE_WRAPPER_STYLE}>
-              <img src="/icons/editIcon.png" alt="" style={EDIT_ICON_STYLE} />
-              <input
-                type="text"
-                placeholder=" "
+              <select
                 value={form.governorate}
-                onChange={e => handleChange('governorate', e.target.value)}
-              />
+                onChange={e => handleGovernorateChange(e.target.value)}
+              >
+                <option value=""></option>
+                {/* Fallback to render existing governorate value if it is not in the predefined lists */}
+                {form.governorate && !EGYPT_DATA[form.governorate] && (
+                  <option value={form.governorate}>{form.governorate}</option>
+                )}
+                {Object.keys(EGYPT_DATA).map(gov => (
+                  <option key={gov} value={gov}>{gov}</option>
+                ))}
+              </select>
               <label>المحافظة</label>
             </div>
             {(fieldErrors?.Governorate || fieldErrors?.governorate) && (
               <p style={{ color: '#C62828', fontSize: '0.8rem', marginTop: '4px' }}>
                 {fieldErrors?.Governorate?.[0] || fieldErrors?.governorate?.[0]}
+              </p>
+            )}
+          </div>
+
+          <div className={styles.formField}>
+            <div className={`${styles.inputWrapper} ${form.city ? styles.hasValue : ''}`} style={EDITABLE_WRAPPER_STYLE}>
+              <img src="/icons/editIcon.png" alt="" style={EDIT_ICON_STYLE} />
+              <select
+                value={form.city}
+                onChange={e => handleChange('city', e.target.value)}
+                disabled={!form.governorate}
+              >
+                <option value=""></option>
+                {/* Fallback to render existing city value if it is not in the predefined lists */}
+                {form.city && (!form.governorate || !EGYPT_DATA[form.governorate]?.includes(form.city)) && (
+                  <option value={form.city}>{form.city}</option>
+                )}
+                {form.governorate && EGYPT_DATA[form.governorate]?.map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
+              <label>المدينة</label>
+            </div>
+            {(fieldErrors?.City || fieldErrors?.city) && (
+              <p style={{ color: '#C62828', fontSize: '0.8rem', marginTop: '4px' }}>
+                {fieldErrors?.City?.[0] || fieldErrors?.city?.[0]}
               </p>
             )}
           </div>

@@ -6,11 +6,13 @@ import RequestListCard from "@/components/cards/RequestListCard";
 import RequestActionModal from "@/components/ui/RequestActionModal";
 import RequestDetailsModal from "@/components/ui/RequestDetailsModal";
 import { useAuth } from "@/context/AuthContext";
+import { useAlert } from "@/context/AlertContext";
 import applicationsService from "@/services/applicationsService";
 import globalPostsStyles from "@/styles/dashboard/posts.module.css";
 
 export default function RequestsPage() {
   const { role } = useAuth();
+  const { showConfirm, showToast, showAlert } = useAlert();
 
   const [requests, setRequests] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -118,6 +120,27 @@ export default function RequestsPage() {
     }
   };
 
+  const handleFulfill = (item) => {
+    showConfirm(
+      "تأكيد استلام البضاعة",
+      "هل تؤكد أنك استلمت هذه التبرعات بشكل كامل؟ لن يمكن التراجع عن هذا الإجراء.",
+      async () => {
+        try {
+          const id = item.id || item.needApplicationId || item.offerApplicationId;
+          await applicationsService.fulfillNeedApplication(id);
+          showToast("تم تأكيد استلام البضاعة بنجاح ✨", "success");
+          fetchRequests();
+        } catch (err) {
+          showAlert(
+            "فشل العملية",
+            err.response?.data?.message || err.appMessage || "تعذّر تأكيد الاستلام.",
+            "error"
+          );
+        }
+      }
+    );
+  };
+
   return (
     <div className={styles.requestsPage}>
 
@@ -153,6 +176,7 @@ export default function RequestsPage() {
               request={req}
               onAccept={handleOpenAccept}
               onReject={handleOpenReject}
+              onFulfill={role === 'Charity' ? handleFulfill : undefined}
               role={role}
               onViewDetails={(r) => setDetailsRequest(r)}
             />

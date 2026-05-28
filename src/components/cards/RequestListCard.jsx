@@ -5,7 +5,7 @@ import { mapApplicationStatus, mapUnit } from "@/utils/enumMapper";
 
 const FALLBACK_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Crect width='100%25' height='100%25' fill='%23e8e0f0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='40' fill='%236F2DBD'%3E%3F%3C/text%3E%3C/svg%3E";
 
-export default function RequestListCard({ request, onAccept, onReject, onCancel, onViewDetails, role, isSent = false }) {
+export default function RequestListCard({ request, onAccept, onReject, onCancel, onFulfill, onViewDetails, role, isSent = false }) {
   const id = request.id || request.needApplicationId || request.offerApplicationId;
   const orgName = isSent
     ? (request.organizationName || request.charityName || request.donorOrganizationName)
@@ -31,15 +31,16 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
 
   const currentStatus = request.status !== undefined ? request.status : request.Status;
   const parentStatus = request.needStatus !== undefined ? request.needStatus : request.offerStatus;
-  
-  // If parent is fulfilled, we show "Fulfilled" regardless of application status (which stays 'Accepted')
-  const isFulfilled = parentStatus === 3;
-  
-  const statusStr = isFulfilled 
-    ? "مكتمل" 
+
+  // Show fulfilled if either parent or application itself is fulfilled
+  const isFulfilled = parentStatus === 3 || currentStatus === 3;
+
+  const statusStr = isFulfilled
+    ? "مكتمل"
     : (currentStatus !== undefined ? mapApplicationStatus(currentStatus) : "");
-    
+
   const isPending = currentStatus === 0;
+  const isAccepted = currentStatus === 1;
 
   const getStatusColor = (status, fulfilled = false) => {
     if (fulfilled) return 'var(--color-status-fulfilled)';
@@ -64,7 +65,7 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
         )}
       </div>
 
-      <div className={styles.cardBody} onClick={() => onViewDetails && onViewDetails(request)} style={onViewDetails ? {cursor: 'pointer'} : {}}>
+      <div className={styles.cardBody} onClick={() => onViewDetails && onViewDetails(request)} style={onViewDetails ? { cursor: 'pointer' } : {}}>
         <h3 className={styles.cardTitle}>{productName}</h3>
         <p className={styles.cardCategory}>{typeLabel} {orgName}</p>
 
@@ -118,6 +119,20 @@ export default function RequestListCard({ request, onAccept, onReject, onCancel,
               style={{ background: '#c0392b', width: '100%', margin: 0 }}
             >
               إلغاء الطلب
+            </button>
+          </div>
+        )}
+
+        {/* Charity confirms goods received for accepted applications */}
+        {!isFulfilled && isAccepted && role === 'Charity' && onFulfill && (
+          <div style={{ marginTop: 'auto', paddingTop: '16px' }}>
+            <button
+              className={styles.publishBtn}
+              onClick={(e) => { e.stopPropagation(); onFulfill(request); }}
+              style={{ background: '#0d9488', width: '100%', margin: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+            >
+              <i className="fa-solid fa-circle-check"></i>
+              تأكيد استلام البضاعة
             </button>
           </div>
         )}

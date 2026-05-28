@@ -1,0 +1,436 @@
+/* ========================
+   PAGE LAYOUT
+   ======================== */
+.page {
+  direction: rtl;
+  padding-bottom: 40px;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 24px 28px;
+  background: linear-gradient(135deg, #6F2DBD 0%, #4d1c8a 100%);
+  border-radius: 18px;
+  color: white;
+  box-shadow: 0 8px 32px rgba(111, 45, 189, 0.35);
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.headerIcon {
+  width: 52px;
+  height: 52px;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  color: white;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.countBadge {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ========================
+   GRID
+   ======================== */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ========================
+   CARD
+   ======================== */
+.card {
+  background: white;
+  border-radius: 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(111, 45, 189, 0.15);
+}
+
+.cardStrip {
+  height: 5px;
+  background: linear-gradient(90deg, #6F2DBD, #8a4fe0, #ab7af4);
+}
+
+.cardInner {
+  display: flex;
+  gap: 0;
+}
+
+/* Image panel */
+.imgWrapper {
+  width: 160px;
+  min-width: 160px;
+  position: relative;
+  background: #f7f4ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  border-left: 1px solid #eee8fa;
+}
+
+.img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  border-radius: 12px;
+}
+
+.sourceTag {
+  position: absolute;
+  bottom: 10px;
+  right: 50%;
+  transform: translateX(50%);
+  background: #6F2DBD;
+  color: white;
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Body */
+.body {
+  flex: 1;
+  padding: 20px 24px;
+  min-width: 0;
+}
+
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.productName {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0;
+  word-break: break-word;
+}
+
+.fulfilledBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #555;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.quantity i {
+  color: #6F2DBD;
+}
+
+/* Parties row */
+.parties {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: #fcfbfe;
+  border: 1px solid #e4d8f5;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.party {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 16px;
+}
+
+.divider {
+  width: 1px;
+  background: #e4d8f5;
+  margin: 8px 0;
+}
+
+.partyLabel {
+  font-size: 11px;
+  color: #6F2DBD;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.partyName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.partyLocation {
+  font-size: 12px;
+  color: #888;
+}
+
+/* Dates */
+.dates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 12px;
+}
+
+.dates i {
+  color: #6F2DBD;
+  margin-left: 4px;
+}
+
+.fulfillDate {
+  color: #059669;
+  font-weight: 500;
+}
+
+/* Toggle button */
+.toggleBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #6F2DBD;
+  color: #6F2DBD;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  font-family: inherit;
+}
+
+.toggleBtn:hover {
+  background: #6F2DBD;
+  color: white;
+}
+
+/* Contact grid */
+.contactGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+  padding: 16px;
+  background: #fcfbfe;
+  border: 1px solid #e4d8f5;
+  border-radius: 12px;
+  animation: expandIn 0.2s ease;
+}
+
+@keyframes expandIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.contactBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.contactTitle {
+  font-size: 13px;
+  font-weight: 700;
+  color: #6F2DBD;
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ========================
+   EMPTY STATE
+   ======================== */
+.emptyState {
+  text-align: center;
+  padding: 80px 20px;
+  color: #888;
+}
+
+.emptyIcon {
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(135deg, #e4d8f5, #f7f4ff);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: #6F2DBD;
+  margin: 0 auto 20px;
+}
+
+.emptyState h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 8px;
+}
+
+.emptyState p {
+  font-size: 14px;
+  color: #aaa;
+  margin: 0;
+}
+
+/* ========================
+   SKELETON LOADING
+   ======================== */
+.loadingGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skeletonCard {
+  height: 180px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 18px;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ========================
+   PAGINATION
+   ======================== */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.pageBtn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid #6F2DBD;
+  background: white;
+  color: #6F2DBD;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: #6F2DBD;
+  color: white;
+}
+
+.pageBtn:disabled {
+  border-color: #ddd;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 14px;
+  color: #555;
+}
+
+/* ========================
+   RESPONSIVE
+   ======================== */
+@media (max-width: 700px) {
+  .cardInner {
+    flex-direction: column;
+  }
+  .imgWrapper {
+    width: 100%;
+    min-width: unset;
+    border-left: none;
+    border-bottom: 1px solid #eee8fa;
+    padding: 20px;
+  }
+  .contactGrid {
+    grid-template-columns: 1fr;
+  }
+  .pageHeader {
+    padding: 18px 20px;
+  }
+  .body {
+    padding: 16px;
+  }
+}
