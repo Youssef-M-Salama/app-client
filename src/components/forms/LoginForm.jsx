@@ -71,8 +71,7 @@ export default function LoginForm({ authStyles }) {
             onChange={handleChange}
             required
             autoComplete="username"
-            dir="ltr"
-            style={{ textAlign: 'left' }}
+            style={{ direction: 'ltr', textAlign: 'left' }}
           />
         </div>
 
@@ -89,6 +88,7 @@ export default function LoginForm({ authStyles }) {
               onChange={handleChange}
               required
               autoComplete="current-password"
+              style={{ direction: 'ltr', textAlign: 'left' }}
             />
             <button
               type="button"

@@ -23,10 +23,9 @@ export default function LoginPage() {
           className={authStyles.mainImage}
         />
 
-        {/* وافر logo on image top-right */}
-        <div className={authStyles.imageLogo}>
+        <Link href="/" className={authStyles.imageLogo}>
           <img src="/logo-white.png" alt="وافر" />
-        </div>
+        </Link>
       </div>
     </>
   )

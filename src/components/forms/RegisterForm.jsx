@@ -392,6 +392,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
             onChange={handleChange}
             onBlur={handleBlur}
             className={inputClass('email')}
+            style={{ direction: 'ltr', textAlign: 'left' }}
           />
           {getError('email') && (
             <span className={authStyles.fieldError}>{getError('email')}</span>
@@ -410,6 +411,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
             onChange={handleChange}
             onBlur={handleBlur}
             className={inputClass('phone')}
+            style={{ direction: 'ltr', textAlign: 'left' }}
           />
           {getError('phone') && (
             <span className={authStyles.fieldError}>{getError('phone')}</span>
@@ -432,6 +434,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className={inputClass('password')}
+                style={{ direction: 'ltr', textAlign: 'left' }}
               />
               <button
                 type="button"
@@ -459,6 +462,7 @@ export default function RegisterForm({ authStyles, regStyles }) {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className={inputClass('confirmPassword')}
+                style={{ direction: 'ltr', textAlign: 'left' }}
               />
               <button
                 type="button"

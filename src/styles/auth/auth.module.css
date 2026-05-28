@@ -362,6 +362,12 @@
     font-family: 'Almarai', sans-serif;
 }
 
+.formField input[type="email"],
+.formField input[type="password"] {
+    direction: ltr;
+    text-align: left;
+}
+
 .formField input::placeholder {
     color: #c0c0c0;
     font-size: 13px;

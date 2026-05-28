@@ -55,9 +55,9 @@ export default function Sidebar({ onClose }) {
         ✕
       </button>
 
-      <div className={sidebarStyle.logo}>
+      <Link href="/" className={sidebarStyle.logo}>
         <img src="/logo-black.png" alt="logo" />
-      </div>
+      </Link>
 
       <ul className={`${sidebarStyle.navLinks} ${sidebarStyle.navLinksTop}`}>
 

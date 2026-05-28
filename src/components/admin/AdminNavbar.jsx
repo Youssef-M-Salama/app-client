@@ -54,6 +54,7 @@ export default function AdminNavbar() {
   }, []);
 
   const navItems = [
+    { label: "لوحة الإحصائيات",             href: "/admin/dashboard" },
     { label: "إدارة المستخدمين",           href: "/admin/users",   badge: stats.totalUsers },
     { label: "العروض المعلقة",             href: "/admin/offers",  badge: stats.pendingOffers },
     { label: "احتياجات الجمعيات المعلقة", href: "/admin/needs",   badge: stats.pendingNeeds },
@@ -68,9 +69,9 @@ export default function AdminNavbar() {
     <nav className={styles.navbar}>
 
       {/* ── Logo ── */}
-      <div className={styles.logo}>
+      <Link href="/" className={styles.logo}>
         <img src="/logo-black.png" alt="وافر" />
-      </div>
+      </Link>
 
       {/* ── Nav Links ── */}
       <ul className={styles.navLinks}>

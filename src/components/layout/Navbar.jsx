@@ -18,7 +18,9 @@ export default function Navbar() {
       {!isAuthenticated ? (
         <>
           <div className='logo'>
-            <Image src="/logo-white.png" alt="وافر" width={99.72} height={35} className='logoImg' priority />
+            <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+              <Image src="/logo-white.png" alt="وافر" width={99.72} height={35} className='logoImg' priority />
+            </Link>
             <div className='brandDivider' />
             <span className='tagline'>وفَّــــــرنـــــاهــــا عـــــلــــيــــكـ</span>
           </div>
@@ -30,7 +32,9 @@ export default function Navbar() {
       ) : (
         <div className='nav-other glass'>
           <div className='other-wafer'>
-            <Image alt='icon' src='/logo-black.png' width={85} height={35}></Image>
+            <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
+              <Image alt='icon' src='/logo-black.png' width={85} height={35}></Image>
+            </Link>
             <div className='divider' />
             <span className='other-tagline'>وفَّــــــرنـــــاهــــا عـــــلــــيــــكـ</span>
           </div>
