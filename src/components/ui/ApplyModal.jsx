@@ -26,6 +26,11 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
   const quantity = itemData.quantity || 1;
   const unitStr = mapUnit(itemData.unit);
 
+  const hasCoords = itemData.latitude != null && itemData.longitude != null;
+  const googleMapsUrl = hasCoords
+    ? `https://www.google.com/maps?q=${itemData.latitude},${itemData.longitude}`
+    : null;
+
   return (
     <div className={globalPostsStyles.overlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className={styles.modal} role="dialog" aria-modal="true" style={{maxHeight: '90vh', overflowY: 'auto'}}>
@@ -74,6 +79,34 @@ export default function ApplyModal({ isOpen, onClose, onApply, itemData, error, 
               <span style={{ color: "#777", fontWeight: "500", flexShrink: 0 }}>الموقع:</span>
               <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", flex: 1, minWidth: 0, wordBreak: "break-word", overflowWrap: "break-word", textAlign: "left" }}>{location}</span>
             </div>
+
+            {/* ── Google Maps link — only when lat/lng are available ── */}
+            {googleMapsUrl && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ color: "#777", fontWeight: "500", flexShrink: 0 }}>
+                  <i className="fa-solid fa-map-location-dot" style={{ color: "#EA4335", marginLeft: "4px" }} />
+                  الخريطة:
+                </span>
+                <a
+                  href={googleMapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontWeight: "600",
+                    fontSize: "14px",
+                    color: "#EA4335",
+                    textDecoration: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "5px",
+                  }}
+                >
+                  عرض على خرائط جوجل
+                  <i className="fa-solid fa-arrow-up-right-from-square" style={{ fontSize: "11px" }} />
+                </a>
+              </div>
+            )}
+
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "10px" }}>
               <span style={{ color: "#777", fontWeight: "500", flexShrink: 0 }}>رقم التواصل:</span>
               <span style={{ fontWeight: "600", color: "#333", fontSize: "15px", direction: "ltr", flex: 1, minWidth: 0, wordBreak: "break-all", overflowWrap: "break-word", textAlign: "left" }}>{phone}</span>
