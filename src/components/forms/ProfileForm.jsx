@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import profileService from '@/services/profileService';
 import { useAlert } from '@/context/AlertContext';
 import styles from '@/styles/profile/ProfileForm.module.css';
@@ -35,10 +35,14 @@ const EGYPT_DATA = {
   "سوهاج": ["سوهاج", "جرجا", "طهطا", "البلينا"]
 };
 
+// Egypt bounding box
+const EGYPT_BOUNDS = [
+  [22.0, 25.0], // South-West
+  [31.7, 37.0], // North-East
+];
+const EGYPT_CENTER = [26.8, 30.8];
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-// Resolve org name + description based on role from the profile API response:
-// role 0 = Charity  → charityDetails.charityName / charityDetails.charityDescription
-// role 1 = Donor    → donorDetails.donorName     / donorDetails.donorDescription
 function getOrgInfo(profile) {
   if (!profile) return { name: '', description: '' };
 
@@ -51,18 +55,16 @@ function getOrgInfo(profile) {
   if (profile.role === 1 && profile.donorDetails) {
     return {
       name: profile.donorDetails.donorOrganizationName || '',
-      // check both common field names the API might return
       description:
         profile.donorDetails.donorOrganizationDescription ||
         profile.donorDetails.donorDescription ||
         '',
     };
   }
-  // fallback – use whatever top-level name field exists
   return { name: profile.name || '', description: profile.description || '' };
 }
 
-// ─── Edit Icon (left side of editable inputs) ─────────────────────────────────
+// ─── Edit Icon ────────────────────────────────────────────────────────────────
 const EDIT_ICON_STYLE = {
   position: 'absolute',
   left: '12px',
@@ -74,10 +76,8 @@ const EDIT_ICON_STYLE = {
   pointerEvents: 'none',
 };
 
-// Wrapper style with extra left padding to make room for the icon
 const EDITABLE_WRAPPER_STYLE = { paddingLeft: '38px' };
 
-// For phone inputs (room for icon + "+20")
 const PHONE_WRAPPER_STYLE = { paddingLeft: '75px' };
 
 const PHONE_PREFIX_STYLE = {
@@ -91,6 +91,207 @@ const PHONE_PREFIX_STYLE = {
   fontSize: '15px',
   direction: 'ltr',
 };
+
+// ─── Map Location Picker ──────────────────────────────────────────────────────
+function MapLocationPicker({ latitude, longitude, onChange }) {
+  const mapContainerRef = useRef(null);
+  const mapInstanceRef = useRef(null);
+  const markerRef = useRef(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [loadError, setLoadError] = useState(false);
+
+  // Load Leaflet CSS + JS dynamically (no npm install needed)
+  useEffect(() => {
+    // Inject CSS if not already present
+    if (!document.getElementById('leaflet-css')) {
+      const link = document.createElement('link');
+      link.id = 'leaflet-css';
+      link.rel = 'stylesheet';
+      link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+      document.head.appendChild(link);
+    }
+
+    // Inject JS if not already present
+    if (window.L) {
+      setMapReady(true);
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = () => setMapReady(true);
+    script.onerror = () => setLoadError(true);
+    document.head.appendChild(script);
+  }, []);
+
+  // Init map once Leaflet is ready and container is mounted
+  useEffect(() => {
+    if (!mapReady || !mapContainerRef.current || mapInstanceRef.current) return;
+
+    const L = window.L;
+
+    // Fix default marker icon path issue with bundlers
+    delete L.Icon.Default.prototype._getIconUrl;
+    L.Icon.Default.mergeOptions({
+      iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+      iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+      shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+    });
+
+    const initialCenter =
+      latitude && longitude ? [latitude, longitude] : EGYPT_CENTER;
+    const initialZoom = latitude && longitude ? 10 : 6;
+
+    const map = L.map(mapContainerRef.current, {
+      center: initialCenter,
+      zoom: initialZoom,
+      maxBounds: EGYPT_BOUNDS,
+      maxBoundsViscosity: 1.0,
+      minZoom: 5,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(map);
+
+    // Place initial marker if coords exist
+    if (latitude && longitude) {
+      markerRef.current = L.marker([latitude, longitude]).addTo(map);
+    }
+
+    // Click to set / move marker
+    map.on('click', (e) => {
+      const { lat, lng } = e.latlng;
+
+      // Keep within Egypt bounds
+      const bounds = L.latLngBounds(EGYPT_BOUNDS);
+      if (!bounds.contains(e.latlng)) return;
+
+      if (markerRef.current) {
+        markerRef.current.setLatLng([lat, lng]);
+      } else {
+        markerRef.current = L.marker([lat, lng]).addTo(map);
+      }
+
+      onChange({ latitude: lat, longitude: lng });
+    });
+
+    mapInstanceRef.current = map;
+  }, [mapReady]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sync external lat/lng changes into the map (e.g. on profile load)
+  useEffect(() => {
+    if (!mapInstanceRef.current || !window.L) return;
+    const L = window.L;
+
+    if (latitude && longitude) {
+      if (markerRef.current) {
+        markerRef.current.setLatLng([latitude, longitude]);
+      } else {
+        markerRef.current = L.marker([latitude, longitude]).addTo(mapInstanceRef.current);
+      }
+      mapInstanceRef.current.setView([latitude, longitude], 10);
+    }
+  }, [latitude, longitude]);
+
+  // ── Styles ──
+  const wrapperStyle = {
+    border: '2px solid #555',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    background: '#fff',
+    direction: 'rtl',
+  };
+
+  const headerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 16px',
+    borderBottom: '1px solid #eee',
+    background: '#faf8ff',
+  };
+
+  const labelStyle = {
+    fontWeight: 700,
+    fontSize: '14px',
+    color: '#333',
+    flex: 1,
+  };
+
+  const coordsStyle = {
+    fontSize: '12px',
+    color: '#6F2DBD',
+    fontWeight: 600,
+    direction: 'ltr',
+    background: '#f0ebff',
+    padding: '3px 10px',
+    borderRadius: '20px',
+  };
+
+  const hintStyle = {
+    fontSize: '12px',
+    color: '#888',
+    padding: '8px 16px',
+    background: '#fafafa',
+    borderTop: '1px solid #f0f0f0',
+    textAlign: 'center',
+  };
+
+  if (loadError) {
+    return (
+      <div style={{ ...wrapperStyle, padding: '16px', color: '#C62828', fontSize: '14px', textAlign: 'center' }}>
+        تعذّر تحميل الخريطة. يرجى التحقق من الاتصال بالإنترنت.
+      </div>
+    );
+  }
+
+  return (
+    <div style={wrapperStyle}>
+      {/* Header */}
+      <div style={headerStyle}>
+        <div style={{
+          width: '36px', height: '36px', minWidth: '36px',
+          borderRadius: '10px', background: '#f0ebff',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: '#6F2DBD', fontSize: '15px',
+        }}>
+          <i className="fa-solid fa-location-dot" />
+        </div>
+        <span style={labelStyle}>تحديد الموقع على الخريطة</span>
+        {latitude && longitude ? (
+          <span style={coordsStyle}>
+            {latitude.toFixed(5)}, {longitude.toFixed(5)}
+          </span>
+        ) : (
+          <span style={{ ...coordsStyle, background: '#fff3cd', color: '#856404' }}>
+            لم يُحدَّد بعد
+          </span>
+        )}
+      </div>
+
+      {/* Map container */}
+      <div
+        ref={mapContainerRef}
+        style={{ width: '100%', height: '320px', background: '#e8e8e8' }}
+      >
+        {!mapReady && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            height: '100%', color: '#999', fontSize: '14px',
+          }}>
+            جاري تحميل الخريطة...
+          </div>
+        )}
+      </div>
+
+      {/* Hint */}
+      <p style={hintStyle}>
+        انقر على الخريطة لتحديد موقعك داخل مصر
+      </p>
+    </div>
+  );
+}
 
 // ─── Change Password Section ──────────────────────────────────────────────────
 function ChangePasswordSection() {
@@ -242,6 +443,8 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
     city: '',
     governorate: '',
     postalCode: '',
+    latitude: null,
+    longitude: null,
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [generalError, setGeneralError] = useState('');
@@ -255,6 +458,9 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
         city: profile.city || '',
         governorate: profile.governorate || '',
         postalCode: profile.postalCode || '',
+        // Use existing coords if the API returned them (non-null, non-zero)
+        latitude: profile.latitude || null,
+        longitude: profile.longitude || null,
       });
     }
   }, [profile]);
@@ -269,10 +475,15 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
     setForm(prev => ({
       ...prev,
       governorate: govVal,
-      city: '' // Clear city when governorate changes
+      city: '',
     }));
     setFieldErrors(prev => ({ ...prev, governorate: null, city: null }));
     setGeneralError('');
+  };
+
+  // Called by MapLocationPicker when user clicks the map
+  const handleMapChange = ({ latitude, longitude }) => {
+    setForm(prev => ({ ...prev, latitude, longitude }));
   };
 
   const handleSubmit = async (e) => {
@@ -283,7 +494,7 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
     // Send only non-empty fields
     const payload = {};
     Object.entries(form).forEach(([k, v]) => {
-      if (v !== '') {
+      if (v !== '' && v !== null && v !== undefined) {
         if (k === 'phone' || k === 'whatsapp') {
           payload[k] = v.replace(/^\+20/, '');
         } else {
@@ -429,7 +640,6 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
                 onChange={e => handleGovernorateChange(e.target.value)}
               >
                 <option value=""></option>
-                {/* Fallback to render existing governorate value if it is not in the predefined lists */}
                 {form.governorate && !EGYPT_DATA[form.governorate] && (
                   <option value={form.governorate}>{form.governorate}</option>
                 )}
@@ -455,7 +665,6 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
                 disabled={!form.governorate}
               >
                 <option value=""></option>
-                {/* Fallback to render existing city value if it is not in the predefined lists */}
                 {form.city && (!form.governorate || !EGYPT_DATA[form.governorate]?.includes(form.city)) && (
                   <option value={form.city}>{form.city}</option>
                 )}
@@ -491,6 +700,13 @@ export default function ProfileForm({ profile, isSaving, onSave }) {
             </p>
           )}
         </div>
+
+        {/* ── Map Location Picker ── */}
+        <MapLocationPicker
+          latitude={form.latitude}
+          longitude={form.longitude}
+          onChange={handleMapChange}
+        />
 
         <button type="submit" className={styles.submitBtn} disabled={isSaving}>
           {isSaving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
