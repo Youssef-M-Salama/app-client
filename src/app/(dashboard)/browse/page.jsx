@@ -152,6 +152,14 @@ export default function BrowsePage() {
     }
   };
 
+  // ─── NEW: AI Match Button Handler (visual only) ───────────────────────────
+  const handleAIMatchClick = () => {
+    showToast("جاري تحليل المطابقات الذكية...", "info");
+    setTimeout(() => {
+      showToast("تم تطبيق المطابق الذكي ✓", "success");
+    }, 800);
+  };
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleApplyClick = (item) => {
@@ -187,7 +195,7 @@ export default function BrowsePage() {
     }
   };
 
-  // ─── Nearest button shared style helper ──────────────────────────────────
+  // ─── Button Styles ────────────────────────────────────────────────────────
   const nearestBtnStyle = {
     display: "flex",
     alignItems: "center",
@@ -209,7 +217,25 @@ export default function BrowsePage() {
     transition: "all 0.25s ease",
     whiteSpace: "nowrap",
     letterSpacing: "0.01em",
-    marginRight: "auto", // pushes button to the left in RTL flex row
+  };
+
+  const aiMatchBtnStyle = {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "9px 18px",
+    borderRadius: "10px",
+    border: "2px solid #d1fae5",
+    background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
+    color: "#047857",
+    fontWeight: 700,
+    fontSize: "14px",
+    cursor: isLoading ? "not-allowed" : "pointer",
+    opacity: isLoading ? 0.65 : 1,
+    boxShadow: "0 2px 8px rgba(5,150,105,0.15)",
+    transition: "all 0.25s ease",
+    whiteSpace: "nowrap",
+    letterSpacing: "0.01em",
   };
 
   return (
@@ -274,53 +300,92 @@ export default function BrowsePage() {
           </div>
         </div>
 
-        {/* ── Nearest Button — pushed to left via marginRight: auto ── */}
-        <button
-          type="button"
-          onClick={handleNearestToggle}
-          disabled={isSortingNearest || isLoading}
-          style={nearestBtnStyle}
-          onMouseEnter={(e) => {
-            if (!nearestActive && !isSortingNearest && !isLoading) {
-              e.currentTarget.style.background = "linear-gradient(135deg, #ebe3fc 0%, #ddd0f7 100%)";
-              e.currentTarget.style.boxShadow = "0 4px 14px rgba(111,45,189,0.2)";
-              e.currentTarget.style.borderColor = "#c8aff0";
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!nearestActive) {
-              e.currentTarget.style.background = "linear-gradient(135deg, #f3f0fb 0%, #ede6fc 100%)";
-              e.currentTarget.style.boxShadow = "0 2px 8px rgba(111,45,189,0.1)";
-              e.currentTarget.style.borderColor = "#e0d5f7";
-            }
-          }}
-        >
-          {/* Icon circle */}
-          <span
-            style={{
-              width: "26px",
-              height: "26px",
-              borderRadius: "50%",
-              background: "rgba(111,45,189,0.1)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "12px",
-              flexShrink: 0,
+        {/* ── Action Buttons ── */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginRight: "auto" }}>
+          
+          {/* ✨ AI Match Button */}
+          <button
+            type="button"
+            onClick={handleAIMatchClick}
+            disabled={isLoading}
+            style={aiMatchBtnStyle}
+            onMouseEnter={(e) => {
+              if (!isLoading) {
+                e.currentTarget.style.background = "linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)";
+                e.currentTarget.style.boxShadow = "0 4px 14px rgba(5,150,105,0.25)";
+                e.currentTarget.style.borderColor = "#6ee7b7";
+              }
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)";
+              e.currentTarget.style.boxShadow = "0 2px 8px rgba(5,150,105,0.15)";
+              e.currentTarget.style.borderColor = "#d1fae5";
             }}
           >
-            <i
-              className={
-                isSortingNearest
-                  ? "fa-solid fa-spinner fa-spin"
-                  : "fa-solid fa-location-crosshairs"
-              }
-            />
-          </span>
+            <span
+              style={{
+                width: "26px",
+                height: "26px",
+                borderRadius: "50%",
+                background: "rgba(5,150,105,0.12)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "12px",
+                flexShrink: 0,
+              }}
+            >
+              <i className="fa-solid fa-wand-magic-sparkles" />
+            </span>
+            مطابق ذكي
+          </button>
 
-          {/* Label */}
-          {isSortingNearest ? "جاري التحديد..." : "الأقرب إليّ"}
-        </button>
+          {/* Nearest Button */}
+          <button
+            type="button"
+            onClick={handleNearestToggle}
+            disabled={isSortingNearest || isLoading}
+            style={nearestBtnStyle}
+            onMouseEnter={(e) => {
+              if (!nearestActive && !isSortingNearest && !isLoading) {
+                e.currentTarget.style.background = "linear-gradient(135deg, #ebe3fc 0%, #ddd0f7 100%)";
+                e.currentTarget.style.boxShadow = "0 4px 14px rgba(111,45,189,0.2)";
+                e.currentTarget.style.borderColor = "#c8aff0";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!nearestActive) {
+                e.currentTarget.style.background = "linear-gradient(135deg, #f3f0fb 0%, #ede6fc 100%)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(111,45,189,0.1)";
+                e.currentTarget.style.borderColor = "#e0d5f7";
+              }
+            }}
+          >
+            <span
+              style={{
+                width: "26px",
+                height: "26px",
+                borderRadius: "50%",
+                background: "rgba(111,45,189,0.1)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "12px",
+                flexShrink: 0,
+              }}
+            >
+              <i
+                className={
+                  isSortingNearest
+                    ? "fa-solid fa-spinner fa-spin"
+                    : "fa-solid fa-location-crosshairs"
+                }
+              />
+            </span>
+            {isSortingNearest ? "جاري التحديد..." : "الأقرب إليّ"}
+          </button>
+
+        </div>
       </div>
 
       {error && <div className={styles.errorMessage}>{error}</div>}
