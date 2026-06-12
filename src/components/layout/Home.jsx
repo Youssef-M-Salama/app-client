@@ -114,7 +114,7 @@ export default function Home() {
               <span>مــن هــنــــــا......</span>
               <div className='hero-arrow'>
                 <Image src='/arrow-right.png' alt='arrow' width={24} height={24}></Image>
-                <Image className='ellipse' src='/Ellipse 12.png' alt='ellipse shadow' width={21} height={21}></Image>
+                <Image className='ellipse' src='/ellipse 12.png' alt='ellipse shadow' width={21} height={21}></Image>
               </div>
             </button>
           </>
@@ -397,7 +397,7 @@ export default function Home() {
         </div>
         <div className='who'>
           <Image alt='icon' className='who-img' src='/ellipse-41.png' width={15} height={15}></Image>
-          <span className='who-txt'>مـــــن نـــــحـــــن</span>
+          <span className='who-txt'>مـــــن نـــــحــــن</span>
         </div>
         <div className='contact'>
           <Image alt='icon' className='contact-img' src='/ellipse-41.png' width={15} height={15}></Image>
