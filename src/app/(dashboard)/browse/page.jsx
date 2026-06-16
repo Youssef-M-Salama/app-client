@@ -43,9 +43,11 @@ export default function BrowsePage() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Nearest sort state
+  // Nearest sort and AI Match states
   const [nearestActive, setNearestActive] = useState(false);
   const [isSortingNearest, setIsSortingNearest] = useState(false);
+  const [aiMatchActive, setAiMatchActive] = useState(false);
+  const [isMatchingAI, setIsMatchingAI] = useState(false);
   const originalItemsRef = useRef([]);
 
   useEffect(() => {
@@ -55,6 +57,7 @@ export default function BrowsePage() {
 
   useEffect(() => {
     setNearestActive(false);
+    setAiMatchActive(false);
     fetchItems();
   }, [role, categoryFilter, priorityFilter, debouncedSearch]);
 
@@ -117,6 +120,7 @@ export default function BrowsePage() {
     }
 
     setIsSortingNearest(true);
+    setAiMatchActive(false); // Disable AI match if active
     try {
       const profileResponse = await profileService.getProfile();
       const profileData = profileResponse?.data || profileResponse;
@@ -152,12 +156,153 @@ export default function BrowsePage() {
     }
   };
 
-  // ─── NEW: AI Match Button Handler (visual only) ───────────────────────────
-  const handleAIMatchClick = () => {
-    showToast("جاري تحليل المطابقات الذكية...", "info");
-    setTimeout(() => {
-      showToast("تم تطبيق المطابق الذكي ✓", "success");
-    }, 800);
+  // ─── NEW: Intelligent AI Match Button Handler ───────────────────────────
+  const handleAIMatchToggle = async () => {
+    if (aiMatchActive) {
+      setAiMatchActive(false);
+      setItems([...originalItemsRef.current]);
+      return;
+    }
+
+    setIsMatchingAI(true);
+    setNearestActive(false); // Disable nearest active if active
+    showToast("جاري تحليل المطابقات الذكية وبناء نموذج الملاءمة الخاص بك...", "info");
+
+    try {
+      const profileResponse = await profileService.getProfile();
+      const profileData = profileResponse?.data || profileResponse;
+      
+      // Simulate intelligent processing delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+
+      const myLat = profileData?.latitude;
+      const myLng = profileData?.longitude;
+      const myGov = profileData?.governorate;
+      const myCity = profileData?.city;
+
+      // Extract org details
+      const orgInfo = { name: "", description: "" };
+      if (profileData?.role === 0 && profileData.charityDetails) {
+        orgInfo.name = profileData.charityDetails.charityName || "";
+        orgInfo.description = profileData.charityDetails.charityDescription || "";
+      } else if (profileData?.role === 1 && profileData.donorDetails) {
+        orgInfo.name = profileData.donorDetails.donorOrganizationName || "";
+        orgInfo.description =
+          profileData.donorDetails.donorOrganizationDescription ||
+          profileData.donorDetails.donorDescription ||
+          "";
+      } else {
+        orgInfo.name = profileData?.name || "";
+        orgInfo.description = profileData?.description || "";
+      }
+
+      // Helper to normalize Arabic text for matching
+      const normalize = (text) => {
+        if (!text) return "";
+        return text
+          .replace(/[إأآا]/g, "ا")
+          .replace(/[ىي]/g, "ي")
+          .replace(/ة/g, "ه")
+          .replace(/[\u064B-\u0652]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      };
+
+      const normName = normalize(orgInfo.name);
+      const normDesc = normalize(orgInfo.description);
+      const fullProfileText = `${normName} ${normDesc}`;
+
+      // Stop words to exclude from keyword index
+      const stopWords = new Set([
+        "من", "في", "على", "الى", "عن", "مع", "هذا", "هذه", "التي", "الذي", 
+        "نحن", "جمعيه", "مؤسسه", "منظمه", "خيريه", "خلال", "كل", "او", "ام",
+        "تم", "كان", "كانت", "ان", "انها", "انه", "بين", "حول", "تحت", "فوق"
+      ]);
+
+      // Extract meaningful keywords from profile text
+      const keywords = fullProfileText
+        .split(/[\s,.:;!?()"\-]+/)
+        .map(w => w.trim())
+        .filter(w => w.length >= 3 && !stopWords.has(w));
+
+      const scoredItems = [...originalItemsRef.current].map(item => {
+        let score = 0;
+
+        // 1. Distance & Location Scoring (Max 40 pts)
+        const itemLat = item.latitude;
+        const itemLng = item.longitude;
+        if (myLat != null && myLng != null && itemLat != null && itemLng != null) {
+          const dist = haversineKm(myLat, myLng, itemLat, itemLng);
+          if (dist < 5) score += 40;
+          else if (dist < 15) score += 30;
+          else if (dist < 30) score += 20;
+          else if (dist < 100) score += 10;
+          else score += 2;
+        } else {
+          // Fallback to governorate/city text mapping
+          const itemGov = item.governorate;
+          const itemCity = item.city;
+          if (myGov && itemGov && normalize(myGov) === normalize(itemGov)) {
+            score += 25;
+            if (myCity && itemCity && normalize(myCity) === normalize(itemCity)) {
+              score += 10;
+            }
+          }
+        }
+
+        // 2. Priority Scoring (Max 25 pts)
+        if (item.priority !== undefined) {
+          if (item.priority === 0) score += 25;
+          else if (item.priority === 1) score += 18;
+          else if (item.priority === 2) score += 10;
+          else if (item.priority === 3) score += 3;
+        }
+
+        // 3. Keyword & Semantic Alignment (Max 35 pts)
+        const itemText = normalize(`${item.productName || ""} ${item.description || ""} ${item.charityName || ""} ${item.donorOrganizationName || ""}`);
+        
+        let keywordMatches = 0;
+        keywords.forEach(kw => {
+          if (itemText.includes(kw)) {
+            keywordMatches++;
+          }
+        });
+        score += Math.min(25, keywordMatches * 5);
+
+        // Category semantic boosters
+        const itemCategory = item.category;
+        if (itemCategory === 0) { // Food
+          if (fullProfileText.includes("طعام") || fullProfileText.includes("غذاء") || fullProfileText.includes("وجب") || fullProfileText.includes("اطعام")) {
+            score += 10;
+          }
+        } else if (itemCategory === 1) { // Clothing
+          if (fullProfileText.includes("ملابس") || fullProfileText.includes("كساء") || fullProfileText.includes("لبس") || fullProfileText.includes("بطاطين")) {
+            score += 10;
+          }
+        } else if (itemCategory === 2) { // Medical
+          if (fullProfileText.includes("طبي") || fullProfileText.includes("علاج") || fullProfileText.includes("دواء") || fullProfileText.includes("مرض") || fullProfileText.includes("مستشفي")) {
+            score += 10;
+          }
+        } else if (itemCategory === 3) { // Educational
+          if (fullProfileText.includes("تعليم") || fullProfileText.includes("مدرس") || fullProfileText.includes("كتب") || fullProfileText.includes("شنط") || fullProfileText.includes("طالب")) {
+            score += 10;
+          }
+        }
+
+        return { item, score };
+      });
+
+      // Sort by score descending
+      scoredItems.sort((a, b) => b.score - a.score);
+
+      setItems(scoredItems.map(s => s.item));
+      setAiMatchActive(true);
+      showToast("تم تطبيق المطابق الذكي بنجاح وتصفية العناصر الأكثر ملاءمة لك ✓", "success");
+    } catch (err) {
+      showToast(err.appMessage || "حدث خطأ أثناء جلب بيانات الملف الشخصي للمطابقة.", "error");
+    } finally {
+      setIsMatchingAI(false);
+    }
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -209,8 +354,8 @@ export default function BrowsePage() {
     color: nearestActive ? "#fff" : "#6F2DBD",
     fontWeight: 700,
     fontSize: "14px",
-    cursor: isSortingNearest || isLoading ? "not-allowed" : "pointer",
-    opacity: isSortingNearest || isLoading ? 0.65 : 1,
+    cursor: isSortingNearest || isMatchingAI || isLoading ? "not-allowed" : "pointer",
+    opacity: isSortingNearest || isMatchingAI || isLoading ? 0.65 : 1,
     boxShadow: nearestActive
       ? "0 4px 16px rgba(111,45,189,0.38)"
       : "0 2px 8px rgba(111,45,189,0.1)",
@@ -225,14 +370,18 @@ export default function BrowsePage() {
     gap: "8px",
     padding: "9px 18px",
     borderRadius: "10px",
-    border: "2px solid #d1fae5",
-    background: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
-    color: "#047857",
+    border: aiMatchActive ? "2px solid transparent" : "2px solid #d1fae5",
+    background: aiMatchActive
+      ? "linear-gradient(135deg, #059669 0%, #10B981 100%)"
+      : "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
+    color: aiMatchActive ? "#fff" : "#047857",
     fontWeight: 700,
     fontSize: "14px",
-    cursor: isLoading ? "not-allowed" : "pointer",
-    opacity: isLoading ? 0.65 : 1,
-    boxShadow: "0 2px 8px rgba(5,150,105,0.15)",
+    cursor: isSortingNearest || isMatchingAI || isLoading ? "not-allowed" : "pointer",
+    opacity: isSortingNearest || isMatchingAI || isLoading ? 0.65 : 1,
+    boxShadow: aiMatchActive
+      ? "0 4px 16px rgba(5,150,105,0.38)"
+      : "0 2px 8px rgba(5,150,105,0.15)",
     transition: "all 0.25s ease",
     whiteSpace: "nowrap",
     letterSpacing: "0.01em",
@@ -306,20 +455,22 @@ export default function BrowsePage() {
           {/* ✨ AI Match Button */}
           <button
             type="button"
-            onClick={handleAIMatchClick}
-            disabled={isLoading}
+            onClick={handleAIMatchToggle}
+            disabled={isSortingNearest || isMatchingAI || isLoading}
             style={aiMatchBtnStyle}
             onMouseEnter={(e) => {
-              if (!isLoading) {
+              if (!aiMatchActive && !isMatchingAI && !isSortingNearest && !isLoading) {
                 e.currentTarget.style.background = "linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)";
                 e.currentTarget.style.boxShadow = "0 4px 14px rgba(5,150,105,0.25)";
                 e.currentTarget.style.borderColor = "#6ee7b7";
               }
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)";
-              e.currentTarget.style.boxShadow = "0 2px 8px rgba(5,150,105,0.15)";
-              e.currentTarget.style.borderColor = "#d1fae5";
+              if (!aiMatchActive) {
+                e.currentTarget.style.background = "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)";
+                e.currentTarget.style.boxShadow = "0 2px 8px rgba(5,150,105,0.15)";
+                e.currentTarget.style.borderColor = "#d1fae5";
+              }
             }}
           >
             <span
@@ -327,7 +478,7 @@ export default function BrowsePage() {
                 width: "26px",
                 height: "26px",
                 borderRadius: "50%",
-                background: "rgba(5,150,105,0.12)",
+                background: aiMatchActive ? "rgba(255,255,255,0.2)" : "rgba(5,150,105,0.12)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -335,19 +486,26 @@ export default function BrowsePage() {
                 flexShrink: 0,
               }}
             >
-              <i className="fa-solid fa-wand-magic-sparkles" />
+              <i
+                className={
+                  isMatchingAI
+                    ? "fa-solid fa-spinner fa-spin"
+                    : "fa-solid fa-wand-magic-sparkles"
+                }
+                style={{ color: aiMatchActive ? "#fff" : "inherit" }}
+              />
             </span>
-            مطابق ذكي
+            {isMatchingAI ? "جاري المطابقة..." : "مطابق ذكي"}
           </button>
 
           {/* Nearest Button */}
           <button
             type="button"
             onClick={handleNearestToggle}
-            disabled={isSortingNearest || isLoading}
+            disabled={isSortingNearest || isMatchingAI || isLoading}
             style={nearestBtnStyle}
             onMouseEnter={(e) => {
-              if (!nearestActive && !isSortingNearest && !isLoading) {
+              if (!nearestActive && !isSortingNearest && !isMatchingAI && !isLoading) {
                 e.currentTarget.style.background = "linear-gradient(135deg, #ebe3fc 0%, #ddd0f7 100%)";
                 e.currentTarget.style.boxShadow = "0 4px 14px rgba(111,45,189,0.2)";
                 e.currentTarget.style.borderColor = "#c8aff0";
@@ -366,7 +524,7 @@ export default function BrowsePage() {
                 width: "26px",
                 height: "26px",
                 borderRadius: "50%",
-                background: "rgba(111,45,189,0.1)",
+                background: nearestActive ? "rgba(255,255,255,0.2)" : "rgba(111,45,189,0.1)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -380,6 +538,7 @@ export default function BrowsePage() {
                     ? "fa-solid fa-spinner fa-spin"
                     : "fa-solid fa-location-crosshairs"
                 }
+                style={{ color: nearestActive ? "#fff" : "inherit" }}
               />
             </span>
             {isSortingNearest ? "جاري التحديد..." : "الأقرب إليّ"}
