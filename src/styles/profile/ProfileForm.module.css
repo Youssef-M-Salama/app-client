@@ -116,9 +116,9 @@
   pointer-events: none;
 }
 
-.inputWrapper input:focus + label,
-.inputWrapper input:not(:placeholder-shown) + label,
-.inputWrapper select:focus + label,
+.inputWrapper input:focus+label,
+.inputWrapper input:not(:placeholder-shown)+label,
+.inputWrapper select:focus+label,
 .inputWrapper.hasValue label {
   top: -5px;
   font-size: 12px;

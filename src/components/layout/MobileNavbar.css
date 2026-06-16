@@ -1,0 +1,101 @@
+/* ── Mobile Navbar — matches desktop Navbar style ── */
+.mobileNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 8px 24px;
+  background-color: transparent;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.mobileNavLogo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.mobileNavDivider {
+  width: 2px;
+  height: 22px;
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.mobileNavTagline {
+  font-size: 12px;
+  color: var(--color-text-on-primary, #fff);
+  white-space: nowrap;
+  font-family: var(--font-family);
+}
+
+/* ── Actions (unauthenticated) ── */
+.mobileNavActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobileNavLoginBtn {
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: var(--font-weight-regular, 400);
+  color: white;
+  background-color: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-family);
+  white-space: nowrap;
+}
+
+.mobileNavLoginBtn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.mobileNavRegisterBtn {
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--color-primary-dark, #1a3a1a);
+  background-color: var(--color-primary-subtle, #fff);
+  border: 1.5px solid var(--color-primary-subtle, #fff);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: var(--font-family);
+  white-space: nowrap;
+}
+
+.mobileNavRegisterBtn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: transparent;
+  color: white;
+}
+
+/* ── Authenticated ── */
+.mobileNavAuth {
+  display: flex;
+  align-items: center;
+}
+
+.mobileNavProfileBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}

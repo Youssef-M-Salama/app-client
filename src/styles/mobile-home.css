@@ -1,0 +1,463 @@
+/* ═══════════════════════════════
+   Mobile Home — matches desktop
+   home page aesthetic exactly
+   ═══════════════════════════════ */
+
+.mobileHome {
+  min-height: 100vh;
+  width: 100%;
+  background-image: url('/bg-img.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  direction: rtl;
+  font-family: var(--font-family, 'Cairo', sans-serif);
+  overflow-x: hidden;
+}
+
+/* ── Hero ── */
+.mHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 100vh;
+  padding: 80px 24px 40px;
+  position: relative;
+}
+
+.mHeroContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.mHeroTitle {
+  font-size: 60px;
+  font-weight: 900;
+  color: var(--color-primary-subtle, #fff);
+  line-height: 1.1;
+  text-align: center;
+}
+
+/* Hero button — matches desktop .hero-btn exactly */
+.mHeroBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--color-primary-dark, #1a3a1a);
+  padding: 8px 16px;
+  border-radius: 11px;
+  border: none;
+  cursor: pointer;
+  color: rgba(251, 251, 251, 1);
+  font-size: 15px;
+  font-weight: 400;
+  font-family: var(--font-family);
+}
+
+.mHeroArrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primary-light, #2d6a2d);
+  border-radius: 8px;
+  padding: 4px;
+  width: 28px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.mHeroBtnLink {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--color-primary-dark, #1a3a1a);
+  padding: 10px 20px;
+  border-radius: 11px;
+  color: rgba(251, 251, 251, 1);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  font-family: var(--font-family);
+}
+
+/* ── Glass Info Strip — matches .r-1 / .r-3 glass cards ── */
+.mGlassStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px 20px;
+}
+
+.mGlassCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border-radius: 20px;
+  padding: 12px 16px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 2px 1px rgba(255, 255, 255, 0.1);
+  font-size: 13px;
+  font-weight: 400;
+  position: relative;
+  overflow: hidden;
+}
+
+.mGlassCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
+}
+
+/* ── Stats Bar ── */
+.mStats {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  padding: 24px 20px;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 0 20px 20px;
+  border-radius: 20px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.mStatItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.mStatNumber {
+  font-size: 24px;
+  font-weight: 900;
+  color: white;
+}
+
+.mStatLabel {
+  font-size: 11px;
+  color: rgba(255,255,255,0.75);
+  text-align: center;
+}
+
+.mStatDivider {
+  width: 1px;
+  height: 36px;
+  background: rgba(255,255,255,0.3);
+}
+
+/* ── Section ── */
+.mSection {
+  padding: 32px 20px;
+  background: #fff;
+  margin-bottom: 8px;
+}
+
+.mSectionTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #111;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* ── Cards — matches desktop .card style ── */
+.mCardsList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.mCard {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+
+.mCardImg {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  background: #eee;
+}
+
+.mCardImgSkeleton {
+  width: 100%;
+  height: 220px;
+  animation: mSkeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* Card body matches desktop .card-txt-cont */
+.mCardBody {
+  background-color: var(--color-primary-subtle, #f9f9f9);
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mCardOrg {
+  font-size: 22px;
+  font-weight: 800;
+  color: #111;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mCardOrgSkeleton {
+  height: 24px;
+  width: 60%;
+  border-radius: 6px;
+  animation: mSkeletonPulse 1.5s ease-in-out infinite;
+}
+
+.mCardText {
+  font-size: 14px;
+  color: rgba(98, 95, 104, 1);
+  line-height: 1.7;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  -webkit-box-orient: vertical;
+  word-break: break-word;
+}
+
+.mCardTextSkeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mCardTextLine {
+  height: 14px;
+  border-radius: 4px;
+  animation: mSkeletonPulse 1.5s ease-in-out infinite;
+}
+
+.mCardDate {
+  font-size: 13px;
+  color: rgba(168, 166, 172, 1);
+}
+
+.mCardDateSkeleton {
+  height: 12px;
+  width: 40%;
+  border-radius: 4px;
+  animation: mSkeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* Matches desktop .tafasel link */
+.mCardLink {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* ── CTA — matches .page-6 style ── */
+.mCta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 40px 24px;
+  background-image: url('/bg-img.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.mCta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 66, 68, 0.55);
+}
+
+.mCta > * {
+  position: relative;
+  z-index: 1;
+}
+
+.mCtaTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+}
+
+.mCtaSub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.6;
+}
+
+.mCtaBtn {
+  display: inline-block;
+  padding: 12px 36px;
+  background-color: var(--color-primary-dark, #1a3a1a);
+  color: white;
+  border-radius: 11px;
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  font-family: var(--font-family);
+}
+
+/* ── Footer — matches desktop footer ── */
+.mFooter {
+  background-color: #fff;
+  padding: 36px 24px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  border-top: 1px solid #eee;
+}
+
+.mFooterTop {
+  display: flex;
+  justify-content: center;
+}
+
+/* Subscribe — matches desktop .sub */
+.mSubscribe {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.mSubscribeLabel {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+}
+
+.mSubscribeRow {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  width: 100%;
+}
+
+.mSubscribeInput {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  direction: ltr;
+  outline: none;
+}
+
+.mSubscribeBtn {
+  padding: 10px 18px;
+  background: var(--color-primary-dark, #1a3a1a);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font-family);
+  white-space: nowrap;
+}
+
+.mSubscribeTxt {
+  font-size: 11px;
+  color: #888;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Footer links — matches desktop .who / .contact */
+.mFooterLinks {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  justify-content: center;
+}
+
+.mFooterLinkRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mFooterLink {
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  cursor: pointer;
+}
+
+/* Social — matches desktop .social */
+.mFooterSocial {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  align-items: center;
+}
+
+.mFooterCopy {
+  font-size: 12px;
+  color: rgba(88, 88, 88, 1);
+  text-align: center;
+  line-height: 1.7;
+}
+
+/* ── Skeleton ── */
+@keyframes mSkeletonPulse {
+  0%   { background-color: rgba(229, 231, 235, 0.6); }
+  50%  { background-color: rgba(209, 213, 219, 0.9); }
+  100% { background-color: rgba(229, 231, 235, 0.6); }
+}
+
+/* ── Show/Hide utility ── */
+.desktopOnly {
+  display: block;
+}
+
+.mobileOnly {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .desktopOnly {
+    display: none !important;
+  }
+  .mobileOnly {
+    display: block !important;
+  }
+}
