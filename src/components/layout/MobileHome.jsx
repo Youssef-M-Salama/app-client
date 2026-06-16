@@ -245,10 +245,10 @@ export default function MobileHome() {
         </div>
 
         <div className='mFooterLinks'>
-          <div className='mFooterLinkRow'>
+          <a href="https://aboutwafer.netlify.app" target="_blank" rel="noopener noreferrer" className='mFooterLinkRow' style={{ textDecoration: 'none', color: 'inherit' }}>
             <Image src='/ellipse-41.png' alt='' width={12} height={12} />
             <span className='mFooterLink'>من نحن</span>
-          </div>
+          </a>
           <div className='mFooterLinkRow'>
             <Image src='/ellipse-41.png' alt='' width={12} height={12} />
             <span className='mFooterLink'>تواصل معنا</span>
