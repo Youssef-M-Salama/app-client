@@ -29,3 +29,24 @@
   padding: 4px 10px;
   border-radius: 8px;
 }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px 0;
+  }
+
+  .content {
+    padding: 0 14px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 0 10px 16px;
+  }
+
+  .card {
+    border-radius: 12px;
+  }
+}

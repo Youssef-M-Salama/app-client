@@ -50,3 +50,38 @@
     padding: 6px 14px;
     cursor: pointer;
 }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .bannerImage {
+    height: 260px;
+  }
+
+  .editBtn,
+  .deleteBtn {
+    width: 120px;
+    height: 44px;
+    font-size: 15px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .bannerImage {
+    height: 180px;
+  }
+
+  .imageActions {
+    flex-direction: column;
+    bottom: 10px;
+    left: 10px;
+    gap: 6px;
+  }
+
+  .editBtn,
+  .deleteBtn {
+    width: 100px;
+    height: 38px;
+    font-size: 13px;
+  }
+}

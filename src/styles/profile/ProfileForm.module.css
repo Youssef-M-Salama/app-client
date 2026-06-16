@@ -145,3 +145,44 @@
 .submitBtn:hover {
   opacity: 0.9;
 }
+
+/* ══════════════════════════
+   RESPONSIVE
+   ══════════════════════════ */
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .inputWrapper input,
+  .inputWrapper select {
+    font-size: 15px;
+  }
+
+  .submitBtn {
+    width: 100%;
+    text-align: center;
+    align-self: stretch;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .infoRow {
+    padding: 12px 14px;
+    gap: 10px;
+  }
+
+  .infoValue {
+    font-size: 13px;
+  }
+
+  .infoLabel {
+    font-size: 10px;
+  }
+
+  .inputWrapper {
+    padding: 12px 10px;
+  }
+}
