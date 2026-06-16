@@ -72,7 +72,7 @@
 
 .cover-layout {
   position: absolute;
-  top: 458px;
+  top: 522px;
   left: 465px;
   bottom: 0;
   overflow: hidden;
@@ -1062,9 +1062,11 @@
   0% {
     background-color: rgba(229, 231, 235, 0.4);
   }
+
   50% {
     background-color: rgba(209, 213, 219, 0.7);
   }
+
   100% {
     background-color: rgba(229, 231, 235, 0.4);
   }
