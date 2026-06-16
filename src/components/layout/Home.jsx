@@ -66,6 +66,7 @@ export default function Home() {
 
   const [offers, setOffers] = useState([]);
   const [needs, setNeeds] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [stats, setStats] = useState({
     totalCharities: 0,
@@ -77,6 +78,7 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const offersRes = await offersService.getPublicOffers({ Page: 1, PageSize: 4 });
         const offersPayload = offersRes.data || offersRes.Data || [];
@@ -98,6 +100,8 @@ export default function Home() {
         }
       } catch (error) {
         console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -221,119 +225,171 @@ export default function Home() {
         <Image alt='icon' className='frame frame-232' src='/images-4.png' width={150.29} height={150.29}></Image>
       </div>
       {/* 3th page - Charity Needs */}
-      {needs.length > 0 && (
-        <div className='page-3' style={{ height: needs.length <= 1 ? '900px' : '2052px' }}>
+      {(isLoading || needs.length > 0) && (
+        <div className='page-3' style={{ height: (isLoading ? 4 : needs.length) <= 1 ? '900px' : '2052px' }}>
           <span className='pg-3-txt'>بعض منشــــورات الجـمعيات الخيرية : </span>
-          <div className='cards-cont' style={{ height: needs.length <= 2 ? 'auto' : '1700px', minHeight: '550px' }}>
-            {needs.map((need, index) => {
-              const rawImg = need.productImage || need.imageUrl || need.image;
-              const imageSrc = getImageUrl(rawImg) || '/card-1.png';
-              const charityName = need.charityName || need.organizationName || 'جمعية خيرية';
-              const date = need.createdAt ? new Date(need.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد';
-
-              return (
-                <div className='card' key={need.id || index}>
-                  <img alt='icon' className='card-1-img' src={imageSrc} style={{ width: 517, height: 524, objectFit: 'contain', backgroundColor: 'transparent' }} />
+          <div className='cards-cont' style={{ height: (isLoading ? 4 : needs.length) <= 2 ? 'auto' : '1700px', minHeight: '550px' }}>
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, idx) => (
+                <div className='card' key={`needs-skeleton-${idx}`}>
+                  <div className='skeleton-shimmer' style={{ width: 517, height: 524 }} />
                   <div className='card-txt-cont'>
-                    <span className='card-header'>{charityName}</span>
-                    <span className='card-txt'>
-                      {need.description || 'يبحثون عن تبرعات'}
-                      <br /> <br />
-                      {need.productName}
-                      <br /> <br />
-                      الكمية المطلوبة: {need.quantity} {mapUnit(need.unit)}
-                      <br /> <br />
-                      رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{need.phone || need.whatsapp || 'غير متوفر'}</span>
-                      <br />
-                      {!isAuthenticated ? (
-                        <Link href="/register" className='tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
-                      ) : role !== 'Admin' ? (
-                        <Link href="/browse" className='tafasel'>......اذهب إلى التصفح للمزيد </Link>
-                      ) : null}
-                    </span>
-                    <span className='card-date'>{date}</span>
+                    <div className='skeleton-shimmer' style={{ width: '80%', height: '45px', marginBottom: '20px' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+                      <div className='skeleton-shimmer' style={{ width: '95%', height: '20px' }} />
+                      <div className='skeleton-shimmer' style={{ width: '75%', height: '20px' }} />
+                      <div className='skeleton-shimmer' style={{ width: '85%', height: '20px' }} />
+                      <div className='skeleton-shimmer' style={{ width: '50%', height: '20px' }} />
+                    </div>
+                    <div className='skeleton-shimmer' style={{ width: '40%', height: '16px', marginTop: 'auto' }} />
                   </div>
                 </div>
-              );
-            })}
+              ))
+            ) : (
+              needs.map((need, index) => {
+                const rawImg = need.productImage || need.imageUrl || need.image;
+                const imageSrc = getImageUrl(rawImg) || '/card-1.png';
+                const charityName = need.charityName || need.organizationName || 'جمعية خيرية';
+                const date = need.createdAt ? new Date(need.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد';
+
+                return (
+                  <div className='card' key={need.id || index}>
+                    <img alt='icon' className='card-1-img' src={imageSrc} style={{ width: 517, height: 524, objectFit: 'contain', backgroundColor: 'transparent' }} />
+                    <div className='card-txt-cont'>
+                      <span className='card-header'>{charityName}</span>
+                      <span className='card-txt'>
+                        {need.description || 'يبحثون عن تبرعات'}
+                        <br /> <br />
+                        {need.productName}
+                        <br /> <br />
+                        الكمية المطلوبة: {need.quantity} {mapUnit(need.unit)}
+                        <br /> <br />
+                        رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{need.phone || need.whatsapp || 'غير متوفر'}</span>
+                        <br />
+                        {!isAuthenticated ? (
+                          <Link href="/register" className='tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
+                        ) : role !== 'Admin' ? (
+                          <Link href="/browse" className='tafasel'>......اذهب إلى التصفح للمزيد </Link>
+                        ) : null}
+                      </span>
+                      <span className='card-date'>{date}</span>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       )}
 
       {/* page 4 - Donor Offers */}
-      {offers.length > 0 && (
+      {(isLoading || offers.length > 0) && (
         <div className='page-4' style={{
-          top: needs.length === 0 ? '2048px' : (needs.length <= 1 ? '3000px' : '4100px'),
-          height: offers.length <= 1 ? '700px' : '1400px'
+          top: (isLoading ? 4 : needs.length) === 0 ? '2048px' : ((isLoading ? 4 : needs.length) <= 1 ? '3000px' : '4100px'),
+          height: (isLoading ? 4 : offers.length) <= 1 ? '700px' : '1400px'
         }}>
           <span className='pg-4-txt'>بعض منشــــورات المؤســـســـات الإنتــــاجــيــــة : </span>
           <div className='posts-cont'>
-            {offers.length > 0 && (
-              <div className='main-post' style={{ position: offers.length === 1 ? 'relative' : 'absolute', margin: offers.length === 1 ? '0 auto' : '0' }}>
-                <img
-                  alt='icon'
-                  className='main-p-img'
-                  src={getImageUrl(offers[0].productImage || offers[0].imageUrl || offers[0].image) || '/main-post.png'}
-                  style={{ width: 450, height: 380, objectFit: 'contain', backgroundColor: 'transparent' }}
-                />
-                <div className='main-post-txt'>
-                  <span className='main-header'>{offers[0].donorOrganizationName || offers[0].organizationName || 'مؤسسة إنتاجية'}</span>
-                  <span className='main-txt'>
-                    مـــتوفر كمية فائضة من {offers[0].productName} ({offers[0].quantity} {mapUnit(offers[0].unit)})
-                    <br />
-                    صلاحيــة هذه الكمية : صـــالحة حتي {offers[0].expiryDate ? new Date(offers[0].expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
-                    <br />
-                    مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
-                    <br />
-                    رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{offers[0].phone || offers[0].whatsapp || 'غير متوفر'}</span>
-                    <br />
-                    {!isAuthenticated ? (
-                      <Link href="/register" className='tafasel-posts'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
-                    ) : role !== 'Admin' ? (
-                      <Link href="/browse" className='tafasel-posts'>......اذهب إلى التصفح للمزيد </Link>
-                    ) : null}
-                  </span>
-                  <span className='main-date'>
-                    {offers[0].createdAt ? new Date(offers[0].createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
-                  </span>
+            {isLoading ? (
+              <>
+                <div className='main-post' style={{ position: 'absolute' }}>
+                  <div className='skeleton-shimmer' style={{ width: 450, height: 380 }} />
+                  <div className='main-post-txt'>
+                    <div className='skeleton-shimmer' style={{ width: '80%', height: '32px', marginBottom: '20px' }} />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', flex: 1 }}>
+                      <div className='skeleton-shimmer' style={{ width: '90%', height: '24px' }} />
+                      <div className='skeleton-shimmer' style={{ width: '75%', height: '24px' }} />
+                      <div className='skeleton-shimmer' style={{ width: '85%', height: '24px' }} />
+                    </div>
+                    <div className='skeleton-shimmer' style={{ width: '40%', height: '18px', marginTop: 'auto' }} />
+                  </div>
                 </div>
-              </div>
-            )}
-
-            {offers.length > 1 && (
-              <div className='more-posts'>
-                {offers.slice(1).map((offer, index) => (
-                  <div className='post' key={offer.id || index}>
+                <div className='more-posts'>
+                  {Array.from({ length: 2 }).map((_, idx) => (
+                    <div className='post' key={`offers-skeleton-${idx}`}>
+                      <div className='skeleton-shimmer' style={{ width: 432.7, height: 243.39 }} />
+                      <div className='post-text' style={{ marginTop: '16px' }}>
+                        <div className='skeleton-shimmer' style={{ width: '80%', height: '24px', marginBottom: '12px' }} />
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
+                          <div className='skeleton-shimmer' style={{ width: '90%', height: '14px' }} />
+                          <div className='skeleton-shimmer' style={{ width: '75%', height: '14px' }} />
+                        </div>
+                        <div className='skeleton-shimmer' style={{ width: '40%', height: '14px', marginTop: 'auto' }} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                {offers.length > 0 && (
+                  <div className='main-post' style={{ position: offers.length === 1 ? 'relative' : 'absolute', margin: offers.length === 1 ? '0 auto' : '0' }}>
                     <img
                       alt='icon'
-                      className='p-img'
-                      src={getImageUrl(offer.productImage || offer.imageUrl || offer.image) || '/post-3.png'}
-                      style={{ width: 432.7, height: 243.39, objectFit: 'contain', backgroundColor: 'transparent' }}
+                      className='main-p-img'
+                      src={getImageUrl(offers[0].productImage || offers[0].imageUrl || offers[0].image) || '/main-post.png'}
+                      style={{ width: 450, height: 380, objectFit: 'contain', backgroundColor: 'transparent' }}
                     />
-                    <div className='post-text'>
-                      <span className='post-header'>{offer.donorOrganizationName || offer.organizationName || 'مؤسسة إنتاجية'}</span>
-                      <span className='post-txt'>
-                        مـــتوفر كمية فائضة من {offer.productName} ({offer.quantity} {mapUnit(offer.unit)})
-                        <br /><br />
-                        صلاحيــة هذه الكمية : صـــالحة حتي {offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
-                        <br /><br />
+                    <div className='main-post-txt'>
+                      <span className='main-header'>{offers[0].donorOrganizationName || offers[0].organizationName || 'مؤسسة إنتاجية'}</span>
+                      <span className='main-txt'>
+                        مـــتوفر كمية فائضة من {offers[0].productName} ({offers[0].quantity} {mapUnit(offers[0].unit)})
+                        <br />
+                        صلاحيــة هذه الكمية : صـــالحة حتي {offers[0].expiryDate ? new Date(offers[0].expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
+                        <br />
                         مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
-                        <br /><br />
-                        رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{offer.phone || offer.whatsapp || 'غير متوفر'}</span>
+                        <br />
+                        رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{offers[0].phone || offers[0].whatsapp || 'غير متوفر'}</span>
                         <br />
                         {!isAuthenticated ? (
-                          <Link href="/register" className='post-tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
+                          <Link href="/register" className='tafasel-posts'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
                         ) : role !== 'Admin' ? (
-                          <Link href="/browse" className='post-tafasel'>......اذهب إلى التصفح للمزيد </Link>
+                          <Link href="/browse" className='tafasel-posts'>......اذهب إلى التصفح للمزيد </Link>
                         ) : null}
                       </span>
-                      <span className='post-date'>
-                        {offer.createdAt ? new Date(offer.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
+                      <span className='main-date'>
+                        {offers[0].createdAt ? new Date(offers[0].createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
                       </span>
                     </div>
                   </div>
-                ))}
-              </div>
+                )}
+
+                {offers.length > 1 && (
+                  <div className='more-posts'>
+                    {offers.slice(1).map((offer, index) => (
+                      <div className='post' key={offer.id || index}>
+                        <img
+                          alt='icon'
+                          className='p-img'
+                          src={getImageUrl(offer.productImage || offer.imageUrl || offer.image) || '/post-3.png'}
+                          style={{ width: 432.7, height: 243.39, objectFit: 'contain', backgroundColor: 'transparent' }}
+                        />
+                        <div className='post-text'>
+                          <span className='post-header'>{offer.donorOrganizationName || offer.organizationName || 'مؤسسة إنتاجية'}</span>
+                          <span className='post-txt'>
+                            مـــتوفر كمية فائضة من {offer.productName} ({offer.quantity} {mapUnit(offer.unit)})
+                            <br /><br />
+                            صلاحيــة هذه الكمية : صـــالحة حتي {offer.expiryDate ? new Date(offer.expiryDate).toLocaleDateString('ar-EG') : 'غير محدد'}
+                            <br /><br />
+                            مدة العرض : الكمية متواجدة إلى حين تواصل مؤسسة خيرية فى حاجة للعرض
+                            <br /><br />
+                            رقـــم التـــواصـــل <span style={{ direction: 'ltr', display: 'inline-block' }}>{offer.phone || offer.whatsapp || 'غير متوفر'}</span>
+                            <br />
+                            {!isAuthenticated ? (
+                              <Link href="/register" className='post-tafasel'>......اشترك معنا لتقدر علي ان تساهم في مثل هذا </Link>
+                            ) : role !== 'Admin' ? (
+                              <Link href="/browse" className='post-tafasel'>......اذهب إلى التصفح للمزيد </Link>
+                            ) : null}
+                          </span>
+                          <span className='post-date'>
+                            {offer.createdAt ? new Date(offer.createdAt).toLocaleDateString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric' }) : 'تاريخ غير محدد'}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -341,12 +397,12 @@ export default function Home() {
 
       {/* page-5 */}
       <div className='page-5' style={{
-        top: needs.length === 0 && offers.length === 0 ? '2048px' :
-          needs.length === 0 ? (offers.length <= 1 ? '2748px' : '3448px') :
-            offers.length === 0 ? (needs.length <= 1 ? '3048px' : '4100px') :
-              (needs.length <= 1 && offers.length <= 1 ? '3748px' :
-                needs.length <= 1 ? '4448px' :
-                  offers.length <= 1 ? '4848px' : '5500.8px')
+        top: (isLoading ? 4 : needs.length) === 0 && (isLoading ? 4 : offers.length) === 0 ? '2048px' :
+          (isLoading ? 4 : needs.length) === 0 ? ((isLoading ? 4 : offers.length) <= 1 ? '2748px' : '3448px') :
+            (isLoading ? 4 : offers.length) === 0 ? ((isLoading ? 4 : needs.length) <= 1 ? '3048px' : '4100px') :
+              ((isLoading ? 4 : needs.length) <= 1 && (isLoading ? 4 : offers.length) <= 1 ? '3748px' :
+                (isLoading ? 4 : needs.length) <= 1 ? '4448px' :
+                  (isLoading ? 4 : offers.length) <= 1 ? '4848px' : '5500.8px')
       }}>
         <span className='pg-5-header'>مـــجـــتــمــع كـــامــــل يـــخـــدم كـــــافـــة الأطراف </span>
         <span className='pg-5-head'>جميعهم مــتــواجــدون فــى مــكان واحـــد</span>
@@ -357,12 +413,12 @@ export default function Home() {
       {/* page-6 */}
       {!isAuthenticated && (
         <div className='page-6' style={{
-          top: (needs.length === 0 && offers.length === 0) ? '2548px' :
-            (needs.length === 0) ? (offers.length <= 1 ? '3248px' : '3948px') :
-              (offers.length === 0) ? (needs.length <= 1 ? '3548px' : '4600px') :
-                (needs.length <= 1 && offers.length <= 1 ? '4248px' :
-                  needs.length <= 1 ? '4948px' :
-                    offers.length <= 1 ? '5348px' : '6000.8px')
+          top: ((isLoading ? 4 : needs.length) === 0 && (isLoading ? 4 : offers.length) === 0) ? '2548px' :
+            ((isLoading ? 4 : needs.length) === 0) ? ((isLoading ? 4 : offers.length) <= 1 ? '3248px' : '3948px') :
+              ((isLoading ? 4 : offers.length) === 0) ? ((isLoading ? 4 : needs.length) <= 1 ? '3548px' : '4600px') :
+                ((isLoading ? 4 : needs.length) <= 1 && (isLoading ? 4 : offers.length) <= 1 ? '4248px' :
+                  (isLoading ? 4 : needs.length) <= 1 ? '4948px' :
+                    (isLoading ? 4 : offers.length) <= 1 ? '5348px' : '6000.8px')
         }}>
           <span className='pg-6-header'>سارع الأن بالتســجـــيــــــــل !</span>
           <span className='pg-6-head'>و كن جزءاً من مجتمع <span className='span-wafer'>وَافــــــر</span> الكبير </span>
@@ -374,18 +430,18 @@ export default function Home() {
       {/* footer */}
       <footer className='footer' style={{
         top: !isAuthenticated
-          ? ((needs.length === 0 && offers.length === 0) ? '3048px' :
-            (needs.length === 0) ? (offers.length <= 1 ? '3748px' : '4448px') :
-              (offers.length === 0) ? (needs.length <= 1 ? '4048px' : '5100px') :
-                (needs.length <= 1 && offers.length <= 1 ? '4748px' :
-                  needs.length <= 1 ? '5448px' :
-                    offers.length <= 1 ? '5848px' : '6500.8px'))
-          : ((needs.length === 0 && offers.length === 0) ? '2548px' :
-            (needs.length === 0) ? (offers.length <= 1 ? '3248px' : '3948px') :
-              (offers.length === 0) ? (needs.length <= 1 ? '3548px' : '4600px') :
-                (needs.length <= 1 && offers.length <= 1 ? '4248px' :
-                  needs.length <= 1 ? '4948px' :
-                    offers.length <= 1 ? '5348px' : '6000.8px'))
+          ? (((isLoading ? 4 : needs.length) === 0 && (isLoading ? 4 : offers.length) === 0) ? '3048px' :
+            ((isLoading ? 4 : needs.length) === 0) ? ((isLoading ? 4 : offers.length) <= 1 ? '3748px' : '4448px') :
+              ((isLoading ? 4 : offers.length) === 0) ? ((isLoading ? 4 : needs.length) <= 1 ? '4048px' : '5100px') :
+                ((isLoading ? 4 : needs.length) <= 1 && (isLoading ? 4 : offers.length) <= 1 ? '4748px' :
+                  (isLoading ? 4 : needs.length) <= 1 ? '5448px' :
+                    (isLoading ? 4 : offers.length) <= 1 ? '5848px' : '6500.8px'))
+          : (((isLoading ? 4 : needs.length) === 0 && (isLoading ? 4 : offers.length) === 0) ? '2548px' :
+            ((isLoading ? 4 : needs.length) === 0) ? ((isLoading ? 4 : offers.length) <= 1 ? '3248px' : '3948px') :
+              ((isLoading ? 4 : offers.length) === 0) ? ((isLoading ? 4 : needs.length) <= 1 ? '3548px' : '4600px') :
+                ((isLoading ? 4 : needs.length) <= 1 && (isLoading ? 4 : offers.length) <= 1 ? '4248px' :
+                  (isLoading ? 4 : needs.length) <= 1 ? '4948px' :
+                    (isLoading ? 4 : offers.length) <= 1 ? '5348px' : '6000.8px'))
       }}>
         <div className='sub'>
           <span className='sub-head'>اشــتــرك الأن</span>
