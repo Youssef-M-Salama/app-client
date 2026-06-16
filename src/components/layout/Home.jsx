@@ -451,10 +451,10 @@ export default function Home() {
           </div>
           <div className='sub-txt'>بالضغط على زر الاشتراك، فإنك تؤكد أنك قرأت ووافقت على شروط الاستخدام الخاصة بنا.</div>
         </div>
-        <a href="https://aboutwafer.netlify.app" target="_blank" rel="noopener noreferrer" className='who' style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div className='who'>
           <Image alt='icon' className='who-img' src='/ellipse-41.png' width={15} height={15}></Image>
           <span className='who-txt'>مـــــن نـــــحــــن</span>
-        </a>
+        </div>
         <div className='contact'>
           <Image alt='icon' className='contact-img' src='/ellipse-41.png' width={15} height={15}></Image>
           <span className='who-txt'>تـــــواصـــــل مـــــعــــــنـــــا</span>
